@@ -1,0 +1,723 @@
+/**
+ * QUOTE RESULTS PAGE
+ * Design: British Legal Prestige — Navy + Gold + Parchment
+ * Features:
+ *   - Staggered card entrance animation
+ *   - Sort by price / rating
+ *   - Full fee breakdown per card
+ *   - "Instruct Directly" modal (form + payment on account)
+ *   - "Request a Callback" modal
+ *   - SDLT & Land Registry breakdown
+ */
+
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
+import {
+  Star, Shield, Award, ChevronDown, ChevronUp, Phone, ArrowLeft,
+  Scale, CheckCircle, X, CreditCard, Clock, MapPin, ArrowUpDown
+} from "lucide-react";
+import { calculateQuotes, formatCurrency, type FirmQuote, type WizardAnswers } from "../lib/feeEngine";
+
+// ─── STAR RATING ──────────────────────────────────────────────────────────────
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <Star
+          key={i}
+          size={13}
+          fill={i <= Math.round(rating) ? "oklch(0.72 0.12 75)" : "transparent"}
+          style={{ color: "oklch(0.72 0.12 75)" }}
+        />
+      ))}
+      <span className="ml-1 text-xs font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
+        {rating.toFixed(1)}
+      </span>
+    </div>
+  );
+}
+
+// ─── INSTRUCT DIRECTLY MODAL ──────────────────────────────────────────────────
+function InstructModal({ firm, onClose, contactDetails }: {
+  firm: FirmQuote;
+  onClose: () => void;
+  contactDetails: { firstName: string; lastName: string; email: string; phone: string };
+}) {
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({
+    firstName: contactDetails.firstName || "",
+    lastName: contactDetails.lastName || "",
+    email: contactDetails.email || "",
+    phone: contactDetails.phone || "",
+    paymentAmount: "150",
+    cardNumber: "",
+    expiry: "",
+    cvv: "",
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "oklch(0.12 0.05 250 / 0.7)", backdropFilter: "blur(4px)" }}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" style={{ border: "1px solid oklch(0.88 0.015 80)" }}>
+        {/* Header */}
+        <div className="flex items-center justify-between p-6" style={{ borderBottom: "1px solid oklch(0.88 0.015 80)" }}>
+          <div>
+            <h3 className="text-xl font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+              Instruct {firm.firmName}
+            </h3>
+            <p className="text-xs mt-0.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              Complete your details and make your initial payment on account
+            </p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "oklch(0.94 0.012 80)" }}>
+            <X size={15} style={{ color: "oklch(0.45 0.04 250)" }} />
+          </button>
+        </div>
+
+        {submitted ? (
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "oklch(0.18 0.06 250)" }}>
+              <CheckCircle size={32} style={{ color: "oklch(0.72 0.12 75)" }} />
+            </div>
+            <h4 className="text-xl font-bold mb-2" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+              Instruction Confirmed
+            </h4>
+            <p className="text-sm mb-6" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              Thank you. {firm.firmName} will be in touch within 24 hours to begin your conveyancing. A confirmation has been sent to {form.email}.
+            </p>
+            <button onClick={onClose} className="btn-gold px-6 py-3 rounded-xl text-sm font-bold">
+              Close
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            {/* Fee summary */}
+            <div className="rounded-xl p-4" style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.88 0.015 80)" }}>
+              <div className="flex justify-between text-sm mb-1">
+                <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Total legal fees (inc. VAT)</span>
+                <span className="font-semibold font-mono-numbers" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(firm.totalIncVat)}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Initial payment on account</span>
+                <span className="font-semibold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(150)}</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: "First name", key: "firstName", placeholder: "Jane" },
+                { label: "Last name", key: "lastName", placeholder: "Smith" },
+              ].map(({ label, key, placeholder }) => (
+                <div key={key}>
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>{label}</label>
+                  <input
+                    type="text"
+                    required
+                    value={form[key as keyof typeof form]}
+                    onChange={(e) => setForm((p) => ({ ...p, [key]: e.target.value }))}
+                    placeholder={placeholder}
+                    className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none"
+                    style={{ fontFamily: "'DM Sans', sans-serif", borderColor: "oklch(0.88 0.015 80)" }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {[
+              { label: "Email address", key: "email", type: "email", placeholder: "jane.smith@email.com" },
+              { label: "Phone number", key: "phone", type: "tel", placeholder: "07700 900000" },
+            ].map(({ label, key, type, placeholder }) => (
+              <div key={key}>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>{label}</label>
+                <input
+                  type={type}
+                  required
+                  value={form[key as keyof typeof form]}
+                  onChange={(e) => setForm((p) => ({ ...p, [key]: e.target.value }))}
+                  placeholder={placeholder}
+                  className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none"
+                  style={{ fontFamily: "'DM Sans', sans-serif", borderColor: "oklch(0.88 0.015 80)" }}
+                  onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                  onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+                />
+              </div>
+            ))}
+
+            {/* Payment section */}
+            <div style={{ borderTop: "1px solid oklch(0.88 0.015 80)", paddingTop: "1rem" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <CreditCard size={15} style={{ color: "oklch(0.72 0.12 75)" }} />
+                <span className="text-sm font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                  Payment on Account — {formatCurrency(150)}
+                </span>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Card number</label>
+                  <input
+                    type="text"
+                    required
+                    value={form.cardNumber}
+                    onChange={(e) => setForm((p) => ({ ...p, cardNumber: e.target.value.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim() }))}
+                    placeholder="1234 5678 9012 3456"
+                    maxLength={19}
+                    className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none"
+                    style={{ fontFamily: "'JetBrains Mono', monospace", borderColor: "oklch(0.88 0.015 80)" }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Expiry (MM/YY)</label>
+                    <input
+                      type="text"
+                      required
+                      value={form.expiry}
+                      onChange={(e) => setForm((p) => ({ ...p, expiry: e.target.value }))}
+                      placeholder="12/27"
+                      maxLength={5}
+                      className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none"
+                      style={{ fontFamily: "'JetBrains Mono', monospace", borderColor: "oklch(0.88 0.015 80)" }}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>CVV</label>
+                    <input
+                      type="text"
+                      required
+                      value={form.cvv}
+                      onChange={(e) => setForm((p) => ({ ...p, cvv: e.target.value.replace(/\D/g, "").slice(0, 4) }))}
+                      placeholder="123"
+                      maxLength={4}
+                      className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none"
+                      style={{ fontFamily: "'JetBrains Mono', monospace", borderColor: "oklch(0.88 0.015 80)" }}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" className="btn-gold w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
+              <CheckCircle size={16} />
+              Confirm Instruction & Pay {formatCurrency(150)}
+            </button>
+
+            <p className="text-xs text-center" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              Secure payment · Your details are encrypted · Cancel anytime before work begins
+            </p>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── CALLBACK MODAL ───────────────────────────────────────────────────────────
+function CallbackModal({ firm, onClose, contactDetails }: {
+  firm: FirmQuote;
+  onClose: () => void;
+  contactDetails: { firstName: string; lastName: string; email: string; phone: string };
+}) {
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({
+    name: `${contactDetails.firstName} ${contactDetails.lastName}`.trim() || "",
+    phone: contactDetails.phone || "",
+    preferredTime: "",
+  });
+
+  const times = ["Morning (9am–12pm)", "Afternoon (12pm–5pm)", "Evening (5pm–7pm)", "Any time"];
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "oklch(0.12 0.05 250 / 0.7)", backdropFilter: "blur(4px)" }}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md" style={{ border: "1px solid oklch(0.88 0.015 80)" }}>
+        <div className="flex items-center justify-between p-6" style={{ borderBottom: "1px solid oklch(0.88 0.015 80)" }}>
+          <div>
+            <h3 className="text-xl font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+              Request a Callback
+            </h3>
+            <p className="text-xs mt-0.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              One of our advisers will call you back
+            </p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "oklch(0.94 0.012 80)" }}>
+            <X size={15} style={{ color: "oklch(0.45 0.04 250)" }} />
+          </button>
+        </div>
+
+        {submitted ? (
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "oklch(0.18 0.06 250)" }}>
+              <Phone size={28} style={{ color: "oklch(0.72 0.12 75)" }} />
+            </div>
+            <h4 className="text-xl font-bold mb-2" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+              Callback Requested
+            </h4>
+            <p className="text-sm" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              One of our advisers will call you on <strong>{form.phone}</strong> during your preferred time. We look forward to speaking with you.
+            </p>
+            <button onClick={onClose} className="btn-gold mt-6 px-6 py-3 rounded-xl text-sm font-bold">Close</button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <div>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Your name</label>
+              <input
+                type="text"
+                required
+                value={form.name}
+                onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                placeholder="Jane Smith"
+                className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none"
+                style={{ fontFamily: "'DM Sans', sans-serif", borderColor: "oklch(0.88 0.015 80)" }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Phone number</label>
+              <input
+                type="tel"
+                required
+                value={form.phone}
+                onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+                placeholder="07700 900000"
+                className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none"
+                style={{ fontFamily: "'DM Sans', sans-serif", borderColor: "oklch(0.88 0.015 80)" }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold mb-2" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Preferred call time</label>
+              <div className="grid grid-cols-2 gap-2">
+                {times.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setForm((p) => ({ ...p, preferredTime: t }))}
+                    className="px-3 py-2 rounded-lg text-xs font-medium border-2 transition-all"
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      ...(form.preferredTime === t
+                        ? { background: "oklch(0.18 0.06 250)", borderColor: "oklch(0.18 0.06 250)", color: "white" }
+                        : { background: "white", borderColor: "oklch(0.88 0.015 80)", color: "oklch(0.45 0.04 250)" }),
+                    }}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <button type="submit" className="btn-gold w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
+              <Phone size={15} />
+              Request My Callback
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── QUOTE CARD ───────────────────────────────────────────────────────────────
+function QuoteCard({
+  quote,
+  rank,
+  onInstruct,
+  onCallback,
+}: {
+  quote: FirmQuote;
+  rank: number;
+  onInstruct: () => void;
+  onCallback: () => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div
+      className="card-stagger bg-white rounded-2xl overflow-hidden"
+      style={{
+        border: rank === 1 ? "2px solid oklch(0.72 0.12 75)" : "1px solid oklch(0.88 0.015 80)",
+        boxShadow: rank === 1 ? "0 8px 30px oklch(0.72 0.12 75 / 0.15)" : "0 2px 12px oklch(0.18 0.06 250 / 0.06)",
+      }}
+    >
+      {/* Best Value badge */}
+      {rank === 1 && (
+        <div className="px-4 py-1.5 text-xs font-bold text-center" style={{ background: "oklch(0.72 0.12 75)", color: "oklch(0.12 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>
+          ★ Best Value
+        </div>
+      )}
+
+      <div className="p-6">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          {/* Firm info */}
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-lg font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+                {quote.firmName}
+              </h3>
+              <span className="px-2 py-0.5 rounded text-xs font-bold" style={{ background: quote.regulated === "SRA" ? "oklch(0.18 0.06 250 / 0.08)" : "oklch(0.72 0.12 75 / 0.15)", color: quote.regulated === "SRA" ? "oklch(0.18 0.06 250)" : "oklch(0.58 0.14 75)", fontFamily: "'DM Sans', sans-serif" }}>
+                {quote.regulated}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 text-xs mb-1" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              <MapPin size={11} />
+              {quote.firmLocation}
+            </div>
+            <StarRating rating={quote.rating} />
+            <div className="text-xs mt-0.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              {quote.reviewCount} reviews · Est. {new Date().getFullYear() - quote.yearsEstablished}
+            </div>
+          </div>
+
+          {/* Price */}
+          <div className="text-right">
+            <div className="text-xs mb-0.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              Legal fees (inc. VAT)
+            </div>
+            <div className="text-2xl font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>
+              {formatCurrency(quote.totalIncVat)}
+            </div>
+            <div className="text-xs mt-0.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              Grand total: <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.grandTotal)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Speciality */}
+        <div className="text-xs mb-4 px-3 py-2 rounded-lg" style={{ background: "oklch(0.975 0.008 80)", color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+          {quote.speciality}
+        </div>
+
+        {/* Accreditations */}
+        <div className="flex flex-wrap gap-1.5 mb-5">
+          {quote.accreditations.map((a) => (
+            <span key={a} className="flex items-center gap-1 px-2 py-1 rounded text-xs" style={{ background: "oklch(0.18 0.06 250 / 0.05)", color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              <Award size={10} style={{ color: "oklch(0.72 0.12 75)" }} />
+              {a}
+            </span>
+          ))}
+        </div>
+
+        {/* CTA Buttons */}
+        <div className="flex gap-3 mb-4">
+          <button
+            onClick={onInstruct}
+            className="btn-gold flex-1 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2"
+          >
+            <CheckCircle size={15} />
+            Instruct Directly
+          </button>
+          <button
+            onClick={onCallback}
+            className="flex-1 py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all"
+            style={{ border: "2px solid oklch(0.18 0.06 250)", color: "oklch(0.18 0.06 250)", background: "white", fontFamily: "'DM Sans', sans-serif" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "oklch(0.18 0.06 250)"; e.currentTarget.style.color = "white"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "white"; e.currentTarget.style.color = "oklch(0.18 0.06 250)"; }}
+          >
+            <Phone size={15} />
+            Request Callback
+          </button>
+        </div>
+
+        {/* Expand fee breakdown */}
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full flex items-center justify-center gap-1.5 text-xs font-medium py-2 rounded-lg transition-all"
+          style={{ color: "oklch(0.45 0.04 250)", background: "oklch(0.975 0.008 80)", fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {expanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+          {expanded ? "Hide" : "View"} full fee breakdown
+        </button>
+
+        {/* Fee Breakdown */}
+        {expanded && (
+          <div className="mt-4 space-y-3 animate-fade-in">
+            {/* Legal Fees */}
+            <div>
+              <div className="text-xs font-bold mb-2 uppercase tracking-wide" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                Legal Fees
+              </div>
+              <div className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Base legal fee</span>
+                  <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.legalFee)}</span>
+                </div>
+                {quote.supplements.map((s) => (
+                  <div key={s.name} className="flex justify-between text-sm">
+                    <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>{s.name}</span>
+                    <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>+{formatCurrency(s.price)}</span>
+                  </div>
+                ))}
+                <div className="flex justify-between text-sm" style={{ borderTop: "1px solid oklch(0.88 0.015 80)", paddingTop: "4px" }}>
+                  <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>VAT (20%)</span>
+                  <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.vat)}</span>
+                </div>
+                <div className="flex justify-between text-sm font-bold">
+                  <span style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Total legal fees (inc. VAT)</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.totalIncVat)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Disbursements */}
+            <div>
+              <div className="text-xs font-bold mb-2 uppercase tracking-wide" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                Disbursements
+              </div>
+              <div className="space-y-1">
+                {quote.disbursements.map((d) => (
+                  <div key={d.name} className="flex justify-between text-sm">
+                    <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>{d.name}</span>
+                    <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(d.price)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Government Fees */}
+            {(quote.sdlt > 0 || quote.landRegistryFee > 0) && (
+              <div>
+                <div className="text-xs font-bold mb-2 uppercase tracking-wide" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                  Government Fees
+                </div>
+                <div className="space-y-1">
+                  {quote.sdlt > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Stamp Duty Land Tax (SDLT)</span>
+                      <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.sdlt)}</span>
+                    </div>
+                  )}
+                  {quote.landRegistryFee > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Land Registry Fee</span>
+                      <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.landRegistryFee)}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Grand Total */}
+            <div className="rounded-xl p-3" style={{ background: "oklch(0.18 0.06 250)" }}>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-bold" style={{ color: "white", fontFamily: "'DM Sans', sans-serif" }}>Grand Total</span>
+                <span className="text-lg font-bold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.grandTotal)}</span>
+              </div>
+              <div className="text-xs mt-0.5" style={{ color: "oklch(0.975 0.008 80 / 0.5)", fontFamily: "'DM Sans', sans-serif" }}>
+                All fees, disbursements, SDLT & Land Registry included
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── MAIN RESULTS PAGE ────────────────────────────────────────────────────────
+export default function QuoteResults() {
+  const [, navigate] = useLocation();
+  const [quotes, setQuotes] = useState<FirmQuote[]>([]);
+  const [sortBy, setSortBy] = useState<"price" | "rating">("price");
+  const [instructFirm, setInstructFirm] = useState<FirmQuote | null>(null);
+  const [callbackFirm, setCallbackFirm] = useState<FirmQuote | null>(null);
+  const [answers, setAnswers] = useState<Partial<WizardAnswers>>({});
+  const [contactDetails, setContactDetails] = useState({ firstName: "", lastName: "", email: "", phone: "" });
+
+  useEffect(() => {
+    const savedAnswers = sessionStorage.getItem("quoteAnswers");
+    const savedContact = sessionStorage.getItem("contactDetails");
+
+    let parsedAnswers: Partial<WizardAnswers> = {
+      transactionType: "purchase",
+      tenure: "freehold",
+      hasMortgage: false,
+      isFirstTimeBuyer: true,
+      isNewBuild: false,
+      isSharedOwnership: false,
+      hasGiftedDeposit: false,
+      hasHelpToBuyISA: false,
+      isRightToBuy: false,
+      isBuyToLet: false,
+      isSecondHome: false,
+      hasMortgageOnProperty: false,
+      buyerCount: 1,
+      propertyValue: 350000,
+      postcode: "SW1A 1AA",
+      completionTimeline: "Within 1 month",
+    };
+
+    if (savedAnswers) {
+      try { parsedAnswers = JSON.parse(savedAnswers); } catch { /* use defaults */ }
+    }
+    if (savedContact) {
+      try { setContactDetails(JSON.parse(savedContact)); } catch { /* use defaults */ }
+    }
+
+    setAnswers(parsedAnswers);
+    const calculated = calculateQuotes(parsedAnswers as WizardAnswers);
+    setQuotes(calculated);
+  }, []);
+
+  const sorted = [...quotes].sort((a, b) =>
+    sortBy === "price" ? a.totalIncVat - b.totalIncVat : b.rating - a.rating
+  );
+
+  const transactionLabels: Record<string, string> = {
+    purchase: "Property Purchase",
+    sale: "Property Sale",
+    sale_purchase: "Sale & Purchase",
+    remortgage: "Remortgage",
+  };
+
+  return (
+    <div className="min-h-screen" style={{ background: "oklch(0.975 0.008 80)" }}>
+      {/* Header */}
+      <div style={{ background: "oklch(0.18 0.06 250)", borderBottom: "1px solid oklch(0.72 0.12 75 / 0.2)" }}>
+        <div className="container py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "oklch(0.72 0.12 75)" }}>
+              <Scale size={15} style={{ color: "oklch(0.12 0.05 250)" }} />
+            </div>
+            <span className="text-sm font-semibold" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
+              Compare the Conveyancing Market
+            </span>
+          </div>
+          <button
+            onClick={() => navigate("/get-quote")}
+            className="text-sm flex items-center gap-1 transition-colors"
+            style={{ color: "oklch(0.975 0.008 80 / 0.6)", fontFamily: "'DM Sans', sans-serif" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "oklch(0.72 0.12 75)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "oklch(0.975 0.008 80 / 0.6)")}
+          >
+            <ArrowLeft size={14} /> Amend Quote
+          </button>
+        </div>
+      </div>
+
+      <div className="container py-10 max-w-3xl mx-auto">
+        {/* Summary bar */}
+        <div className="rounded-2xl p-5 mb-8" style={{ background: "oklch(0.18 0.06 250)", border: "1px solid oklch(0.72 0.12 75 / 0.2)" }}>
+          <div className="flex flex-wrap gap-4 items-center justify-between">
+            <div>
+              <div className="text-xs mb-1" style={{ color: "oklch(0.975 0.008 80 / 0.5)", fontFamily: "'DM Sans', sans-serif" }}>Your quote summary</div>
+              <div className="text-lg font-bold" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
+                {transactionLabels[answers.transactionType || "purchase"]} · {formatCurrency(answers.propertyValue || 0)}
+              </div>
+              <div className="flex flex-wrap gap-3 mt-1">
+                {[
+                  answers.postcode,
+                  answers.tenure === "leasehold" ? "Leasehold" : "Freehold",
+                  answers.isFirstTimeBuyer ? "First-Time Buyer" : null,
+                  answers.hasMortgage ? "With Mortgage" : "Cash Buyer",
+                  answers.isNewBuild ? "New Build" : null,
+                ].filter(Boolean).map((tag) => (
+                  <span key={tag} className="text-xs px-2 py-0.5 rounded" style={{ background: "oklch(0.72 0.12 75 / 0.15)", color: "oklch(0.82 0.10 75)", fontFamily: "'DM Sans', sans-serif" }}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Shield size={14} style={{ color: "oklch(0.72 0.12 75)" }} />
+              <span className="text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.6)", fontFamily: "'DM Sans', sans-serif" }}>
+                All firms SRA / CLC regulated
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Results header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+              Your Quotes
+            </h1>
+            <p className="text-sm" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              {sorted.length} regulated firms found · All fees fully itemised
+            </p>
+          </div>
+
+          {/* Sort control */}
+          <div className="flex items-center gap-2">
+            <ArrowUpDown size={14} style={{ color: "oklch(0.55 0.04 250)" }} />
+            <span className="text-xs" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Sort by:</span>
+            <div className="flex rounded-lg overflow-hidden" style={{ border: "1px solid oklch(0.88 0.015 80)" }}>
+              {(["price", "rating"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSortBy(s)}
+                  className="px-3 py-1.5 text-xs font-medium transition-all capitalize"
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    ...(sortBy === s
+                      ? { background: "oklch(0.18 0.06 250)", color: "white" }
+                      : { background: "white", color: "oklch(0.45 0.04 250)" }),
+                  }}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Quote Cards */}
+        <div className="space-y-5">
+          {sorted.map((quote, i) => (
+            <QuoteCard
+              key={quote.id}
+              quote={quote}
+              rank={i + 1}
+              onInstruct={() => setInstructFirm(quote)}
+              onCallback={() => setCallbackFirm(quote)}
+            />
+          ))}
+        </div>
+
+        {/* Footer note */}
+        <div className="mt-8 rounded-xl p-4 text-xs" style={{ background: "white", border: "1px solid oklch(0.88 0.015 80)", color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+          <div className="flex items-start gap-2">
+            <Clock size={13} className="mt-0.5 flex-shrink-0" style={{ color: "oklch(0.72 0.12 75)" }} />
+            <span>
+              Quotes are indicative and based on the information you provided. Final fees may vary depending on the complexity of your transaction. All firms are regulated by the SRA or CLC. SDLT is calculated using current HMRC rates and is subject to change.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Modals */}
+      {instructFirm && (
+        <InstructModal
+          firm={instructFirm}
+          onClose={() => setInstructFirm(null)}
+          contactDetails={contactDetails}
+        />
+      )}
+      {callbackFirm && (
+        <CallbackModal
+          firm={callbackFirm}
+          onClose={() => setCallbackFirm(null)}
+          contactDetails={contactDetails}
+        />
+      )}
+    </div>
+  );
+}
