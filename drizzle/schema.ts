@@ -120,3 +120,56 @@ export const instructRequests = mysqlTable("instruct_requests", {
 
 export type InstructRequest = typeof instructRequests.$inferSelect;
 export type InsertInstructRequest = typeof instructRequests.$inferInsert;
+
+// ─── FIRM FEE STRUCTURES ─────────────────────────────────────────────────────
+// Each row is one fee band for a given firm + transaction type combination.
+// The fee engine picks the band where propertyValue falls within minValue..maxValue.
+export const firmFeeStructures = mysqlTable("firm_fee_structures", {
+  id: int("id").autoincrement().primaryKey(),
+  firmId: int("firmId").notNull(),
+  transactionType: mysqlEnum("transactionType", ["purchase", "sale", "sale_purchase", "remortgage"]).notNull(),
+  // Property value band (inclusive)
+  minValue: int("minValue").notNull().default(0),
+  maxValue: int("maxValue").notNull().default(9999999),
+  // Core legal fee (excl. VAT)
+  legalFee: decimal("legalFee", { precision: 10, scale: 2 }).notNull().default("0"),
+  // Disbursements
+  searchFee: decimal("searchFee", { precision: 10, scale: 2 }).default("0"),
+  landRegistryFee: decimal("landRegistryFee", { precision: 10, scale: 2 }).default("0"),
+  electronicTransferFee: decimal("electronicTransferFee", { precision: 10, scale: 2 }).default("30"),
+  bankTransferFee: decimal("bankTransferFee", { precision: 10, scale: 2 }).default("0"),
+  antiMoneyLaunderingFee: decimal("antiMoneyLaunderingFee", { precision: 10, scale: 2 }).default("6"),
+  officialCopiesFee: decimal("officialCopiesFee", { precision: 10, scale: 2 }).default("0"),
+  // Leasehold supplement
+  leaseholdSupplement: decimal("leaseholdSupplement", { precision: 10, scale: 2 }).default("0"),
+  // New build supplement
+  newBuildSupplement: decimal("newBuildSupplement", { precision: 10, scale: 2 }).default("0"),
+  // Shared ownership supplement
+  sharedOwnershipSupplement: decimal("sharedOwnershipSupplement", { precision: 10, scale: 2 }).default("0"),
+  // Gifted deposit supplement
+  giftedDepositSupplement: decimal("giftedDepositSupplement", { precision: 10, scale: 2 }).default("0"),
+  // Margin / commission earned by the platform (£)
+  platformCommission: decimal("platformCommission", { precision: 10, scale: 2 }).default("0"),
+  // Whether this band is currently active
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type FirmFeeStructure = typeof firmFeeStructures.$inferSelect;
+export type InsertFirmFeeStructure = typeof firmFeeStructures.$inferInsert;
+
+// ─── FIRM NOTES ───────────────────────────────────────────────────────────────
+// Investor notes attached to a law firm (e.g. contract terms, contact history)
+export const firmNotes = mysqlTable("firm_notes", {
+  id: int("id").autoincrement().primaryKey(),
+  firmId: int("firmId").notNull(),
+  authorId: int("authorId"),
+  authorName: varchar("authorName", { length: 200 }),
+  content: text("content").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type FirmNote = typeof firmNotes.$inferSelect;
+export type InsertFirmNote = typeof firmNotes.$inferInsert;

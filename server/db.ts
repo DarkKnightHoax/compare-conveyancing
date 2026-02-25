@@ -193,3 +193,82 @@ export async function updateInstructStatus(id: number, status: "submitted" | "co
   if (!db) throw new Error("Database not available");
   await db.update(instructRequests).set({ status }).where(eq(instructRequests.id, id));
 }
+
+// ─── FIRM FEE STRUCTURES ──────────────────────────────────────────────────────
+import {
+  firmFeeStructures, InsertFirmFeeStructure,
+  firmNotes, InsertFirmNote,
+} from "../drizzle/schema";
+
+export async function getFeeStructuresForFirm(firmId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(firmFeeStructures)
+    .where(eq(firmFeeStructures.firmId, firmId))
+    .orderBy(firmFeeStructures.transactionType, firmFeeStructures.minValue);
+}
+
+export async function getAllFeeStructures() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(firmFeeStructures)
+    .orderBy(firmFeeStructures.firmId, firmFeeStructures.transactionType, firmFeeStructures.minValue);
+}
+
+export async function upsertFeeStructure(data: InsertFirmFeeStructure) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  if (data.id) {
+    const { id, ...rest } = data as any;
+    await db.update(firmFeeStructures).set(rest).where(eq(firmFeeStructures.id, id));
+    return id as number;
+  }
+  const result = await db.insert(firmFeeStructures).values(data);
+  return (result[0] as any).insertId as number;
+}
+
+export async function deleteFeeStructure(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(firmFeeStructures).where(eq(firmFeeStructures.id, id));
+}
+
+// ─── FIRM NOTES ───────────────────────────────────────────────────────────────
+export async function getNotesForFirm(firmId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(firmNotes)
+    .where(eq(firmNotes.firmId, firmId))
+    .orderBy(desc(firmNotes.createdAt));
+}
+
+export async function createFirmNote(data: InsertFirmNote) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(firmNotes).values(data);
+  return (result[0] as any).insertId as number;
+}
+
+export async function deleteFirmNote(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(firmNotes).where(eq(firmNotes.id, id));
+}
+
+// ─── INVESTOR REVENUE STATS ───────────────────────────────────────────────────
+export async function getInvestorStats() {
+  const db = await getDb();
+  if (!db) return { totalFirms: 0, activeFirms: 0, totalLeads: 0, totalInstructions: 0, totalCommissionEstimate: 0 };
+  const [firmsTotal, firmsActive, leadsTotal, instructionsTotal] = await Promise.all([
+    db.select({ count: count() }).from(lawFirms),
+    db.select({ count: count() }).from(lawFirms).where(eq(lawFirms.isActive, true)),
+    db.select({ count: count() }).from(leads),
+    db.select({ count: count() }).from(instructRequests).where(eq(instructRequests.status, "completed")),
+  ]);
+  return {
+    totalFirms: firmsTotal[0]?.count ?? 0,
+    activeFirms: firmsActive[0]?.count ?? 0,
+    totalLeads: leadsTotal[0]?.count ?? 0,
+    totalInstructions: instructionsTotal[0]?.count ?? 0,
+  };
+}

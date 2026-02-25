@@ -9,6 +9,8 @@ import {
   createLead, getAllLeads, getLeadById, updateLeadStatus, getLeadsStats,
   createCallbackRequest, getAllCallbacks, updateCallbackStatus, getPendingCallbacksCount,
   createInstructRequest, getAllInstructRequests, updateInstructStatus,
+  getFeeStructuresForFirm, getAllFeeStructures, upsertFeeStructure, deleteFeeStructure,
+  getNotesForFirm, createFirmNote, deleteFirmNote, getInvestorStats,
 } from "./db";
 import { notifyOwner } from "./_core/notification";
 
@@ -200,6 +202,82 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  investor: router({
+    // Overview stats for the investor dashboard
+    stats: adminProcedure.query(() => getInvestorStats()),
+
+    // All fee structures across all firms
+    allFeeStructures: adminProcedure.query(() => getAllFeeStructures()),
+
+    // Fee structures for a single firm
+    feeStructures: adminProcedure
+      .input(z.object({ firmId: z.number() }))
+      .query(({ input }) => getFeeStructuresForFirm(input.firmId)),
+
+    // Create or update a fee band
+    upsertFeeStructure: adminProcedure
+      .input(z.object({
+        id: z.number().optional(),
+        firmId: z.number(),
+        transactionType: z.enum(["purchase", "sale", "sale_purchase", "remortgage"]),
+        minValue: z.number().min(0).default(0),
+        maxValue: z.number().min(1).default(9999999),
+        legalFee: z.string(),
+        searchFee: z.string().optional(),
+        landRegistryFee: z.string().optional(),
+        electronicTransferFee: z.string().optional(),
+        bankTransferFee: z.string().optional(),
+        antiMoneyLaunderingFee: z.string().optional(),
+        officialCopiesFee: z.string().optional(),
+        leaseholdSupplement: z.string().optional(),
+        newBuildSupplement: z.string().optional(),
+        sharedOwnershipSupplement: z.string().optional(),
+        giftedDepositSupplement: z.string().optional(),
+        platformCommission: z.string().optional(),
+        isActive: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await upsertFeeStructure(input as any);
+        return { success: true, id };
+      }),
+
+    // Delete a fee band
+    deleteFeeStructure: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await deleteFeeStructure(input.id);
+        return { success: true };
+      }),
+
+    // Notes for a firm
+    notes: adminProcedure
+      .input(z.object({ firmId: z.number() }))
+      .query(({ input }) => getNotesForFirm(input.firmId)),
+
+    addNote: adminProcedure
+      .input(z.object({
+        firmId: z.number(),
+        content: z.string().min(1),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const id = await createFirmNote({
+          firmId: input.firmId,
+          content: input.content,
+          authorId: ctx.user.id,
+          authorName: ctx.user.name ?? "Admin",
+        } as any);
+        return { success: true, id };
+      }),
+
+    deleteNote: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await deleteFirmNote(input.id);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
+

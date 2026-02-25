@@ -50,6 +50,21 @@ vi.mock("./db", () => ({
   updateInstructStatus: vi.fn().mockResolvedValue(undefined),
   upsertUser: vi.fn().mockResolvedValue(undefined),
   getUserByOpenId: vi.fn().mockResolvedValue(undefined),
+  // Investor fee management
+  getFeeStructuresForFirm: vi.fn().mockResolvedValue([
+    { id: 1, firmId: 1, transactionType: "purchase", minValue: 0, maxValue: 500000, legalFee: "850.00", searchFee: "250.00", landRegistryFee: "270.00", electronicTransferFee: "30.00", platformCommission: "50.00", isActive: true, createdAt: new Date() },
+  ]),
+  getAllFeeStructures: vi.fn().mockResolvedValue([
+    { id: 1, firmId: 1, transactionType: "purchase", minValue: 0, maxValue: 500000, legalFee: "850.00", isActive: true, createdAt: new Date() },
+  ]),
+  upsertFeeStructure: vi.fn().mockResolvedValue(1),
+  deleteFeeStructure: vi.fn().mockResolvedValue(undefined),
+  getNotesForFirm: vi.fn().mockResolvedValue([
+    { id: 1, firmId: 1, content: "Agreed 3% commission rate.", authorName: "Admin", createdAt: new Date() },
+  ]),
+  createFirmNote: vi.fn().mockResolvedValue(10),
+  deleteFirmNote: vi.fn().mockResolvedValue(undefined),
+  getInvestorStats: vi.fn().mockResolvedValue({ totalFirms: 3, activeFirms: 2, totalLeads: 45, totalInstructions: 12 }),
 }));
 
 vi.mock("./_core/notification", () => ({
@@ -60,6 +75,8 @@ import {
   getAllLawFirms, createLead, getAllLeads, getLeadsStats,
   createCallbackRequest, getAllCallbacks, getPendingCallbacksCount,
   createInstructRequest, getAllInstructRequests,
+  getFeeStructuresForFirm, getAllFeeStructures, upsertFeeStructure,
+  getNotesForFirm, createFirmNote, getInvestorStats,
 } from "./db";
 
 // ─── LAW FIRMS ────────────────────────────────────────────────────────────────
@@ -151,6 +168,62 @@ describe("Instruct Requests", () => {
     expect(requests).toHaveLength(1);
     expect(requests[0].firmName).toBe("Easy Choice Conveyancing");
     expect(requests[0].status).toBe("submitted");
+  });
+});
+
+// ─── INVESTOR FEE MANAGEMENT ─────────────────────────────────────────────────
+describe("Investor Fee Management", () => {
+  it("retrieves fee structures for a firm", async () => {
+    const bands = await getFeeStructuresForFirm(1);
+    expect(bands).toHaveLength(1);
+    expect(bands[0].firmId).toBe(1);
+    expect(bands[0].transactionType).toBe("purchase");
+    expect(bands[0].legalFee).toBe("850.00");
+  });
+
+  it("retrieves all fee structures across all firms", async () => {
+    const all = await getAllFeeStructures();
+    expect(all).toHaveLength(1);
+    expect(all[0].isActive).toBe(true);
+  });
+
+  it("upserts a fee structure and returns an ID", async () => {
+    const id = await upsertFeeStructure({
+      firmId: 1,
+      transactionType: "purchase",
+      minValue: 0,
+      maxValue: 500000,
+      legalFee: "950",
+      platformCommission: "60",
+    } as any);
+    expect(id).toBe(1);
+  });
+
+  it("retrieves investor overview stats", async () => {
+    const stats = await getInvestorStats();
+    expect(stats.totalFirms).toBe(3);
+    expect(stats.activeFirms).toBe(2);
+    expect(stats.totalLeads).toBe(45);
+    expect(stats.totalInstructions).toBe(12);
+  });
+});
+
+// ─── FIRM NOTES ───────────────────────────────────────────────────────────────
+describe("Firm Notes", () => {
+  it("retrieves notes for a firm", async () => {
+    const notes = await getNotesForFirm(1);
+    expect(notes).toHaveLength(1);
+    expect(notes[0].content).toBe("Agreed 3% commission rate.");
+    expect(notes[0].authorName).toBe("Admin");
+  });
+
+  it("creates a firm note and returns an ID", async () => {
+    const id = await createFirmNote({
+      firmId: 1,
+      content: "Contract renewal due March 2026.",
+      authorName: "Investor",
+    } as any);
+    expect(id).toBe(10);
   });
 });
 

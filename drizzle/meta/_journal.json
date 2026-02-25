@@ -15,6 +15,13 @@
       "when": 1772021245393,
       "tag": "0001_square_venus",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1772025304885,
+      "tag": "0002_white_sharon_carter",
+      "breakpoints": true
     }
   ]
 }

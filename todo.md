@@ -71,3 +71,17 @@
 - [x] robots.txt in client/public
 - [x] Internal links from FAQ and Blog back to /get-quote
 - [x] FAQ and Blog links added to navbar and footer
+
+## Investor Admin Panel
+- [x] firmFeeStructures table in drizzle schema (per-firm fee bands, disbursements, margins)
+- [x] firmNotes table for investor notes per firm
+- [x] DB migration pushed
+- [x] tRPC investor router (fee CRUD, firm overview, revenue stats)
+- [x] Investor login page at /investor/login (auth guard redirects to OAuth)
+- [x] Investor dashboard: revenue overview, firm comparison table
+- [x] Fee editor: per-firm legal fee bands by property value
+- [x] Disbursements editor: per-firm search fees, SDLT, Land Registry
+- [x] Margin/commission settings per firm
+- [x] Firm notes section
+- [x] Route registered in App.tsx at /investor
+- [x] Vitest tests for investor procedures (18 tests passing)
