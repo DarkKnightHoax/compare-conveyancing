@@ -54,6 +54,6 @@
 ## Remaining / Future
 - [ ] Stripe payment integration for "Instruct Directly" flow (Stripe keys needed)
 - [ ] Update Contact Us page with real business phone/email
-- [ ] SEO meta tags and sitemap.xml
+- [x] SEO meta tags: description, keywords, Open Graph, Twitter Card, robots
 - [ ] Custom domain (user to buy GoDaddy domain and point DNS to Manus)
 - [ ] Promote owner account to admin role via database
