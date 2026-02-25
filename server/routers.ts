@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { COOKIE_NAME } from "@shared/const";
+import { parse as parseCookieHeader } from "cookie";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
@@ -42,14 +43,21 @@ async function verifyAdminToken(token: string): Promise<boolean> {
     const secret = new TextEncoder().encode(ENV.cookieSecret || "admin-fallback-secret");
     const { payload } = await jwtVerify(token, secret);
     return payload.role === "admin";
-  } catch {
+  } catch (e) {
+    console.error("[AdminAuth] JWT verify failed:", (e as Error).message);
     return false;
   }
 }
 
+// Helper to read admin cookie from raw header (no cookie-parser middleware needed)
+function getAdminCookie(req: { headers: { cookie?: string } }): string | undefined {
+  const cookies = parseCookieHeader(req.headers.cookie || "");
+  return cookies[ADMIN_COOKIE];
+}
+
 // Middleware that checks the admin session cookie (independent of Manus OAuth)
 const standaloneAdminProcedure = publicProcedure.use(async ({ ctx, next }) => {
-  const token = ctx.req.cookies?.[ADMIN_COOKIE];
+  const token = getAdminCookie(ctx.req);
   if (!token) throw new TRPCError({ code: "UNAUTHORIZED", message: "Admin login required" });
   const valid = await verifyAdminToken(token);
   if (!valid) throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid or expired admin session" });
@@ -87,13 +95,11 @@ export const appRouter = router({
           throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid username or password" });
         }
         const token = await signAdminToken(input.username);
-        const isProduction = ENV.isProduction;
+        // Use getSessionCookieOptions to correctly detect HTTPS behind proxy
+        const cookieOpts = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(ADMIN_COOKIE, token, {
-          httpOnly: true,
-          secure: isProduction,
-          sameSite: "lax",
+          ...cookieOpts,
           maxAge: 12 * 60 * 60 * 1000, // 12 hours
-          path: "/",
         });
         return { success: true };
       }),
@@ -104,7 +110,7 @@ export const appRouter = router({
     }),
 
     check: publicProcedure.query(async ({ ctx }) => {
-      const token = ctx.req.cookies?.[ADMIN_COOKIE];
+      const token = getAdminCookie(ctx.req);
       if (!token) return { authenticated: false };
       const valid = await verifyAdminToken(token);
       return { authenticated: valid };

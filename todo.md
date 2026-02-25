@@ -94,3 +94,6 @@
 - [x] Remove separate /investor route
 - [x] Admin logout clears session cookie
 - [x] Tests for admin auth procedures (19 tests passing)
+
+## Bug Fixes
+- [x] Fix admin login redirect loop — root cause: ctx.req.cookies undefined (no cookie-parser), fixed by using parse() from cookie package directly on req.headers.cookie
