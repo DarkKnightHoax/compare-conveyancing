@@ -776,10 +776,11 @@ export default function Admin() {
   );
 
   useEffect(() => {
-    if (!authLoading && authCheck && !authCheck.authenticated) {
-      navigate("/admin/login");
+    // Only redirect once the check query has fully resolved (not while loading)
+    if (!authLoading && authCheck !== undefined && !authCheck?.authenticated) {
+      window.location.href = "/admin/login";
     }
-  }, [authLoading, authCheck, navigate]);
+  }, [authLoading, authCheck]);
 
   if (authLoading) {
     return (

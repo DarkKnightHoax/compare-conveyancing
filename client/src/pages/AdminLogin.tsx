@@ -15,7 +15,8 @@ export default function AdminLogin() {
 
   const loginMutation = trpc.adminAuth.login.useMutation({
     onSuccess: () => {
-      navigate("/admin");
+      // Use hard redirect so the admin page gets a fresh page load with the new cookie
+      window.location.href = "/admin";
     },
     onError: (err) => {
       setError(err.message || "Invalid username or password");
