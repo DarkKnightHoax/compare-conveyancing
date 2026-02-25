@@ -194,9 +194,9 @@ function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-8">
-          {([
-            { label: "How It Works", path: "/how-it-works" },
-            { label: "About Us", path: "/contact" },
+           {([            { label: "How It Works", path: "/how-it-works" },
+            { label: "FAQs", path: "/faq" },
+            { label: "Blog", path: "/blog" },
             { label: "Contact", path: "/contact" },
           ] as { label: string; path: string }[]).map(({ label, path }) => (
             <button
@@ -490,6 +490,54 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── BLOG & FAQ TEASER ── */}
+      <section className="py-20" style={{ background: "oklch(0.975 0.008 80)" }}>
+        <div className="container">
+          <div className="text-center mb-12">
+            <div className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'DM Sans', sans-serif" }}>Resources</div>
+            <h2 className="text-4xl font-bold mb-4" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>Guides & Advice</h2>
+            <div className="gold-rule w-24 mx-auto mb-4" />
+            <p className="text-base max-w-xl mx-auto" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              Everything you need to know about conveyancing — from costs and timelines to leasehold law and first-time buyer tips.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {/* FAQ card */}
+            <div
+              className="card-hover-gold bg-white rounded-2xl p-8 shadow-sm cursor-pointer"
+              onClick={() => navigate("/faq")}
+            >
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style={{ background: "oklch(0.18 0.06 250)" }}>
+                <CheckCircle size={18} style={{ color: "oklch(0.72 0.12 75)" }} />
+              </div>
+              <h3 className="text-xl font-bold mb-2" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>Conveyancing FAQs</h3>
+              <p className="text-sm leading-relaxed mb-5" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                Answers to the 20 most common conveyancing questions — costs, timelines, searches, SDLT, and more.
+              </p>
+              <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'DM Sans', sans-serif" }}>
+                Read the FAQs <ArrowRight size={14} />
+              </div>
+            </div>
+            {/* Blog card */}
+            <div
+              className="card-hover-gold bg-white rounded-2xl p-8 shadow-sm cursor-pointer"
+              onClick={() => navigate("/blog")}
+            >
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style={{ background: "oklch(0.18 0.06 250)" }}>
+                <Award size={18} style={{ color: "oklch(0.72 0.12 75)" }} />
+              </div>
+              <h3 className="text-xl font-bold mb-2" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>Conveyancing Blog</h3>
+              <p className="text-sm leading-relaxed mb-5" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                In-depth guides on conveyancing costs, the buying process, leasehold vs freehold, and first-time buyer advice.
+              </p>
+              <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'DM Sans', sans-serif" }}>
+                Read the Blog <ArrowRight size={14} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── FINAL CTA ── */}
       <section className="py-24 relative overflow-hidden" style={{ background: "oklch(0.975 0.008 80)" }}>
         <div className="container text-center">
@@ -535,6 +583,8 @@ export default function Home() {
               <button onClick={() => navigate("/terms")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>Terms & Conditions</button>
               <button onClick={() => navigate("/privacy-policy")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>Privacy Policy</button>
               <button onClick={() => navigate("/contact")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>Contact Us</button>
+              <button onClick={() => navigate("/faq")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>FAQs</button>
+              <button onClick={() => navigate("/blog")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>Blog</button>
             </div>
             <div className="text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.3)", fontFamily: "'DM Sans', sans-serif" }}>
               © {new Date().getFullYear()} Compare the Conveyancing Market

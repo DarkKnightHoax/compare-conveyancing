@@ -57,3 +57,17 @@
 - [x] SEO meta tags: description, keywords, Open Graph, Twitter Card, robots
 - [ ] Custom domain (user to buy GoDaddy domain and point DNS to Manus)
 - [ ] Promote owner account to admin role via database
+
+## SEO Improvements
+- [x] FAQ page with FAQPage JSON-LD schema
+- [x] Blog index page listing all articles
+- [x] Blog article: How Much Does Conveyancing Cost in 2025?
+- [x] Blog article: What Is Conveyancing and How Does It Work?
+- [x] Blog article: First-Time Buyer Conveyancing Guide
+- [x] Blog article: Leasehold vs Freehold — What Buyers Need to Know
+- [x] JSON-LD structured data on homepage (Service + Organization schema)
+- [x] Per-page meta title and description for all routes
+- [x] sitemap.xml in client/public
+- [x] robots.txt in client/public
+- [x] Internal links from FAQ and Blog back to /get-quote
+- [x] FAQ and Blog links added to navbar and footer

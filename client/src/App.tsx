@@ -12,6 +12,9 @@ import ContactUs from "./pages/ContactUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import Admin from "./pages/Admin";
+import FAQ from "./pages/FAQ";
+import Blog from "./pages/Blog";
+import BlogArticle from "./pages/BlogArticle";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -24,6 +27,9 @@ function Router() {
       <Route path={"/privacy-policy"} component={PrivacyPolicy} />
       <Route path={"/terms"} component={Terms} />
       <Route path={"/admin"} component={Admin} />
+      <Route path={"/faq"} component={FAQ} />
+      <Route path={"/blog"} component={Blog} />
+      <Route path={"/blog/:slug"} component={BlogArticle} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
