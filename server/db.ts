@@ -338,13 +338,14 @@ function calcSDLT(value: number, isFirstTimeBuyer: boolean, isSecondHome: boolea
   return Math.round(sdlt);
 }
 
+// Land Registry Scale 1 fees — "Apply by post" column (official HMLR fee schedule)
 function calcLandRegistry(value: number): number {
-  if (value <= 80000) return 20;
-  if (value <= 100000) return 40;
-  if (value <= 200000) return 100;
-  if (value <= 500000) return 270;
-  if (value <= 1000000) return 540;
-  return 910;
+  if (value <= 80000) return 45;
+  if (value <= 100000) return 95;
+  if (value <= 200000) return 230;
+  if (value <= 500000) return 330;
+  if (value <= 1000000) return 655;
+  return 1105;
 }
 
 export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQuoteResult[]> {

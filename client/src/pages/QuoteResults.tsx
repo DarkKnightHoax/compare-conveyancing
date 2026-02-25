@@ -573,6 +573,18 @@ function QuoteCard({
 
 // ─── EXCLUSIVE PRICING POPUP ─────────────────────────────────────────────────
 function ExclusivePricingPopup({ onClose }: { onClose: () => void }) {
+  const [tick, setTick] = useState(0);
+
+  // Animate the warning banner: cycles forward and backward
+  useEffect(() => {
+    const id = setInterval(() => setTick(t => t + 1), 60);
+    return () => clearInterval(id);
+  }, []);
+
+  // Oscillate between 0 and 1 using a sine wave for smooth back-and-forth
+  const progress = (Math.sin(tick * 0.05) + 1) / 2; // 0..1
+  const bannerOffset = progress * -60; // slides -60px to 0px
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -582,7 +594,31 @@ function ExclusivePricingPopup({ onClose }: { onClose: () => void }) {
         className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
         style={{ border: "2px solid oklch(0.72 0.12 75 / 0.4)" }}
       >
-        {/* Gold header bar */}
+        {/* Animated warning banner — slides back and forth */}
+        <div
+          className="overflow-hidden"
+          style={{
+            background: "oklch(0.45 0.22 25)",
+            padding: "0.6rem 2rem",
+          }}
+        >
+          <div
+            style={{
+              transform: `translateX(${bannerOffset}px)`,
+              whiteSpace: "nowrap",
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "0.75rem",
+              fontWeight: 700,
+              color: "white",
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+            }}
+          >
+            ⚠ EXCLUSIVE RATES — Available only through Compare the Conveyancing Market &nbsp;&nbsp;&nbsp; ⚠ EXCLUSIVE RATES — Available only through Compare the Conveyancing Market
+          </div>
+        </div>
+
+        {/* Navy header */}
         <div className="px-8 py-5" style={{ background: "oklch(0.18 0.06 250)" }}>
           <div className="flex items-center gap-3 mb-1">
             <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "oklch(0.72 0.12 75)" }}>
@@ -599,15 +635,12 @@ function ExclusivePricingPopup({ onClose }: { onClose: () => void }) {
 
         {/* Body */}
         <div className="px-8 py-6">
-          <p className="text-base font-bold leading-relaxed mb-4" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
+          <p className="text-base font-bold leading-relaxed mb-5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
             The fees displayed on this page represent exclusive rates negotiated solely for clients who instruct through Compare the Conveyancing Market. These prices are not available if you approach the law firm directly.
           </p>
-          <p className="text-base font-bold leading-relaxed mb-4" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
-            By instructing through our platform, you benefit from our panel agreements, which include preferential pricing, guaranteed service standards, and our client protection commitment. Should any firm fail to meet the agreed service level, we will assist you in resolving the matter at no additional cost.
-          </p>
-          <div className="rounded-xl p-4 mb-5" style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.88 0.015 80)" }}>
-            <p className="text-sm font-bold mb-1" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Legal Notice</p>
-            <p className="text-sm font-bold" style={{ color: "oklch(0.35 0.04 250)", fontFamily: "'DM Sans', sans-serif", lineHeight: "1.6" }}>
+          <div className="rounded-xl p-4 mb-5" style={{ background: "oklch(0.98 0.01 25)", border: "2px solid oklch(0.55 0.22 25 / 0.4)" }}>
+            <p className="text-sm font-bold mb-2" style={{ color: "oklch(0.40 0.22 25)", fontFamily: "'DM Sans', sans-serif", textTransform: "uppercase", letterSpacing: "0.05em" }}>⚠ Legal Notice</p>
+            <p className="text-sm font-bold" style={{ color: "oklch(0.35 0.22 25)", fontFamily: "'DM Sans', sans-serif", lineHeight: "1.6" }}>
               These quoted fees are conditional upon instruction being placed via Compare the Conveyancing Market. Direct instruction to any firm listed herein will not entitle you to the rates shown. Compare the Conveyancing Market acts as an introducer only and does not provide legal advice. All firms are independently regulated by the Solicitors Regulation Authority (SRA) or the Council for Licensed Conveyancers (CLC).
             </p>
           </div>
