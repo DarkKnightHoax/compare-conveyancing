@@ -12,6 +12,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation, useSearch } from "wouter";
 import { ChevronLeft, ChevronRight, Scale, HelpCircle, MapPin, X, Check } from "lucide-react";
 import type { WizardAnswers } from "../lib/feeEngine";
+import { trpc } from "@/lib/trpc";
 
 // ─── TOOLTIP ─────────────────────────────────────────────────────────────────
 function Tooltip({ text }: { text: string }) {
@@ -265,6 +266,7 @@ export default function QuoteWizard() {
   const search = useSearch();
   const params = new URLSearchParams(search);
   const initialType = (params.get("type") as WizardAnswers["transactionType"]) || "purchase";
+  const createLead = trpc.leads.create.useMutation();
 
   // High-level step (1=Property Details, 2=Your Situation, 3=Contact)
   const [step, setStep] = useState(1);
@@ -369,6 +371,30 @@ export default function QuoteWizard() {
     if (step === 3) {
       sessionStorage.setItem("quoteAnswers", JSON.stringify(answers));
       sessionStorage.setItem("contactDetails", JSON.stringify(contactDetails));
+      // Save lead to database (fire-and-forget — don't block navigation)
+      createLead.mutate({
+        firstName: contactDetails.firstName,
+        lastName: contactDetails.lastName,
+        email: contactDetails.email,
+        phone: contactDetails.phone,
+        transactionType: answers.transactionType!,
+        propertyValue: answers.propertyValue!,
+        postcode: answers.postcode!,
+        propertyTenure: answers.tenure as any,
+        isFirstTimeBuyer: answers.isFirstTimeBuyer,
+        hasMortgage: answers.hasMortgage,
+        mortgageLender: contactDetails.mortgageLender || undefined,
+        isNewBuild: answers.isNewBuild,
+        isSharedOwnership: answers.isSharedOwnership,
+        isGiftedDeposit: answers.hasGiftedDeposit,
+        hasHelpToBuyIsa: answers.hasHelpToBuyISA,
+        isRightToBuy: answers.isRightToBuy,
+        isBuyToLet: answers.isBuyToLet,
+        isSecondHome: answers.isSecondHome,
+        numberOfBuyers: answers.buyerCount,
+        hasMortgageOnSale: answers.hasMortgageOnProperty,
+        movingTimeline: answers.completionTimeline,
+      });
       navigate("/results");
       return;
     }

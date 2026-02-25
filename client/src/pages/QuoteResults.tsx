@@ -17,6 +17,7 @@ import {
   Scale, CheckCircle, X, CreditCard, Clock, MapPin, ArrowUpDown
 } from "lucide-react";
 import { calculateQuotes, formatCurrency, type FirmQuote, type WizardAnswers } from "../lib/feeEngine";
+import { trpc } from "@/lib/trpc";
 
 // ─── STAR RATING ──────────────────────────────────────────────────────────────
 function StarRating({ rating }: { rating: number }) {
@@ -54,9 +55,19 @@ function InstructModal({ firm, onClose, contactDetails }: {
     expiry: "",
     cvv: "",
   });
+  const createInstruct = trpc.instruct.create.useMutation();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    createInstruct.mutate({
+      firmId: firm.id,
+      firmName: firm.firmName,
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.email,
+      phone: form.phone,
+      paymentAmount: form.paymentAmount,
+    });
     setSubmitted(true);
   };
 
@@ -235,11 +246,18 @@ function CallbackModal({ firm, onClose, contactDetails }: {
     phone: contactDetails.phone || "",
     preferredTime: "",
   });
+  const createCallback = trpc.callbacks.create.useMutation();
 
   const times = ["Morning (9am–12pm)", "Afternoon (12pm–5pm)", "Evening (5pm–7pm)", "Any time"];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    createCallback.mutate({
+      name: form.name,
+      phone: form.phone,
+      email: contactDetails.email || undefined,
+      preferredTime: form.preferredTime || undefined,
+    });
     setSubmitted(true);
   };
 
@@ -559,15 +577,15 @@ function ExclusivePricingPopup({ onClose }: { onClose: () => void }) {
 
         {/* Body */}
         <div className="px-8 py-6">
-          <p className="text-sm leading-relaxed mb-4" style={{ color: "oklch(0.25 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-            The fees displayed on this page represent <strong>exclusive rates negotiated solely for clients who instruct through Compare the Conveyancing Market</strong>. These prices are not available if you approach the law firm directly.
+          <p className="text-base font-bold leading-relaxed mb-4" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
+            The fees displayed on this page represent exclusive rates negotiated solely for clients who instruct through Compare the Conveyancing Market. These prices are not available if you approach the law firm directly.
           </p>
-          <p className="text-sm leading-relaxed mb-4" style={{ color: "oklch(0.25 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+          <p className="text-base font-bold leading-relaxed mb-4" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
             By instructing through our platform, you benefit from our panel agreements, which include preferential pricing, guaranteed service standards, and our client protection commitment. Should any firm fail to meet the agreed service level, we will assist you in resolving the matter at no additional cost.
           </p>
           <div className="rounded-xl p-4 mb-5" style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.88 0.015 80)" }}>
-            <p className="text-xs font-semibold mb-1" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Legal Notice</p>
-            <p className="text-xs" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif", lineHeight: "1.6" }}>
+            <p className="text-sm font-bold mb-1" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Legal Notice</p>
+            <p className="text-sm font-bold" style={{ color: "oklch(0.35 0.04 250)", fontFamily: "'DM Sans', sans-serif", lineHeight: "1.6" }}>
               These quoted fees are conditional upon instruction being placed via Compare the Conveyancing Market. Direct instruction to any firm listed herein will not entitle you to the rates shown. Compare the Conveyancing Market acts as an introducer only and does not provide legal advice. All firms are independently regulated by the Solicitors Regulation Authority (SRA) or the Council for Licensed Conveyancers (CLC).
             </p>
           </div>
