@@ -27,6 +27,9 @@ export const lawFirms = mysqlTable("law_firms", {
   sraNumber: varchar("sraNumber", { length: 50 }),
   rating: decimal("rating", { precision: 3, scale: 2 }).default("4.50"),
   reviewCount: int("reviewCount").default(0),
+  speciality: varchar("speciality", { length: 255 }),
+  yearsEstablished: int("yearsEstablished").default(0),
+  accreditations: text("accreditations"), // JSON array stored as text
   isActive: boolean("isActive").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

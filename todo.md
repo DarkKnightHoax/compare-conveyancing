@@ -97,3 +97,10 @@
 
 ## Bug Fixes
 - [x] Fix admin login redirect loop — root cause: ctx.req.cookies undefined (no cookie-parser), fixed by using parse() from cookie package directly on req.headers.cookie
+
+## Live Fee Sync (Admin → Results Page)
+- [x] Seed 5 law firms into the database
+- [x] Seed fee structures for each firm from existing feeEngine.ts values
+- [x] tRPC procedure: calculate live quotes from DB fee structures
+- [x] Results page reads live quotes from DB (not static feeEngine.ts)
+- [x] Admin fee editor changes reflect immediately on results page

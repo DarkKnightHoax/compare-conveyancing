@@ -1,0 +1,170 @@
+{
+  "query": "SELECT firmId, transactionType, `minValue`, `maxValue`, legalFee, platformCommission FROM firm_fee_structures ORDER BY firmId, transactionType, `minValue` LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT firmId, transactionType, `minValue`, `maxValue`, legalFee, platformCommission FROM firm_fee_structures ORDER BY firmId, transactionType, `minValue` LIMIT 20;",
+  "rows": [
+    {
+      "firmId": "2",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "525.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "2",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "599.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "2",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "750.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "2",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "1250.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "2",
+      "transactionType": "sale",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "499.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "2",
+      "transactionType": "sale",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "599.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "2",
+      "transactionType": "sale",
+      "minValue": "600001",
+      "maxValue": "9999999",
+      "legalFee": "750.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "2",
+      "transactionType": "sale_purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "1024.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "2",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "1198.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "2",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "1500.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "2",
+      "transactionType": "sale_purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "2000.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "2",
+      "transactionType": "remortgage",
+      "minValue": "0",
+      "maxValue": "250000",
+      "legalFee": "349.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "2",
+      "transactionType": "remortgage",
+      "minValue": "250001",
+      "maxValue": "500000",
+      "legalFee": "449.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "2",
+      "transactionType": "remortgage",
+      "minValue": "500001",
+      "maxValue": "9999999",
+      "legalFee": "599.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "3",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "499.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "3",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "569.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "3",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "713.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "3",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "1188.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "3",
+      "transactionType": "sale",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "474.00",
+      "platformCommission": "0.00"
+    },
+    {
+      "firmId": "3",
+      "transactionType": "sale",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "569.00",
+      "platformCommission": "0.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "firmId\ttransactionType\tminValue\tmaxValue\tlegalFee\tplatformCommission\n2\tpurchase\t0\t300000\t525.00\t0.00\n2\tpurchase\t300001\t600000\t599.00\t0.00\n2\tpurchase\t600001\t1000000\t750.00\t0.00\n2\tpurchase\t1000001\t9999999\t1250.00\t0.00\n2\tsale\t0\t300000\t499.00\t0.00\n2\tsale\t300001\t600000\t599.00\t0.00\n2\tsale\t600001\t9999999\t750.00\t0.00\n2\tsale_purchase\t0\t300000\t1024.00\t0.00\n2\tsale_purchase\t300001\t600000\t1198.00\t0.00\n2\tsale_purchase\t600001\t1000000\t1500.00\t0.00\n2\tsale_purchase\t1000001\t9999999\t2000.00\t0.00\n2\tremortgage\t0\t250000\t349.00\t0.00\n2\tremortgage\t250001\t500000\t449.00\t0.00\n2\tremortgage\t500001\t9999999\t599.00\t0.00\n3\tpurchase\t0\t300000\t499.00\t0.00\n3\tpurchase\t300001\t600000\t569.00\t0.00\n3\tpurchase\t600001\t1000000\t713.00\t0.00\n3\tpurchase\t1000001\t9999999\t1188.00\t0.00\n3\tsale\t0\t300000\t474.00\t0.00\n3\tsale\t300001\t600000\t569.00\t0.00\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

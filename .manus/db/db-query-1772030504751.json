@@ -1,0 +1,170 @@
+{
+  "query": "SELECT id, firmId, transactionType, `minValue`, `maxValue`, legalFee FROM firm_fee_structures WHERE transactionType = 'purchase' ORDER BY firmId, `minValue`;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT id, firmId, transactionType, `minValue`, `maxValue`, legalFee FROM firm_fee_structures WHERE transactionType = 'purchase' ORDER BY firmId, `minValue`;",
+  "rows": [
+    {
+      "id": "1",
+      "firmId": "2",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "499.00"
+    },
+    {
+      "id": "2",
+      "firmId": "2",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "569.00"
+    },
+    {
+      "id": "3",
+      "firmId": "2",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "713.00"
+    },
+    {
+      "id": "4",
+      "firmId": "2",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "1188.00"
+    },
+    {
+      "id": "15",
+      "firmId": "3",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "588.00"
+    },
+    {
+      "id": "16",
+      "firmId": "3",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "671.00"
+    },
+    {
+      "id": "17",
+      "firmId": "3",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "840.00"
+    },
+    {
+      "id": "18",
+      "firmId": "3",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "1400.00"
+    },
+    {
+      "id": "29",
+      "firmId": "4",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "462.00"
+    },
+    {
+      "id": "30",
+      "firmId": "4",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "527.00"
+    },
+    {
+      "id": "31",
+      "firmId": "4",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "660.00"
+    },
+    {
+      "id": "32",
+      "firmId": "4",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "1100.00"
+    },
+    {
+      "id": "43",
+      "firmId": "5",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "551.00"
+    },
+    {
+      "id": "44",
+      "firmId": "5",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "629.00"
+    },
+    {
+      "id": "45",
+      "firmId": "5",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "788.00"
+    },
+    {
+      "id": "46",
+      "firmId": "5",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "1313.00"
+    },
+    {
+      "id": "57",
+      "firmId": "6",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "551.00"
+    },
+    {
+      "id": "58",
+      "firmId": "6",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "629.00"
+    },
+    {
+      "id": "59",
+      "firmId": "6",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "788.00"
+    },
+    {
+      "id": "60",
+      "firmId": "6",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "1313.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tfirmId\ttransactionType\tminValue\tmaxValue\tlegalFee\n1\t2\tpurchase\t0\t300000\t499.00\n2\t2\tpurchase\t300001\t600000\t569.00\n3\t2\tpurchase\t600001\t1000000\t713.00\n4\t2\tpurchase\t1000001\t9999999\t1188.00\n15\t3\tpurchase\t0\t300000\t588.00\n16\t3\tpurchase\t300001\t600000\t671.00\n17\t3\tpurchase\t600001\t1000000\t840.00\n18\t3\tpurchase\t1000001\t9999999\t1400.00\n29\t4\tpurchase\t0\t300000\t462.00\n30\t4\tpurchase\t300001\t600000\t527.00\n31\t4\tpurchase\t600001\t1000000\t660.00\n32\t4\tpurchase\t1000001\t9999999\t1100.00\n43\t5\tpurchase\t0\t300000\t551.00\n44\t5\tpurchase\t300001\t600000\t629.00\n45\t5\tpurchase\t600001\t1000000\t788.00\n46\t5\tpurchase\t1000001\t9999999\t1313.00\n57\t6\tpurchase\t0\t300000\t551.00\n58\t6\tpurchase\t300001\t600000\t629.00\n59\t6\tpurchase\t600001\t1000000\t788.00\n60\t6\tpurchase\t1000001\t9999999\t1313.00\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

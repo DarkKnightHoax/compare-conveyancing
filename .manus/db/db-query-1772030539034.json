@@ -1,0 +1,37 @@
+{
+  "query": "SELECT id, name FROM law_firms ORDER BY id;\nSELECT DISTINCT firmId FROM firm_fee_structures ORDER BY firmId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT id, name FROM law_firms ORDER BY id;\nSELECT DISTINCT firmId FROM firm_fee_structures ORDER BY firmId;",
+  "rows": [
+    {
+      "id": "2",
+      "name": "PCS Legal"
+    },
+    {
+      "id": "3",
+      "name": "Premier Property Law"
+    },
+    {
+      "id": "4",
+      "name": "Clarity Conveyancing"
+    },
+    {
+      "id": "5",
+      "name": "Meridian Law"
+    },
+    {
+      "id": "6",
+      "name": "Meridian Law"
+    }
+  ],
+  "messages": [
+    "firmId",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+  ],
+  "stdout": "id\tname\n2\tPCS Legal\n3\tPremier Property Law\n4\tClarity Conveyancing\n5\tMeridian Law\n6\tMeridian Law\nfirmId\n2\n3\n4\n5\n6\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

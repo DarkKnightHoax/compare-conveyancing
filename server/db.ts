@@ -1,4 +1,4 @@
-import { eq, desc, count, gte } from "drizzle-orm";
+import { eq, desc, count, gte, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   InsertUser, users,
@@ -271,4 +271,197 @@ export async function getInvestorStats() {
     totalLeads: leadsTotal[0]?.count ?? 0,
     totalInstructions: instructionsTotal[0]?.count ?? 0,
   };
+}
+
+// ─── LIVE QUOTE CALCULATION ───────────────────────────────────────────────────
+// Reads fee structures from the database and computes quotes for all active firms.
+// This is the server-side equivalent of the static feeEngine.ts on the frontend.
+
+export interface LiveQuoteInput {
+  transactionType: 'purchase' | 'sale' | 'sale_purchase' | 'remortgage';
+  propertyValue: number;
+  tenure: 'freehold' | 'leasehold';
+  hasMortgage: boolean;
+  isFirstTimeBuyer: boolean;
+  isNewBuild: boolean;
+  isSharedOwnership: boolean;
+  hasGiftedDeposit: boolean;
+  isBuyToLet: boolean;
+  isSecondHome: boolean;
+  hasMortgageOnProperty?: boolean;
+  newMortgageValue?: number;
+}
+
+export interface LiveQuoteResult {
+  firmId: number;
+  firmName: string;
+  firmLocation: string;
+  rating: number;
+  reviewCount: number;
+  sraNumber: string;
+  regulated: 'SRA' | 'CLC';
+  speciality: string;
+  yearsEstablished: number;
+  accreditations: string[];
+  legalFee: number;
+  supplements: { name: string; price: number }[];
+  disbursements: { name: string; price: number; includesVat: boolean }[];
+  totalExVat: number;
+  vat: number;
+  totalIncVat: number;
+  sdlt: number;
+  landRegistryFee: number;
+  grandTotal: number;
+}
+
+function calcSDLT(value: number, isFirstTimeBuyer: boolean, isSecondHome: boolean, isBuyToLet: boolean): number {
+  if (value <= 0) return 0;
+  const additionalRate = isSecondHome || isBuyToLet;
+  const surcharge = additionalRate ? 0.03 : 0;
+  if (isFirstTimeBuyer && !additionalRate) {
+    if (value <= 425000) return 0;
+    if (value <= 625000) return Math.round((value - 425000) * 0.05);
+  }
+  let sdlt = 0;
+  const bands = [
+    { from: 0, to: 250000, rate: 0.00 + surcharge },
+    { from: 250000, to: 925000, rate: 0.05 + surcharge },
+    { from: 925000, to: 1500000, rate: 0.10 + surcharge },
+    { from: 1500000, to: Infinity, rate: 0.12 + surcharge },
+  ];
+  for (const band of bands) {
+    if (value > band.from) {
+      const taxable = Math.min(value, band.to) - band.from;
+      sdlt += taxable * band.rate;
+    }
+  }
+  return Math.round(sdlt);
+}
+
+function calcLandRegistry(value: number): number {
+  if (value <= 80000) return 20;
+  if (value <= 100000) return 40;
+  if (value <= 200000) return 100;
+  if (value <= 500000) return 270;
+  if (value <= 1000000) return 540;
+  return 910;
+}
+
+export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQuoteResult[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  // Fetch all active firms with their fee structures for the given transaction type
+  const firms = await db.select().from(lawFirms).where(eq(lawFirms.isActive, true));
+  if (firms.length === 0) return [];
+
+  const feeRows = await db.select().from(firmFeeStructures)
+    .where(and(
+      eq(firmFeeStructures.transactionType, input.transactionType),
+      eq(firmFeeStructures.isActive, true)
+    ));
+
+  const { transactionType, propertyValue } = input;
+  const value = propertyValue || 0;
+
+  const results: LiveQuoteResult[] = [];
+
+  for (const firm of firms) {
+    // Find the matching fee band for this firm + property value
+    type FeeRow = typeof feeRows[number];
+    const band: FeeRow | undefined = feeRows.find((r: FeeRow) =>
+      r.firmId === firm.id &&
+      value >= r.minValue &&
+      value <= r.maxValue
+    ) || feeRows.filter((r: FeeRow) => r.firmId === firm.id).sort((a: FeeRow, b: FeeRow) => b.minValue - a.minValue)[0];
+
+    if (!band) continue; // No fee band configured for this firm
+
+    const legalFee = Number(band.legalFee);
+    const supplements: { name: string; price: number }[] = [];
+    const disbursements: { name: string; price: number; includesVat: boolean }[] = [];
+
+    // ── SUPPLEMENTS ──
+    if (transactionType === 'purchase' || transactionType === 'sale_purchase') {
+      if (input.tenure === 'leasehold' && Number(band.leaseholdSupplement) > 0)
+        supplements.push({ name: 'Leasehold Supplement', price: Number(band.leaseholdSupplement) });
+      if (input.isNewBuild && Number(band.newBuildSupplement) > 0)
+        supplements.push({ name: 'New Build Supplement', price: Number(band.newBuildSupplement) });
+      if (input.isSharedOwnership && Number(band.sharedOwnershipSupplement) > 0)
+        supplements.push({ name: 'Shared Ownership', price: Number(band.sharedOwnershipSupplement) });
+      if (input.hasGiftedDeposit && Number(band.giftedDepositSupplement) > 0)
+        supplements.push({ name: 'Gifted Deposit', price: Number(band.giftedDepositSupplement) });
+      if (input.hasMortgage)
+        supplements.push({ name: 'Mortgage / Re-mortgage', price: 234 });
+      if (input.isBuyToLet)
+        supplements.push({ name: 'Buy to Let Supplement', price: 99 });
+      if (input.isSecondHome)
+        supplements.push({ name: 'Second Home Supplement', price: 99 });
+    }
+    if (transactionType === 'sale' || transactionType === 'sale_purchase') {
+      if (input.tenure === 'leasehold' && Number(band.leaseholdSupplement) > 0)
+        supplements.push({ name: 'Leasehold Supplement', price: Number(band.leaseholdSupplement) });
+      if (input.hasMortgageOnProperty)
+        supplements.push({ name: 'Mortgage Redemption', price: 149 });
+    }
+
+    // ── DISBURSEMENTS ──
+    if (Number(band.antiMoneyLaunderingFee) > 0)
+      disbursements.push({ name: 'Anti-Money Laundering (AML) Check', price: Number(band.antiMoneyLaunderingFee), includesVat: true });
+    if (Number(band.searchFee) > 0)
+      disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: Number(band.searchFee), includesVat: true });
+    if (Number(band.officialCopiesFee) > 0)
+      disbursements.push({ name: 'Official Copies (Title Register & Plan)', price: Number(band.officialCopiesFee), includesVat: true });
+    if (Number(band.electronicTransferFee) > 0)
+      disbursements.push({ name: 'Electronic Transfer Fee (CHAPS)', price: Number(band.electronicTransferFee), includesVat: true });
+    // Land Registry Searches (purchase)
+    if (transactionType === 'purchase' || transactionType === 'sale_purchase')
+      disbursements.push({ name: 'Land Registry Searches', price: 3, includesVat: true });
+    if (transactionType === 'purchase' || transactionType === 'sale_purchase')
+      disbursements.push({ name: 'Bankruptcy Search', price: 4, includesVat: true });
+
+    // ── TOTALS ──
+    const supplementTotal = supplements.reduce((s, x) => s + x.price, 0);
+    const disbursementTotal = disbursements.reduce((s, x) => s + x.price, 0);
+    const totalExVat = legalFee + supplementTotal;
+    const vat = Math.round(totalExVat * 0.20);
+    const totalIncVat = totalExVat + vat;
+
+    const sdlt = (transactionType === 'purchase' || transactionType === 'sale_purchase')
+      ? calcSDLT(value, input.isFirstTimeBuyer, input.isSecondHome, input.isBuyToLet)
+      : 0;
+    const landRegistryFee = (transactionType === 'purchase' || transactionType === 'sale_purchase')
+      ? calcLandRegistry(value)
+      : 0;
+
+    const grandTotal = totalIncVat + disbursementTotal + sdlt + landRegistryFee;
+
+    let parsedAccreditations: string[] = [];
+    try { parsedAccreditations = firm.accreditations ? JSON.parse(firm.accreditations) : []; } catch { /* ignore */ }
+
+    results.push({
+      firmId: firm.id,
+      firmName: firm.name,
+      firmLocation: firm.location ?? '',
+      rating: Number(firm.rating),
+      reviewCount: firm.reviewCount ?? 0,
+      sraNumber: firm.sraNumber ?? '',
+      regulated: (firm.regulatoryBody ?? 'SRA') as 'SRA' | 'CLC',
+      speciality: firm.speciality ?? '',
+      yearsEstablished: firm.yearsEstablished ?? 0,
+      accreditations: parsedAccreditations,
+      legalFee,
+      supplements,
+      disbursements,
+      totalExVat,
+      vat,
+      totalIncVat,
+      sdlt,
+      landRegistryFee,
+      grandTotal,
+    });
+  }
+
+  // Sort by grandTotal ascending
+  return results.sort((a, b) => a.grandTotal - b.grandTotal);
 }

@@ -16,6 +16,7 @@ import {
   createInstructRequest, getAllInstructRequests, updateInstructStatus,
   getFeeStructuresForFirm, getAllFeeStructures, upsertFeeStructure, deleteFeeStructure,
   getNotesForFirm, createFirmNote, deleteFirmNote, getInvestorStats,
+  calculateLiveQuotes,
 } from "./db";
 import { notifyOwner } from "./_core/notification";
 
@@ -359,6 +360,26 @@ export const appRouter = router({
         await deleteFirmNote(input.id);
         return { success: true };
       }),
+  }),
+
+  // ── LIVE QUOTES (reads from DB fee structures) ──────────────────────────────
+  quotes: router({
+    getLive: publicProcedure
+      .input(z.object({
+        transactionType: z.enum(["purchase", "sale", "sale_purchase", "remortgage"]),
+        propertyValue: z.number().min(0),
+        tenure: z.enum(["freehold", "leasehold"]),
+        hasMortgage: z.boolean().default(false),
+        isFirstTimeBuyer: z.boolean().default(false),
+        isNewBuild: z.boolean().default(false),
+        isSharedOwnership: z.boolean().default(false),
+        hasGiftedDeposit: z.boolean().default(false),
+        isBuyToLet: z.boolean().default(false),
+        isSecondHome: z.boolean().default(false),
+        hasMortgageOnProperty: z.boolean().optional(),
+        newMortgageValue: z.number().optional(),
+      }))
+      .query(({ input }) => calculateLiveQuotes(input)),
   }),
 });
 

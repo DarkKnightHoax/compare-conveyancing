@@ -1,0 +1,50 @@
+{
+  "query": "SELECT id, name, location, rating, isActive, speciality FROM law_firms ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT id, name, location, rating, isActive, speciality FROM law_firms ORDER BY id;",
+  "rows": [
+    {
+      "id": "2",
+      "name": "Easy Choice Conveyancing",
+      "location": "Basildon, Essex",
+      "rating": "4.80",
+      "isActive": "1",
+      "speciality": "NULL"
+    },
+    {
+      "id": "3",
+      "name": "PCS Legal",
+      "location": "Basildon, Essex",
+      "rating": "4.60",
+      "isActive": "1",
+      "speciality": "NULL"
+    },
+    {
+      "id": "4",
+      "name": "Premier Property Law",
+      "location": "London, EC2",
+      "rating": "4.90",
+      "isActive": "1",
+      "speciality": "NULL"
+    },
+    {
+      "id": "5",
+      "name": "Clarity Conveyancing",
+      "location": "Birmingham, B1",
+      "rating": "4.50",
+      "isActive": "1",
+      "speciality": "NULL"
+    },
+    {
+      "id": "6",
+      "name": "Meridian Law",
+      "location": "Manchester, M1",
+      "rating": "4.70",
+      "isActive": "1",
+      "speciality": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tlocation\trating\tisActive\tspeciality\n2\tEasy Choice Conveyancing\tBasildon, Essex\t4.80\t1\tNULL\n3\tPCS Legal\tBasildon, Essex\t4.60\t1\tNULL\n4\tPremier Property Law\tLondon, EC2\t4.90\t1\tNULL\n5\tClarity Conveyancing\tBirmingham, B1\t4.50\t1\tNULL\n6\tMeridian Law\tManchester, M1\t4.70\t1\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 146
+}

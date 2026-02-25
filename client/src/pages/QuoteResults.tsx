@@ -16,7 +16,29 @@ import {
   Star, Shield, Award, ChevronDown, ChevronUp, Phone, ArrowLeft,
   Scale, CheckCircle, X, CreditCard, Clock, MapPin, ArrowUpDown
 } from "lucide-react";
-import { calculateQuotes, formatCurrency, type FirmQuote, type WizardAnswers } from "../lib/feeEngine";
+import { formatCurrency, type WizardAnswers } from "../lib/feeEngine";
+
+export interface LiveQuoteResult {
+  firmId: number;
+  firmName: string;
+  firmLocation: string;
+  rating: number;
+  reviewCount: number;
+  sraNumber: string;
+  regulated: 'SRA' | 'CLC';
+  speciality: string;
+  yearsEstablished: number;
+  accreditations: string[];
+  legalFee: number;
+  supplements: { name: string; price: number }[];
+  disbursements: { name: string; price: number; includesVat: boolean }[];
+  totalExVat: number;
+  vat: number;
+  totalIncVat: number;
+  sdlt: number;
+  landRegistryFee: number;
+  grandTotal: number;
+}
 import { trpc } from "@/lib/trpc";
 
 // ─── STAR RATING ──────────────────────────────────────────────────────────────
@@ -40,7 +62,7 @@ function StarRating({ rating }: { rating: number }) {
 
 // ─── INSTRUCT DIRECTLY MODAL ──────────────────────────────────────────────────
 function InstructModal({ firm, onClose, contactDetails }: {
-  firm: FirmQuote;
+  firm: LiveQuoteResult;
   onClose: () => void;
   contactDetails: { firstName: string; lastName: string; email: string; phone: string };
 }) {
@@ -60,7 +82,7 @@ function InstructModal({ firm, onClose, contactDetails }: {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     createInstruct.mutate({
-      firmId: firm.id,
+      firmId: firm.firmId,
       firmName: firm.firmName,
       firstName: form.firstName,
       lastName: form.lastName,
@@ -236,7 +258,7 @@ function InstructModal({ firm, onClose, contactDetails }: {
 
 // ─── CALLBACK MODAL ───────────────────────────────────────────────────────────
 function CallbackModal({ firm, onClose, contactDetails }: {
-  firm: FirmQuote;
+  firm: LiveQuoteResult;
   onClose: () => void;
   contactDetails: { firstName: string; lastName: string; email: string; phone: string };
 }) {
@@ -360,7 +382,7 @@ function QuoteCard({
   onInstruct,
   onCallback,
 }: {
-  quote: FirmQuote;
+  quote: LiveQuoteResult;
   rank: number;
   onInstruct: () => void;
   onCallback: () => void;
@@ -400,7 +422,7 @@ function QuoteCard({
             </div>
             <StarRating rating={quote.rating} />
             <div className="text-xs mt-0.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-              {quote.reviewCount} reviews · Est. {new Date().getFullYear() - quote.yearsEstablished}
+              {quote.reviewCount} reviews · Est. {quote.yearsEstablished}
             </div>
           </div>
 
@@ -605,13 +627,31 @@ function ExclusivePricingPopup({ onClose }: { onClose: () => void }) {
 // ─── MAIN RESULTS PAGE ────────────────────────────────────────────────────────
 export default function QuoteResults() {
   const [, navigate] = useLocation();
-  const [quotes, setQuotes] = useState<FirmQuote[]>([]);
   const [sortBy, setSortBy] = useState<"price" | "rating">("price");
-  const [instructFirm, setInstructFirm] = useState<FirmQuote | null>(null);
-  const [callbackFirm, setCallbackFirm] = useState<FirmQuote | null>(null);
+  const [instructFirm, setInstructFirm] = useState<LiveQuoteResult | null>(null);
+  const [callbackFirm, setCallbackFirm] = useState<LiveQuoteResult | null>(null);
   const [answers, setAnswers] = useState<Partial<WizardAnswers>>({});
   const [contactDetails, setContactDetails] = useState({ firstName: "", lastName: "", email: "", phone: "" });
   const [showExclusivePopup, setShowExclusivePopup] = useState(false);
+  const [queryInput, setQueryInput] = useState<{
+    transactionType: "purchase" | "sale" | "sale_purchase" | "remortgage";
+    propertyValue: number;
+    tenure: "freehold" | "leasehold";
+    hasMortgage: boolean;
+    isFirstTimeBuyer: boolean;
+    isNewBuild: boolean;
+    isSharedOwnership: boolean;
+    hasGiftedDeposit: boolean;
+    isBuyToLet: boolean;
+    isSecondHome: boolean;
+    hasMortgageOnProperty?: boolean;
+    newMortgageValue?: number;
+  } | null>(null);
+
+  const { data: liveQuotes, isLoading: quotesLoading } = trpc.quotes.getLive.useQuery(
+    queryInput!,
+    { enabled: queryInput !== null }
+  );
 
   useEffect(() => {
     const savedAnswers = sessionStorage.getItem("quoteAnswers");
@@ -644,12 +684,24 @@ export default function QuoteResults() {
     }
 
     setAnswers(parsedAnswers);
-    const calculated = calculateQuotes(parsedAnswers as WizardAnswers);
-    setQuotes(calculated);
+    setQueryInput({
+      transactionType: (parsedAnswers.transactionType ?? "purchase") as "purchase" | "sale" | "sale_purchase" | "remortgage",
+      propertyValue: parsedAnswers.propertyValue ?? 350000,
+      tenure: (parsedAnswers.tenure ?? "freehold") as "freehold" | "leasehold",
+      hasMortgage: parsedAnswers.hasMortgage ?? false,
+      isFirstTimeBuyer: parsedAnswers.isFirstTimeBuyer ?? false,
+      isNewBuild: parsedAnswers.isNewBuild ?? false,
+      isSharedOwnership: parsedAnswers.isSharedOwnership ?? false,
+      hasGiftedDeposit: parsedAnswers.hasGiftedDeposit ?? false,
+      isBuyToLet: parsedAnswers.isBuyToLet ?? false,
+      isSecondHome: parsedAnswers.isSecondHome ?? false,
+      hasMortgageOnProperty: parsedAnswers.hasMortgageOnProperty,
+    });
     // Show the exclusive pricing popup after a short delay for dramatic effect
     setTimeout(() => setShowExclusivePopup(true), 800);
   }, []);
 
+  const quotes = liveQuotes ?? [];
   const sorted = [...quotes].sort((a, b) =>
     sortBy === "price" ? a.totalIncVat - b.totalIncVat : b.rating - a.rating
   );
@@ -758,9 +810,28 @@ export default function QuoteResults() {
 
         {/* Quote Cards */}
         <div className="space-y-5">
-          {sorted.map((quote, i) => (
+          {quotesLoading && (
+            <div className="space-y-5">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="rounded-2xl p-6 animate-pulse" style={{ background: "white", border: "1px solid oklch(0.88 0.015 80)" }}>
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-2">
+                      <div className="h-5 w-48 rounded" style={{ background: "oklch(0.92 0.01 80)" }} />
+                      <div className="h-3 w-32 rounded" style={{ background: "oklch(0.92 0.01 80)" }} />
+                      <div className="h-3 w-24 rounded" style={{ background: "oklch(0.92 0.01 80)" }} />
+                    </div>
+                    <div className="text-right space-y-2">
+                      <div className="h-8 w-28 rounded" style={{ background: "oklch(0.92 0.01 80)" }} />
+                      <div className="h-3 w-20 rounded ml-auto" style={{ background: "oklch(0.92 0.01 80)" }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {!quotesLoading && sorted.map((quote, i) => (
             <QuoteCard
-              key={quote.id}
+              key={quote.firmId}
               quote={quote}
               rank={i + 1}
               onInstruct={() => setInstructFirm(quote)}
