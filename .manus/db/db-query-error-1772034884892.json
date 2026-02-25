@@ -1,0 +1,8 @@
+{
+  "query": "\nUPDATE firm_fee_structures SET landRegistryFee = 20 WHERE minValue = 0 AND maxValue = 80000;\nUPDATE firm_fee_structures SET landRegistryFee = 40 WHERE minValue = 80001 AND maxValue = 100000;\nUPDATE firm_fee_structures SET landRegistryFee = 100 WHERE minValue = 100001 AND maxValue = 200000;\nUPDATE firm_fee_structures SET landRegistryFee = 150 WHERE minValue = 200001 AND maxValue = 500000;\nUPDATE firm_fee_structures SET landRegistryFee = 295 WHERE minValue = 500001 AND maxValue = 1000000;\nUPDATE firm_fee_structures SET landRegistryFee = 500 WHERE minValue = 1000001;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute \nUPDATE firm_fee_structures SET landRegistryFee = 20 WHERE minValue = 0 AND maxValue = 80000;\nUPDATE firm_fee_structures SET landRegistryFee = 40 WHERE minValue = 80001 AND maxValue = 100000;\nUPDATE firm_fee_structures SET landRegistryFee = 100 WHERE minValue = 100001 AND maxValue = 200000;\nUPDATE firm_fee_structures SET landRegistryFee = 150 WHERE minValue = 200001 AND maxValue = 500000;\nUPDATE firm_fee_structures SET landRegistryFee = 295 WHERE minValue = 500001 AND maxValue = 1000000;\nUPDATE firm_fee_structures SET landRegistryFee = 500 WHERE minValue = 1000001;\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1064 (42000) at line 2: You have an error in your SQL syntax; check the manual that corresponds to your TiDB version for the right syntax to use line 1 column 83 near \"maxValue = 80000\""
+  ]
+}

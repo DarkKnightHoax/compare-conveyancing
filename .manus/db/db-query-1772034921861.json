@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO law_firms (name, location, regulatoryBody, rating, reviewCount, yearsEstablished, isActive) VALUES ('Burtons Solicitors', 'London', 'SRA', 4.2, 0, 2004, true);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute INSERT INTO law_firms (name, location, regulatoryBody, rating, reviewCount, yearsEstablished, isActive) VALUES ('Burtons Solicitors', 'London', 'SRA', 4.2, 0, 2004, true);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 60
+}

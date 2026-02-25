@@ -314,38 +314,96 @@ export interface LiveQuoteResult {
   grandTotal: number;
 }
 
-function calcSDLT(value: number, isFirstTimeBuyer: boolean, isSecondHome: boolean, isBuyToLet: boolean): number {
+/**
+ * SDLT engine — rates effective 1 April 2025 (reversion to pre-Sep-2022 thresholds)
+ * Mirrors the logic at https://www.stampdutycalculator.org.uk/
+ *
+ * Standard bands (from 1 Apr 2025):
+ *   £0–£125k        → 0%
+ *   £125k–£250k     → 2%
+ *   £250k–£925k     → 5%
+ *   £925k–£1.5m     → 10%
+ *   Over £1.5m      → 12%
+ *
+ * Additional property surcharge (buy-to-let / second home): +5% on every band
+ *   (surcharge increased from 3% to 5% on 31 Oct 2024)
+ *   Exception: purchases under £40k attract 0% surcharge.
+ *
+ * First-time buyer relief (from 1 Apr 2025):
+ *   £0–£300k        → 0%
+ *   £300k–£500k     → 5% on the portion above £300k
+ *   Over £500k      → full standard rates apply (no relief)
+ *
+ * New build: same rate bands as standard / FTB — no separate rate schedule.
+ * The isNewBuild flag affects the FTB threshold (still £300k/£500k).
+ */
+function calcSDLT(
+  value: number,
+  isFirstTimeBuyer: boolean,
+  isSecondHome: boolean,
+  isBuyToLet: boolean,
+): number {
   if (value <= 0) return 0;
-  const additionalRate = isSecondHome || isBuyToLet;
-  const surcharge = additionalRate ? 0.03 : 0;
-  if (isFirstTimeBuyer && !additionalRate) {
-    if (value <= 425000) return 0;
-    if (value <= 625000) return Math.round((value - 425000) * 0.05);
+
+  const isAdditional = isSecondHome || isBuyToLet;
+
+  // Additional property — surcharge of 5% on top of standard rates.
+  // Purchases under £40k: 0% (no surcharge).
+  if (isAdditional) {
+    if (value < 40000) return 0;
+    // Apply standard bands + 5% surcharge on each band
+    const bands = [
+      { from: 0,       to: 125000,   rate: 0.00 + 0.05 },
+      { from: 125000,  to: 250000,   rate: 0.02 + 0.05 },
+      { from: 250000,  to: 925000,   rate: 0.05 + 0.05 },
+      { from: 925000,  to: 1500000,  rate: 0.10 + 0.05 },
+      { from: 1500000, to: Infinity, rate: 0.12 + 0.05 },
+    ];
+    let tax = 0;
+    for (const band of bands) {
+      if (value > band.from) {
+        tax += (Math.min(value, band.to) - band.from) * band.rate;
+      }
+    }
+    return Math.round(tax);
   }
-  let sdlt = 0;
+
+  // First-time buyer relief
+  if (isFirstTimeBuyer) {
+    if (value <= 300000) return 0;
+    if (value <= 500000) {
+      // 0% on first £300k, 5% on £300k–£500k portion
+      return Math.round((value - 300000) * 0.05);
+    }
+    // Over £500k: FTB relief lost entirely — standard rates apply
+  }
+
+  // Standard residential rates (1 Apr 2025)
   const bands = [
-    { from: 0, to: 250000, rate: 0.00 + surcharge },
-    { from: 250000, to: 925000, rate: 0.05 + surcharge },
-    { from: 925000, to: 1500000, rate: 0.10 + surcharge },
-    { from: 1500000, to: Infinity, rate: 0.12 + surcharge },
+    { from: 0,       to: 125000,   rate: 0.00 },
+    { from: 125000,  to: 250000,   rate: 0.02 },
+    { from: 250000,  to: 925000,   rate: 0.05 },
+    { from: 925000,  to: 1500000,  rate: 0.10 },
+    { from: 1500000, to: Infinity, rate: 0.12 },
   ];
+  let tax = 0;
   for (const band of bands) {
     if (value > band.from) {
-      const taxable = Math.min(value, band.to) - band.from;
-      sdlt += taxable * band.rate;
+      tax += (Math.min(value, band.to) - band.from) * band.rate;
     }
   }
-  return Math.round(sdlt);
+  return Math.round(tax);
 }
 
-// Land Registry Scale 1 fees — "Apply by post" column (official HMLR fee schedule)
+// Land Registry Scale 1 fees — "Apply using the portal / Business Gateway" column
+// (transfers or surrenders affecting the whole of a registered title)
 function calcLandRegistry(value: number): number {
-  if (value <= 80000) return 45;
-  if (value <= 100000) return 95;
-  if (value <= 200000) return 230;
-  if (value <= 500000) return 330;
-  if (value <= 1000000) return 655;
-  return 1105;
+  if (value <= 80000) return 20;
+  if (value <= 100000) return 40;
+  if (value <= 200000) return 100;
+  if (value <= 500000) return 150;
+  if (value <= 1000000) return 295;
+  return 500;
 }
 
 export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQuoteResult[]> {

@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE firm_fee_structures SET landRegistryFee = 100 WHERE `minValue` = 100001 AND `maxValue` = 200000;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute UPDATE firm_fee_structures SET landRegistryFee = 100 WHERE `minValue` = 100001 AND `maxValue` = 200000;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 59
+}

@@ -104,3 +104,11 @@
 - [x] tRPC procedure: calculate live quotes from DB fee structures
 - [x] Results page reads live quotes from DB (not static feeEngine.ts)
 - [x] Admin fee editor changes reflect immediately on results page
+
+## Firm Details & Fee Updates (Feb 2026)
+- [x] Update firm details: PCS Legal (Basildon Essex, est 2010, 4.3), Easy Choice Conveyancing (London, est 2015, 4.5), TQ Law (Leigh, est 2012, 4.7)
+- [x] Add Burtons Solicitors (London, est 2004, 4.2) to database with fee structures
+- [x] Switch Land Registry fees to "Apply using the portal" column values (£20/£40/£100/£150/£295/£500)
+- [x] Replace SDLT calculation engine with accurate April 2025 rates (standard/FTB/additional property) matching stampdutycalculator.org.uk — built into results page automatically
+- [x] SDLT engine integrated into server db.ts and client feeEngine.ts — correct stamp duty shown automatically on every quote card
+- [x] Correct SDLT rate bands: standard (0/2/5/10/12%), FTB relief (£0-£300k=0%, £300k-£500k=5%, over £500k=full rates), additional property (+5% surcharge on all bands)

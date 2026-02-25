@@ -1,0 +1,8 @@
+{
+  "query": "SELECT id, name, location, yearsEstablished, rating, is_active FROM law_firms;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT id, name, location, yearsEstablished, rating, is_active FROM law_firms;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'is_active' in 'field list'"
+  ]
+}

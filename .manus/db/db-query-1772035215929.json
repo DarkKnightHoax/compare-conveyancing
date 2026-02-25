@@ -1,0 +1,38 @@
+{
+  "query": "SELECT id, name, location, CAST(rating AS CHAR) as rating, yearsEstablished FROM law_firms ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT id, name, location, CAST(rating AS CHAR) as rating, yearsEstablished FROM law_firms ORDER BY id;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "location": "London",
+      "rating": "4.50",
+      "yearsEstablished": "2015"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "location": "Basildon, Essex",
+      "rating": "4.30",
+      "yearsEstablished": "2010"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "location": "Leigh",
+      "rating": "4.70",
+      "yearsEstablished": "2012"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "location": "London",
+      "rating": "4.20",
+      "yearsEstablished": "2004"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tlocation\trating\tyearsEstablished\n30001\tEasy Choice Conveyancing\tLondon\t4.50\t2015\n30002\tPCS Legal\tBasildon, Essex\t4.30\t2010\n30006\tTQ Law\tLeigh\t4.70\t2012\n60001\tBurtons Solicitors\tLondon\t4.20\t2004\n",
+  "stderr": "",
+  "execution_time_ms": 74
+}

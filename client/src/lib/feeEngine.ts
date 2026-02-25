@@ -121,7 +121,22 @@ const REMORTGAGE_DISBURSEMENTS: DisbursementItem[] = [
   { name: 'Electronic Transfer Fee (CHAPS)', price: 35, includesVat: true },
 ];
 
-// ─── SDLT CALCULATION ────────────────────────────────────────────────────────
+/**
+ * SDLT engine — rates effective 1 April 2025
+ * Mirrors https://www.stampdutycalculator.org.uk/
+ *
+ * Standard bands:
+ *   £0–£125k   → 0%   |  £125k–£250k → 2%
+ *   £250k–£925k → 5%  |  £925k–£1.5m → 10%  |  Over £1.5m → 12%
+ *
+ * Additional property (buy-to-let / second home): +5% on every band
+ *   (surcharge raised from 3% to 5% on 31 Oct 2024)
+ *   Exception: under £40k → 0% surcharge
+ *
+ * First-time buyer relief (from 1 Apr 2025):
+ *   £0–£300k → 0%  |  £300k–£500k → 5% on portion above £300k
+ *   Over £500k → full standard rates (no relief)
+ */
 export function calculateSDLT(
   propertyValue: number,
   isFirstTimeBuyer: boolean,
@@ -130,45 +145,54 @@ export function calculateSDLT(
 ): number {
   if (propertyValue <= 0) return 0;
 
-  const additionalRate = isSecondHome || isBuyToLet;
-  const surcharge = additionalRate ? 0.03 : 0;
+  const isAdditional = isSecondHome || isBuyToLet;
 
-  if (isFirstTimeBuyer && !additionalRate) {
-    // First-time buyer relief
-    if (propertyValue <= 425000) return 0;
-    if (propertyValue <= 625000) {
-      return Math.round((propertyValue - 425000) * 0.05);
+  if (isAdditional) {
+    if (propertyValue < 40000) return 0;
+    const bands = [
+      { from: 0,       to: 125000,   rate: 0.05 },
+      { from: 125000,  to: 250000,   rate: 0.07 },
+      { from: 250000,  to: 925000,   rate: 0.10 },
+      { from: 925000,  to: 1500000,  rate: 0.15 },
+      { from: 1500000, to: Infinity, rate: 0.17 },
+    ];
+    let tax = 0;
+    for (const band of bands) {
+      if (propertyValue > band.from)
+        tax += (Math.min(propertyValue, band.to) - band.from) * band.rate;
     }
-    // Above £625k, no FTB relief — standard rates apply
+    return Math.round(tax);
   }
 
-  // Standard SDLT bands (from April 2025 thresholds)
-  let sdlt = 0;
+  if (isFirstTimeBuyer) {
+    if (propertyValue <= 300000) return 0;
+    if (propertyValue <= 500000) return Math.round((propertyValue - 300000) * 0.05);
+    // Over £500k: FTB relief lost — fall through to standard rates
+  }
+
   const bands = [
-    { from: 0, to: 250000, rate: 0.00 + surcharge },
-    { from: 250000, to: 925000, rate: 0.05 + surcharge },
-    { from: 925000, to: 1500000, rate: 0.10 + surcharge },
-    { from: 1500000, to: Infinity, rate: 0.12 + surcharge },
+    { from: 0,       to: 125000,   rate: 0.00 },
+    { from: 125000,  to: 250000,   rate: 0.02 },
+    { from: 250000,  to: 925000,   rate: 0.05 },
+    { from: 925000,  to: 1500000,  rate: 0.10 },
+    { from: 1500000, to: Infinity, rate: 0.12 },
   ];
-
+  let tax = 0;
   for (const band of bands) {
-    if (propertyValue > band.from) {
-      const taxable = Math.min(propertyValue, band.to) - band.from;
-      sdlt += taxable * band.rate;
-    }
+    if (propertyValue > band.from)
+      tax += (Math.min(propertyValue, band.to) - band.from) * band.rate;
   }
-
-  return Math.round(sdlt);
+  return Math.round(tax);
 }
 
-// ─── LAND REGISTRY FEE ──────────────────────────────────────────────────────
+// Land Registry Scale 1 — "Apply using the portal / Business Gateway" column
 export function calculateLandRegistryFee(propertyValue: number): number {
   if (propertyValue <= 80000) return 20;
   if (propertyValue <= 100000) return 40;
   if (propertyValue <= 200000) return 100;
-  if (propertyValue <= 500000) return 270;
-  if (propertyValue <= 1000000) return 540;
-  return 910;
+  if (propertyValue <= 500000) return 150;
+  if (propertyValue <= 1000000) return 295;
+  return 500;
 }
 
 // ─── BASE FEE LOOKUP ─────────────────────────────────────────────────────────

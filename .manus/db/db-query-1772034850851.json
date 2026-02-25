@@ -1,0 +1,9 @@
+{
+  "query": "\nUPDATE law_firms SET location = 'Basildon, Essex', yearsEstablished = 2010, rating = 4.3 WHERE name = 'PCS Legal';\nUPDATE law_firms SET location = 'London', yearsEstablished = 2015, rating = 4.5 WHERE name = 'Easy Choice Conveyancing';\nUPDATE law_firms SET location = 'Leigh', yearsEstablished = 2012, rating = 4.7 WHERE name = 'TQ Law';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute \nUPDATE law_firms SET location = 'Basildon, Essex', yearsEstablished = 2010, rating = 4.3 WHERE name = 'PCS Legal';\nUPDATE law_firms SET location = 'London', yearsEstablished = 2015, rating = 4.5 WHERE name = 'Easy Choice Conveyancing';\nUPDATE law_firms SET location = 'Leigh', yearsEstablished = 2012, rating = 4.7 WHERE name = 'TQ Law';\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 83
+}
