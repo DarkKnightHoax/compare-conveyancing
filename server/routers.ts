@@ -4,7 +4,11 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
+import { SignJWT, jwtVerify } from "jose";
+import * as bcrypt from "bcryptjs";
+import { ENV } from "./_core/env";
 import {
+
   getAllLawFirms, getAllLawFirmsAdmin, createLawFirm, updateLawFirm, deleteLawFirm,
   createLead, getAllLeads, getLeadById, updateLeadStatus, getLeadsStats,
   createCallbackRequest, getAllCallbacks, updateCallbackStatus, getPendingCallbacksCount,
@@ -21,6 +25,37 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   return next({ ctx });
 });
 
+const ADMIN_COOKIE = "admin_session";
+const ADMIN_JWT_EXPIRY = "12h";
+
+async function signAdminToken(username: string): Promise<string> {
+  const secret = new TextEncoder().encode(ENV.cookieSecret || "admin-fallback-secret");
+  return new SignJWT({ sub: username, role: "admin" })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime(ADMIN_JWT_EXPIRY)
+    .sign(secret);
+}
+
+async function verifyAdminToken(token: string): Promise<boolean> {
+  try {
+    const secret = new TextEncoder().encode(ENV.cookieSecret || "admin-fallback-secret");
+    const { payload } = await jwtVerify(token, secret);
+    return payload.role === "admin";
+  } catch {
+    return false;
+  }
+}
+
+// Middleware that checks the admin session cookie (independent of Manus OAuth)
+const standaloneAdminProcedure = publicProcedure.use(async ({ ctx, next }) => {
+  const token = ctx.req.cookies?.[ADMIN_COOKIE];
+  if (!token) throw new TRPCError({ code: "UNAUTHORIZED", message: "Admin login required" });
+  const valid = await verifyAdminToken(token);
+  if (!valid) throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid or expired admin session" });
+  return next({ ctx });
+});
+
 export const appRouter = router({
   system: systemRouter,
 
@@ -33,10 +68,53 @@ export const appRouter = router({
     }),
   }),
 
+  // Standalone admin authentication (independent of Manus OAuth)
+  adminAuth: router({
+    login: publicProcedure
+      .input(z.object({ username: z.string(), password: z.string() }))
+      .mutation(async ({ input, ctx }) => {
+        const expectedUser = ENV.adminUsername;
+        const expectedPass = ENV.adminPassword;
+        if (!expectedUser || !expectedPass) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin credentials not configured" });
+        }
+        const usernameMatch = input.username === expectedUser;
+        // Support both plain-text and bcrypt-hashed passwords
+        const passwordMatch = expectedPass.startsWith("$2") 
+          ? await bcrypt.compare(input.password, expectedPass)
+          : input.password === expectedPass;
+        if (!usernameMatch || !passwordMatch) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid username or password" });
+        }
+        const token = await signAdminToken(input.username);
+        const isProduction = ENV.isProduction;
+        ctx.res.cookie(ADMIN_COOKIE, token, {
+          httpOnly: true,
+          secure: isProduction,
+          sameSite: "lax",
+          maxAge: 12 * 60 * 60 * 1000, // 12 hours
+          path: "/",
+        });
+        return { success: true };
+      }),
+
+    logout: publicProcedure.mutation(({ ctx }) => {
+      ctx.res.clearCookie(ADMIN_COOKIE, { path: "/" });
+      return { success: true };
+    }),
+
+    check: publicProcedure.query(async ({ ctx }) => {
+      const token = ctx.req.cookies?.[ADMIN_COOKIE];
+      if (!token) return { authenticated: false };
+      const valid = await verifyAdminToken(token);
+      return { authenticated: valid };
+    }),
+  }),
+
   firms: router({
     list: publicProcedure.query(() => getAllLawFirms()),
-    listAdmin: adminProcedure.query(() => getAllLawFirmsAdmin()),
-    create: adminProcedure
+    listAdmin: standaloneAdminProcedure.query(() => getAllLawFirmsAdmin()),
+    create: standaloneAdminProcedure
       .input(z.object({
         name: z.string().min(1),
         location: z.string().optional(),
@@ -53,7 +131,7 @@ export const appRouter = router({
         await createLawFirm(input as any);
         return { success: true };
       }),
-    update: adminProcedure
+    update: standaloneAdminProcedure
       .input(z.object({
         id: z.number(),
         name: z.string().min(1).optional(),
@@ -72,7 +150,7 @@ export const appRouter = router({
         await updateLawFirm(id, data as any);
         return { success: true };
       }),
-    delete: adminProcedure
+    delete: standaloneAdminProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await deleteLawFirm(input.id);
@@ -116,13 +194,13 @@ export const appRouter = router({
         }).catch(() => {});
         return { success: true, leadId };
       }),
-    list: adminProcedure
+    list: standaloneAdminProcedure
       .input(z.object({ limit: z.number().optional(), offset: z.number().optional() }))
       .query(({ input }) => getAllLeads(input.limit, input.offset)),
-    getById: adminProcedure
+    getById: standaloneAdminProcedure
       .input(z.object({ id: z.number() }))
       .query(({ input }) => getLeadById(input.id)),
-    updateStatus: adminProcedure
+    updateStatus: standaloneAdminProcedure
       .input(z.object({
         id: z.number(),
         status: z.enum(["new", "contacted", "instructed", "lost"]),
@@ -132,7 +210,7 @@ export const appRouter = router({
         await updateLeadStatus(input.id, input.status, input.notes);
         return { success: true };
       }),
-    stats: adminProcedure.query(() => getLeadsStats()),
+    stats: standaloneAdminProcedure.query(() => getLeadsStats()),
   }),
 
   callbacks: router({
@@ -153,10 +231,10 @@ export const appRouter = router({
         }).catch(() => {});
         return { success: true, id };
       }),
-    list: adminProcedure
+    list: standaloneAdminProcedure
       .input(z.object({ limit: z.number().optional(), offset: z.number().optional() }))
       .query(({ input }) => getAllCallbacks(input.limit, input.offset)),
-    updateStatus: adminProcedure
+    updateStatus: standaloneAdminProcedure
       .input(z.object({
         id: z.number(),
         status: z.enum(["pending", "called", "no_answer", "resolved"]),
@@ -166,7 +244,7 @@ export const appRouter = router({
         await updateCallbackStatus(input.id, input.status, input.assignedTo);
         return { success: true };
       }),
-    pendingCount: adminProcedure.query(() => getPendingCallbacksCount()),
+    pendingCount: standaloneAdminProcedure.query(() => getPendingCallbacksCount()),
   }),
 
   instruct: router({
@@ -189,10 +267,10 @@ export const appRouter = router({
         }).catch(() => {});
         return { success: true, id };
       }),
-    list: adminProcedure
+    list: standaloneAdminProcedure
       .input(z.object({ limit: z.number().optional(), offset: z.number().optional() }))
       .query(({ input }) => getAllInstructRequests(input.limit, input.offset)),
-    updateStatus: adminProcedure
+    updateStatus: standaloneAdminProcedure
       .input(z.object({
         id: z.number(),
         status: z.enum(["submitted", "confirmed", "in_progress", "completed", "cancelled"]),
@@ -205,18 +283,18 @@ export const appRouter = router({
 
   investor: router({
     // Overview stats for the investor dashboard
-    stats: adminProcedure.query(() => getInvestorStats()),
+    stats: standaloneAdminProcedure.query(() => getInvestorStats()),
 
     // All fee structures across all firms
-    allFeeStructures: adminProcedure.query(() => getAllFeeStructures()),
+    allFeeStructures: standaloneAdminProcedure.query(() => getAllFeeStructures()),
 
     // Fee structures for a single firm
-    feeStructures: adminProcedure
+    feeStructures: standaloneAdminProcedure
       .input(z.object({ firmId: z.number() }))
       .query(({ input }) => getFeeStructuresForFirm(input.firmId)),
 
     // Create or update a fee band
-    upsertFeeStructure: adminProcedure
+    upsertFeeStructure: standaloneAdminProcedure
       .input(z.object({
         id: z.number().optional(),
         firmId: z.number(),
@@ -243,7 +321,7 @@ export const appRouter = router({
       }),
 
     // Delete a fee band
-    deleteFeeStructure: adminProcedure
+    deleteFeeStructure: standaloneAdminProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await deleteFeeStructure(input.id);
@@ -251,26 +329,25 @@ export const appRouter = router({
       }),
 
     // Notes for a firm
-    notes: adminProcedure
+    notes: standaloneAdminProcedure
       .input(z.object({ firmId: z.number() }))
       .query(({ input }) => getNotesForFirm(input.firmId)),
 
-    addNote: adminProcedure
+    addNote: standaloneAdminProcedure
       .input(z.object({
         firmId: z.number(),
         content: z.string().min(1),
       }))
-      .mutation(async ({ input, ctx }) => {
+      .mutation(async ({ input }) => {
         const id = await createFirmNote({
           firmId: input.firmId,
           content: input.content,
-          authorId: ctx.user.id,
-          authorName: ctx.user.name ?? "Admin",
+          authorName: "Admin",
         } as any);
         return { success: true, id };
       }),
 
-    deleteNote: adminProcedure
+    deleteNote: standaloneAdminProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await deleteFirmNote(input.id);

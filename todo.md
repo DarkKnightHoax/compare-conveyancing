@@ -85,3 +85,12 @@
 - [x] Firm notes section
 - [x] Route registered in App.tsx at /investor
 - [x] Vitest tests for investor procedures (18 tests passing)
+
+## Unified Admin Panel (standalone login)
+- [x] ADMIN_USERNAME and ADMIN_PASSWORD_HASH secrets added
+- [x] Standalone admin login tRPC procedure (bcrypt password check, JWT session cookie)
+- [x] Admin login page at /admin/login (username + password form)
+- [x] Unified /admin panel with all tabs: Overview, Leads, Callbacks, Instructions, Law Firms, Fee Editor, Firm Notes
+- [x] Remove separate /investor route
+- [x] Admin logout clears session cookie
+- [x] Tests for admin auth procedures (19 tests passing)

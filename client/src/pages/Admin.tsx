@@ -1,14 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
-import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
 import {
   LayoutDashboard, Users, Phone, Building2, FileCheck,
   LogOut, Scale, ChevronDown, CheckCircle, XCircle,
-  Clock, AlertCircle, TrendingUp, RefreshCw, Eye, Edit2
+  Clock, AlertCircle, TrendingUp, RefreshCw,
+  DollarSign, StickyNote, Plus, Trash2, Edit3, Save, Loader2,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
-type AdminTab = "dashboard" | "leads" | "callbacks" | "instructions" | "firms";
+type AdminTab = "dashboard" | "leads" | "callbacks" | "instructions" | "firms" | "fees" | "notes";
 
 // ─── STATUS BADGE ─────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: string }) {
@@ -296,7 +300,7 @@ function InstructionsTab() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
-          Instruction Requests
+          Instructions
         </h2>
         <button onClick={() => refetch()} className="flex items-center gap-2 text-sm px-4 py-2 rounded-lg" style={{ background: "oklch(0.18 0.06 250)", color: "white", fontFamily: "'DM Sans', sans-serif" }}>
           <RefreshCw size={14} /> Refresh
@@ -306,14 +310,14 @@ function InstructionsTab() {
       {!instructions || instructions.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl" style={{ border: "1px solid oklch(0.92 0.01 250)" }}>
           <FileCheck size={40} className="mx-auto mb-3" style={{ color: "oklch(0.72 0.12 75)" }} />
-          <p className="text-lg font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>No instruction requests yet</p>
+          <p className="text-lg font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>No instructions yet</p>
         </div>
       ) : (
         <div className="space-y-3">
           {instructions.map((inst) => (
             <div key={inst.id} className="bg-white rounded-2xl p-5 shadow-sm flex items-center justify-between" style={{ border: "1px solid oklch(0.92 0.01 250)" }}>
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "oklch(0.95 0.08 75)", color: "oklch(0.45 0.15 75)" }}>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "oklch(0.95 0.08 75)", color: "oklch(0.35 0.15 75)" }}>
                   <FileCheck size={16} />
                 </div>
                 <div>
@@ -321,10 +325,7 @@ function InstructionsTab() {
                     {inst.firstName} {inst.lastName} → {inst.firmName}
                   </div>
                   <div className="text-xs" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                    {inst.email} · {inst.phone} {inst.paymentAmount ? `· Payment: £${inst.paymentAmount}` : ""}
-                  </div>
-                  <div className="text-xs mt-0.5" style={{ color: "oklch(0.6 0.03 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                    {new Date(inst.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                    {inst.email} · {new Date(inst.createdAt).toLocaleDateString("en-GB")}
                   </div>
                 </div>
               </div>
@@ -352,11 +353,19 @@ function InstructionsTab() {
 }
 
 // ─── FIRMS TAB ────────────────────────────────────────────────────────────────
-function FirmsTab() {
+function FirmsTab({ onGoToFees }: { onGoToFees: (id: number) => void }) {
   const { data: firms, refetch } = trpc.firms.listAdmin.useQuery();
   const deleteFirm = trpc.firms.delete.useMutation({ onSuccess: () => refetch() });
   const updateFirm = trpc.firms.update.useMutation({ onSuccess: () => refetch() });
-  const createFirm = trpc.firms.create.useMutation({ onSuccess: () => { refetch(); setShowAdd(false); setNewFirm({ name: "", location: "", phone: "", email: "", regulatoryBody: "SRA", sraNumber: "", rating: "4.50", reviewCount: 0 }); } });
+  const createFirm = trpc.firms.create.useMutation({
+    onSuccess: () => {
+      refetch();
+      setShowAdd(false);
+      setNewFirm({ name: "", location: "", phone: "", email: "", regulatoryBody: "SRA", sraNumber: "", rating: "4.50", reviewCount: 0 });
+      toast.success("Firm added");
+    },
+    onError: (e) => toast.error(e.message),
+  });
   const [showAdd, setShowAdd] = useState(false);
   const [newFirm, setNewFirm] = useState({ name: "", location: "", phone: "", email: "", regulatoryBody: "SRA" as "SRA" | "CLC", sraNumber: "", rating: "4.50", reviewCount: 0 });
 
@@ -456,6 +465,13 @@ function FirmsTab() {
                   {firm.isActive ? "Active" : "Inactive"}
                 </button>
                 <button
+                  onClick={() => onGoToFees(firm.id)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1"
+                  style={{ background: "oklch(0.95 0.08 75)", color: "oklch(0.35 0.15 75)", fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  <DollarSign size={11} /> Fees
+                </button>
+                <button
                   onClick={() => { if (confirm(`Remove ${firm.name} from the panel?`)) deleteFirm.mutate({ id: firm.id }); }}
                   className="px-3 py-1.5 rounded-lg text-xs"
                   style={{ background: "oklch(0.95 0.03 15)", color: "oklch(0.40 0.12 15)", fontFamily: "'DM Sans', sans-serif" }}
@@ -471,13 +487,301 @@ function FirmsTab() {
   );
 }
 
+// ─── FEE EDITOR TAB ───────────────────────────────────────────────────────────
+function FeesTab({ initialFirmId }: { initialFirmId: number | null }) {
+  const utils = trpc.useUtils();
+  const { data: firms } = trpc.firms.listAdmin.useQuery();
+  const [firmId, setFirmId] = useState<number | null>(initialFirmId);
+  const [txType, setTxType] = useState<"purchase" | "sale" | "sale_purchase" | "remortgage">("purchase");
+  const [editingId, setEditingId] = useState<number | "new" | null>(null);
+
+  useEffect(() => { if (initialFirmId) setFirmId(initialFirmId); }, [initialFirmId]);
+
+  const { data: bands, isLoading } = trpc.investor.feeStructures.useQuery(
+    { firmId: firmId! },
+    { enabled: !!firmId }
+  );
+
+  const upsert = trpc.investor.upsertFeeStructure.useMutation({
+    onSuccess: () => { utils.investor.feeStructures.invalidate(); setEditingId(null); toast.success("Fee band saved"); },
+    onError: (e) => toast.error(e.message),
+  });
+  const deleteBand = trpc.investor.deleteFeeStructure.useMutation({
+    onSuccess: () => { utils.investor.feeStructures.invalidate(); toast.success("Fee band deleted"); },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const emptyForm = { firmId: firmId ?? 0, transactionType: txType, minValue: 0, maxValue: 500000, legalFee: "", searchFee: "", landRegistryFee: "", electronicTransferFee: "", bankTransferFee: "", antiMoneyLaunderingFee: "", platformCommission: "", isActive: true };
+  const [form, setForm] = useState<any>(emptyForm);
+
+  const filteredBands = bands?.filter((b: any) => b.transactionType === txType) ?? [];
+
+  const feeFields = [
+    { key: "legalFee", label: "Legal Fee *" },
+    { key: "searchFee", label: "Search Fee" },
+    { key: "landRegistryFee", label: "Land Registry Fee" },
+    { key: "electronicTransferFee", label: "Electronic Transfer" },
+    { key: "bankTransferFee", label: "Bank Transfer Fee" },
+    { key: "antiMoneyLaunderingFee", label: "AML Fee" },
+    { key: "platformCommission", label: "Platform Commission" },
+  ];
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-6" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+        Fee Editor
+      </h2>
+
+      <div className="flex gap-4 mb-6 flex-wrap">
+        <div>
+          <label className="block text-xs font-semibold mb-1" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Select Firm</label>
+          <select
+            value={firmId ?? ""}
+            onChange={(e) => { setFirmId(Number(e.target.value)); setEditingId(null); }}
+            className="px-3 py-2 rounded-lg text-sm min-w-52"
+            style={{ border: "1px solid oklch(0.88 0.02 250)", fontFamily: "'DM Sans', sans-serif", color: "oklch(0.18 0.06 250)" }}
+          >
+            <option value="">— Choose a firm —</option>
+            {firms?.map((f: any) => <option key={f.id} value={f.id}>{f.name}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold mb-1" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Transaction Type</label>
+          <select
+            value={txType}
+            onChange={(e) => { setTxType(e.target.value as any); setEditingId(null); }}
+            className="px-3 py-2 rounded-lg text-sm"
+            style={{ border: "1px solid oklch(0.88 0.02 250)", fontFamily: "'DM Sans', sans-serif", color: "oklch(0.18 0.06 250)" }}
+          >
+            <option value="purchase">Purchase</option>
+            <option value="sale">Sale</option>
+            <option value="sale_purchase">Sale & Purchase</option>
+            <option value="remortgage">Remortgage</option>
+          </select>
+        </div>
+      </div>
+
+      {!firmId ? (
+        <div className="text-center py-16 bg-white rounded-2xl" style={{ border: "1px solid oklch(0.92 0.01 250)" }}>
+          <DollarSign size={40} className="mx-auto mb-3" style={{ color: "oklch(0.72 0.12 75)" }} />
+          <p className="text-lg font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>Select a firm to manage fees</p>
+        </div>
+      ) : isLoading ? (
+        <div className="flex justify-center py-10"><Loader2 className="animate-spin" style={{ color: "oklch(0.72 0.12 75)" }} /></div>
+      ) : (
+        <div className="space-y-3">
+          {filteredBands.map((band: any) => (
+            <div key={band.id} className="bg-white rounded-2xl shadow-sm overflow-hidden" style={{ border: "1px solid oklch(0.92 0.01 250)" }}>
+              {editingId === band.id ? (
+                <div className="p-5 space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>Min Value (£)</Label>
+                      <Input type="number" value={form.minValue} onChange={(e) => setForm((p: any) => ({ ...p, minValue: Number(e.target.value) }))} style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                    </div>
+                    <div>
+                      <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>Max Value (£)</Label>
+                      <Input type="number" value={form.maxValue} onChange={(e) => setForm((p: any) => ({ ...p, maxValue: Number(e.target.value) }))} style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                    </div>
+                    {feeFields.map(({ key, label }) => (
+                      <div key={key}>
+                        <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>{label}</Label>
+                        <Input value={form[key] ?? ""} onChange={(e) => setForm((p: any) => ({ ...p, [key]: e.target.value }))} placeholder="e.g. 850" style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => upsert.mutate({ ...form, firmId: firmId! })} disabled={upsert.isPending} className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-semibold" style={{ background: "oklch(0.18 0.06 250)", color: "white", fontFamily: "'DM Sans', sans-serif" }}>
+                      <Save size={13} /> Save
+                    </button>
+                    <button onClick={() => setEditingId(null)} className="px-4 py-2 rounded-lg text-sm" style={{ background: "oklch(0.96 0.01 250)", color: "oklch(0.35 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-5 flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold text-sm" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                      £{Number(band.minValue).toLocaleString()} – £{Number(band.maxValue).toLocaleString()}
+                    </div>
+                    <div className="text-xs mt-1 flex gap-4 flex-wrap" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                      <span>Legal: <strong style={{ color: "oklch(0.18 0.06 250)" }}>£{band.legalFee}</strong></span>
+                      {band.searchFee && <span>Search: £{band.searchFee}</span>}
+                      {band.platformCommission && <span>Commission: £{band.platformCommission}</span>}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => { setForm({ ...band }); setEditingId(band.id); }} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "oklch(0.95 0.05 230)", color: "oklch(0.25 0.12 230)" }}>
+                      <Edit3 size={13} />
+                    </button>
+                    <button onClick={() => { if (confirm("Delete this fee band?")) deleteBand.mutate({ id: band.id }); }} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "oklch(0.95 0.03 15)", color: "oklch(0.40 0.12 15)" }}>
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {editingId === "new" && (
+            <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4" style={{ border: "1px solid oklch(0.72 0.12 75 / 0.3)" }}>
+              <h4 className="font-semibold text-sm" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>New Fee Band</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>Min Value (£)</Label>
+                  <Input type="number" value={form.minValue} onChange={(e) => setForm((p: any) => ({ ...p, minValue: Number(e.target.value) }))} style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                </div>
+                <div>
+                  <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>Max Value (£)</Label>
+                  <Input type="number" value={form.maxValue} onChange={(e) => setForm((p: any) => ({ ...p, maxValue: Number(e.target.value) }))} style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                </div>
+                {feeFields.map(({ key, label }) => (
+                  <div key={key}>
+                    <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>{label}</Label>
+                    <Input value={form[key] ?? ""} onChange={(e) => setForm((p: any) => ({ ...p, [key]: e.target.value }))} placeholder="e.g. 850" style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => upsert.mutate({ ...form, firmId: firmId!, transactionType: txType })} disabled={upsert.isPending} className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-semibold" style={{ background: "oklch(0.18 0.06 250)", color: "white", fontFamily: "'DM Sans', sans-serif" }}>
+                  <Save size={13} /> Save Band
+                </button>
+                <button onClick={() => setEditingId(null)} className="px-4 py-2 rounded-lg text-sm" style={{ background: "oklch(0.96 0.01 250)", color: "oklch(0.35 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
+              </div>
+            </div>
+          )}
+
+          {editingId !== "new" && (
+            <button
+              onClick={() => { setForm({ ...emptyForm, firmId: firmId!, transactionType: txType }); setEditingId("new"); }}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold"
+              style={{ background: "oklch(0.95 0.08 75)", color: "oklch(0.35 0.15 75)", fontFamily: "'DM Sans', sans-serif" }}
+            >
+              <Plus size={14} /> Add Fee Band
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── NOTES TAB ────────────────────────────────────────────────────────────────
+function NotesTab() {
+  const utils = trpc.useUtils();
+  const { data: firms } = trpc.firms.listAdmin.useQuery();
+  const [firmId, setFirmId] = useState<number | null>(null);
+  const [newNote, setNewNote] = useState("");
+
+  const { data: notes, isLoading } = trpc.investor.notes.useQuery(
+    { firmId: firmId! },
+    { enabled: !!firmId }
+  );
+  const addNote = trpc.investor.addNote.useMutation({
+    onSuccess: () => { utils.investor.notes.invalidate(); setNewNote(""); toast.success("Note added"); },
+    onError: (e) => toast.error(e.message),
+  });
+  const deleteNote = trpc.investor.deleteNote.useMutation({
+    onSuccess: () => { utils.investor.notes.invalidate(); toast.success("Note deleted"); },
+    onError: (e) => toast.error(e.message),
+  });
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-6" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+        Firm Notes
+      </h2>
+      <div className="mb-5">
+        <label className="block text-xs font-semibold mb-1" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Select Firm</label>
+        <select
+          value={firmId ?? ""}
+          onChange={(e) => setFirmId(Number(e.target.value))}
+          className="px-3 py-2 rounded-lg text-sm min-w-52"
+          style={{ border: "1px solid oklch(0.88 0.02 250)", fontFamily: "'DM Sans', sans-serif", color: "oklch(0.18 0.06 250)" }}
+        >
+          <option value="">— Choose a firm —</option>
+          {firms?.map((f: any) => <option key={f.id} value={f.id}>{f.name}</option>)}
+        </select>
+      </div>
+
+      {firmId && (
+        <>
+          <div className="flex gap-2 mb-5">
+            <input
+              value={newNote}
+              onChange={(e) => setNewNote(e.target.value)}
+              placeholder="Add a note about this firm…"
+              onKeyDown={(e) => { if (e.key === "Enter" && newNote.trim()) addNote.mutate({ firmId, content: newNote.trim() }); }}
+              className="flex-1 px-3 py-2 rounded-lg text-sm"
+              style={{ border: "1px solid oklch(0.88 0.02 250)", fontFamily: "'DM Sans', sans-serif", color: "oklch(0.18 0.06 250)" }}
+            />
+            <button
+              onClick={() => { if (newNote.trim()) addNote.mutate({ firmId, content: newNote.trim() }); }}
+              disabled={!newNote.trim() || addNote.isPending}
+              className="px-4 py-2 rounded-lg text-sm font-semibold"
+              style={{ background: "oklch(0.72 0.12 75)", color: "oklch(0.12 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}
+            >
+              <Plus size={14} />
+            </button>
+          </div>
+
+          {isLoading ? (
+            <div className="flex justify-center py-6"><Loader2 className="animate-spin" style={{ color: "oklch(0.72 0.12 75)" }} /></div>
+          ) : !notes || notes.length === 0 ? (
+            <div className="text-center py-10 bg-white rounded-2xl" style={{ border: "1px solid oklch(0.92 0.01 250)" }}>
+              <StickyNote size={32} className="mx-auto mb-2" style={{ color: "oklch(0.72 0.12 75)" }} />
+              <p className="text-sm" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>No notes for this firm yet.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {notes.map((note: any) => (
+                <div key={note.id} className="bg-white rounded-2xl p-5 shadow-sm flex items-start justify-between gap-3" style={{ border: "1px solid oklch(0.92 0.01 250)" }}>
+                  <div>
+                    <p className="text-sm" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>{note.content}</p>
+                    <p className="text-xs mt-1" style={{ color: "oklch(0.6 0.03 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                      {note.authorName} · {new Date(note.createdAt).toLocaleDateString("en-GB")}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => { if (confirm("Delete this note?")) deleteNote.mutate({ id: note.id }); }}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ background: "oklch(0.95 0.03 15)", color: "oklch(0.40 0.12 15)" }}
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── MAIN ADMIN PAGE ──────────────────────────────────────────────────────────
 export default function Admin() {
-  const { user, loading, isAuthenticated } = useAuth();
+  const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState<AdminTab>("dashboard");
-  const { data: pendingCallbacks } = trpc.callbacks.pendingCount.useQuery(undefined, { enabled: isAuthenticated && user?.role === "admin" });
+  const [feesFirmId, setFeesFirmId] = useState<number | null>(null);
 
-  if (loading) {
+  // Standalone admin session check
+  const { data: authCheck, isLoading: authLoading } = trpc.adminAuth.check.useQuery();
+  const logoutMutation = trpc.adminAuth.logout.useMutation({
+    onSuccess: () => navigate("/admin/login"),
+  });
+
+  const { data: pendingCallbacks } = trpc.callbacks.pendingCount.useQuery(
+    undefined,
+    { enabled: authCheck?.authenticated === true }
+  );
+
+  useEffect(() => {
+    if (!authLoading && authCheck && !authCheck.authenticated) {
+      navigate("/admin/login");
+    }
+  }, [authLoading, authCheck, navigate]);
+
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: "oklch(0.975 0.008 80)" }}>
         <div className="text-center">
@@ -488,32 +792,7 @@ export default function Admin() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "oklch(0.975 0.008 80)" }}>
-        <div className="text-center bg-white rounded-2xl p-10 shadow-sm" style={{ border: "1px solid oklch(0.92 0.01 250)" }}>
-          <Scale size={40} className="mx-auto mb-4" style={{ color: "oklch(0.72 0.12 75)" }} />
-          <h2 className="text-2xl font-bold mb-2" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>Admin Access Required</h2>
-          <p className="text-sm mb-6" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Please sign in to access the admin panel.</p>
-          <a href={getLoginUrl()} className="inline-block px-6 py-3 rounded-xl text-sm font-semibold" style={{ background: "oklch(0.18 0.06 250)", color: "white", fontFamily: "'DM Sans', sans-serif" }}>
-            Sign In
-          </a>
-        </div>
-      </div>
-    );
-  }
-
-  if (user?.role !== "admin") {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "oklch(0.975 0.008 80)" }}>
-        <div className="text-center bg-white rounded-2xl p-10 shadow-sm" style={{ border: "1px solid oklch(0.92 0.01 250)" }}>
-          <XCircle size={40} className="mx-auto mb-4" style={{ color: "oklch(0.55 0.18 15)" }} />
-          <h2 className="text-2xl font-bold mb-2" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>Access Denied</h2>
-          <p className="text-sm" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>You do not have admin privileges.</p>
-        </div>
-      </div>
-    );
-  }
+  if (!authCheck?.authenticated) return null;
 
   const navItems: { id: AdminTab; label: string; icon: any; badge?: number }[] = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -521,7 +800,14 @@ export default function Admin() {
     { id: "callbacks", label: "Callbacks", icon: Phone, badge: pendingCallbacks ?? 0 },
     { id: "instructions", label: "Instructions", icon: FileCheck },
     { id: "firms", label: "Law Firms", icon: Building2 },
+    { id: "fees", label: "Fee Editor", icon: DollarSign },
+    { id: "notes", label: "Firm Notes", icon: StickyNote },
   ];
+
+  const handleGoToFees = (firmId: number) => {
+    setFeesFirmId(firmId);
+    setActiveTab("fees");
+  };
 
   return (
     <div className="min-h-screen flex" style={{ background: "oklch(0.975 0.008 80)" }}>
@@ -561,15 +847,16 @@ export default function Admin() {
         </nav>
 
         <div className="p-4" style={{ borderTop: "1px solid oklch(0.72 0.12 75 / 0.15)" }}>
-          <div className="flex items-center gap-3 px-4 py-3">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: "oklch(0.72 0.12 75 / 0.2)", color: "oklch(0.82 0.10 75)" }}>
-              {user.name?.[0] ?? "A"}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold truncate" style={{ color: "white", fontFamily: "'DM Sans', sans-serif" }}>{user.name ?? "Admin"}</div>
-              <div className="text-xs truncate" style={{ color: "oklch(0.975 0.008 80 / 0.4)", fontFamily: "'DM Sans', sans-serif" }}>{user.email ?? ""}</div>
-            </div>
-          </div>
+          <button
+            onClick={() => logoutMutation.mutate()}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"
+            style={{ color: "oklch(0.975 0.008 80 / 0.4)", fontFamily: "'DM Sans', sans-serif", background: "none" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "oklch(0.65 0.15 25)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "oklch(0.975 0.008 80 / 0.4)")}
+          >
+            <LogOut size={16} />
+            Sign Out
+          </button>
         </div>
       </aside>
 
@@ -579,7 +866,9 @@ export default function Admin() {
         {activeTab === "leads" && <LeadsTab />}
         {activeTab === "callbacks" && <CallbacksTab />}
         {activeTab === "instructions" && <InstructionsTab />}
-        {activeTab === "firms" && <FirmsTab />}
+        {activeTab === "firms" && <FirmsTab onGoToFees={handleGoToFees} />}
+        {activeTab === "fees" && <FeesTab initialFirmId={feesFirmId} />}
+        {activeTab === "notes" && <NotesTab />}
       </main>
     </div>
   );
