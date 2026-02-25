@@ -1,15 +1,16 @@
-/**
+/*
  * QUOTE WIZARD PAGE
  * Design: British Legal Prestige — Navy + Gold + Parchment
- * 3-step grouped wizard:
- *   Step 1: Transaction type + Property details
- *   Step 2: Your situation (conditional questions)
- *   Step 3: Contact details + submit
+ * Structure: 3 high-level steps (progress bar tabs)
+ *   Step 1: Property Details — questions slide in one-by-one
+ *   Step 2: Your Situation — questions slide in one-by-one (conditional)
+ *   Step 3: Contact Details — single screen
+ * Animation: each question slides in from the right, exits to the left
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useSearch } from "wouter";
-import { ChevronLeft, ChevronRight, Scale, HelpCircle, MapPin, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Scale, HelpCircle, MapPin, X, Check } from "lucide-react";
 import type { WizardAnswers } from "../lib/feeEngine";
 
 // ─── TOOLTIP ─────────────────────────────────────────────────────────────────
@@ -36,20 +37,14 @@ function Tooltip({ text }: { text: string }) {
 
 // ─── OPTION BUTTON ────────────────────────────────────────────────────────────
 function OptionBtn({
-  label,
-  selected,
-  onClick,
-  icon,
+  label, selected, onClick, icon, fullWidth = false,
 }: {
-  label: string;
-  selected: boolean;
-  onClick: () => void;
-  icon?: React.ReactNode;
+  label: string; selected: boolean; onClick: () => void; icon?: React.ReactNode; fullWidth?: boolean;
 }) {
   return (
     <button
       onClick={onClick}
-      className="wizard-option rounded-xl px-5 py-3.5 text-sm font-medium flex items-center gap-2 transition-all"
+      className={`wizard-option rounded-xl px-5 py-3.5 text-sm font-medium flex items-center gap-2 transition-all ${fullWidth ? "w-full justify-between" : ""}`}
       style={{
         fontFamily: "'DM Sans', sans-serif",
         ...(selected
@@ -57,20 +52,17 @@ function OptionBtn({
           : {}),
       }}
     >
-      {icon && <span style={{ color: selected ? "oklch(0.72 0.12 75)" : "oklch(0.45 0.04 250)" }}>{icon}</span>}
-      {label}
+      <span className="flex items-center gap-2">
+        {icon && <span style={{ color: selected ? "oklch(0.72 0.12 75)" : "oklch(0.45 0.04 250)" }}>{icon}</span>}
+        {label}
+      </span>
+      {selected && <Check size={14} style={{ color: "oklch(0.72 0.12 75)", flexShrink: 0 }} />}
     </button>
   );
 }
 
 // ─── POSTCODE AUTOCOMPLETE ────────────────────────────────────────────────────
-function PostcodeInput({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-}) {
+function PostcodeInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -83,11 +75,8 @@ function PostcodeInput({
         const res = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(clean)}/autocomplete`);
         const data = await res.json();
         setSuggestions(data.result || []);
-      } catch {
-        setSuggestions([]);
-      } finally {
-        setLoading(false);
-      }
+      } catch { setSuggestions([]); }
+      finally { setLoading(false); }
     }, 300);
     return () => clearTimeout(timer);
   }, [value]);
@@ -102,12 +91,8 @@ function PostcodeInput({
           onChange={(e) => onChange(e.target.value.toUpperCase())}
           placeholder="e.g. SW1A 1AA"
           maxLength={8}
-          className="w-full pl-9 pr-4 py-3 rounded-xl text-sm border-2 outline-none transition-all"
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            borderColor: "oklch(0.88 0.015 80)",
-            background: "white",
-          }}
+          className="w-full pl-9 pr-4 py-3.5 rounded-xl text-sm border-2 outline-none transition-all"
+          style={{ fontFamily: "'DM Sans', sans-serif", borderColor: "oklch(0.88 0.015 80)", background: "white" }}
           onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
           onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
         />
@@ -120,12 +105,9 @@ function PostcodeInput({
         <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border z-50 overflow-hidden"
           style={{ borderColor: "oklch(0.88 0.015 80)" }}>
           {suggestions.slice(0, 5).map((s) => (
-            <button
-              key={s}
-              className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2"
+            <button key={s} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2"
               style={{ fontFamily: "'DM Sans', sans-serif", color: "oklch(0.18 0.06 250)" }}
-              onMouseDown={() => { onChange(s); setSuggestions([]); }}
-            >
+              onMouseDown={() => { onChange(s); setSuggestions([]); }}>
               <MapPin size={13} style={{ color: "oklch(0.72 0.12 75)" }} />
               {s}
             </button>
@@ -137,59 +119,99 @@ function PostcodeInput({
 }
 
 // ─── PROGRESS BAR ─────────────────────────────────────────────────────────────
-function ProgressBar({ step, total }: { step: number; total: number }) {
-  const pct = ((step - 1) / (total - 1)) * 100;
-  const labels = ["Property Details", "Your Situation", "Your Contact Details"];
+function ProgressBar({ step }: { step: number }) {
+  const labels = ["Property Details", "Your Situation", "Contact Details"];
   return (
     <div className="mb-10">
-      <div className="flex justify-between mb-3">
+      <div className="flex items-center justify-between relative">
+        {/* Connecting line */}
+        <div className="absolute left-0 right-0 top-4 h-0.5" style={{ background: "oklch(0.88 0.015 80)", zIndex: 0 }} />
+        <div
+          className="absolute left-0 top-4 h-0.5 transition-all duration-500"
+          style={{
+            width: step === 1 ? "0%" : step === 2 ? "50%" : "100%",
+            background: "linear-gradient(90deg, oklch(0.18 0.06 250), oklch(0.72 0.12 75))",
+            zIndex: 1,
+          }}
+        />
         {labels.map((label, i) => (
-          <div key={label} className="flex flex-col items-center" style={{ width: `${100 / total}%` }}>
+          <div key={label} className="flex flex-col items-center relative z-10">
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold mb-1 transition-all duration-300"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold mb-2 transition-all duration-300"
               style={{
                 fontFamily: "'DM Sans', sans-serif",
-                background: i + 1 <= step ? "oklch(0.18 0.06 250)" : "oklch(0.88 0.015 80)",
+                background: i + 1 <= step ? "oklch(0.18 0.06 250)" : "white",
                 color: i + 1 <= step ? "white" : "oklch(0.55 0.04 250)",
-                boxShadow: i + 1 === step ? "0 0 0 4px oklch(0.72 0.12 75 / 0.3)" : "none",
+                border: `2px solid ${i + 1 <= step ? "oklch(0.18 0.06 250)" : "oklch(0.88 0.015 80)"}`,
+                boxShadow: i + 1 === step ? "0 0 0 4px oklch(0.72 0.12 75 / 0.25)" : "none",
               }}
             >
-              {i + 1 < step ? "✓" : i + 1}
+              {i + 1 < step ? <Check size={14} /> : i + 1}
             </div>
-            <span
-              className="text-xs text-center hidden md:block"
+            <span className="text-xs text-center hidden md:block"
               style={{
                 fontFamily: "'DM Sans', sans-serif",
-                color: i + 1 <= step ? "oklch(0.18 0.06 250)" : "oklch(0.55 0.04 250)",
+                color: i + 1 <= step ? "oklch(0.18 0.06 250)" : "oklch(0.65 0.04 250)",
                 fontWeight: i + 1 === step ? 600 : 400,
-              }}
-            >
+              }}>
               {label}
             </span>
           </div>
         ))}
       </div>
-      <div className="h-2 rounded-full" style={{ background: "oklch(0.88 0.015 80)" }}>
-        <div className="h-2 rounded-full progress-fill" style={{ width: `${pct}%` }} />
-      </div>
-      <div className="text-right mt-1 text-xs" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-        Step {step} of {total}
-      </div>
+    </div>
+  );
+}
+
+// ─── ANIMATED QUESTION WRAPPER ────────────────────────────────────────────────
+function QuestionSlide({
+  children, direction, questionKey,
+}: {
+  children: React.ReactNode; direction: "forward" | "backward"; questionKey: string;
+}) {
+  const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(true);
+
+  useEffect(() => {
+    setMounted(true);
+    setVisible(false);
+    const t = setTimeout(() => setVisible(true), 30);
+    return () => clearTimeout(t);
+  }, [questionKey]);
+
+  const fromX = direction === "forward" ? "40px" : "-40px";
+
+  return (
+    <div
+      style={{
+        transition: "opacity 0.35s cubic-bezier(0.4,0,0.2,1), transform 0.35s cubic-bezier(0.4,0,0.2,1)",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateX(0)" : `translateX(${fromX})`,
+      }}
+    >
+      {children}
     </div>
   );
 }
 
 // ─── QUESTION LABEL ───────────────────────────────────────────────────────────
-function QLabel({ children, tooltip }: { children: React.ReactNode; tooltip?: string }) {
+function QLabel({ children, tooltip, subtitle }: { children: React.ReactNode; tooltip?: string; subtitle?: string }) {
   return (
-    <label className="flex items-center text-sm font-semibold mb-3" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
-      {children}
-      {tooltip && <Tooltip text={tooltip} />}
-    </label>
+    <div className="mb-5">
+      <label className="flex items-center text-lg font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+        {children}
+        {tooltip && <Tooltip text={tooltip} />}
+      </label>
+      {subtitle && (
+        <p className="text-sm mt-1" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+          {subtitle}
+        </p>
+      )}
+    </div>
   );
 }
 
-// ─── MAIN WIZARD ──────────────────────────────────────────────────────────────
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const TIMELINES = ["As soon as possible", "Within 1 month", "1–3 months", "3–6 months", "Not yet decided"];
 const MORTGAGE_LENDERS = [
   "Barclays", "Halifax", "HSBC", "Lloyds Bank", "Nationwide", "NatWest", "Santander",
@@ -207,14 +229,48 @@ const MORTGAGE_LENDERS = [
   "Tipton & Coseley Building Society", "Vernon Building Society", "Other Lender",
 ];
 
+const transactionLabels: Record<string, string> = {
+  purchase: "Property Purchase",
+  sale: "Property Sale",
+  sale_purchase: "Sale & Purchase",
+  remortgage: "Remortgage",
+};
+
+// ─── QUESTION DEFINITIONS ─────────────────────────────────────────────────────
+// Each question has an id, the step it belongs to, and a condition function
+type QuestionId =
+  | "transactionType"
+  | "tenure"
+  | "propertyValue"
+  | "postcode"
+  | "completionTimeline"
+  | "hasMortgage"
+  | "mortgageLender"
+  | "isFirstTimeBuyer"
+  | "isSecondHome"
+  | "isBuyToLet"
+  | "isNewBuild"
+  | "isSharedOwnership"
+  | "hasGiftedDeposit"
+  | "hasHelpToBuyISA"
+  | "isRightToBuy"
+  | "buyerCount"
+  | "hasMortgageOnProperty"
+  | "remortgageValue"
+  | "remortgageTenure";
+
+// ─── MAIN WIZARD ──────────────────────────────────────────────────────────────
 export default function QuoteWizard() {
   const [, navigate] = useLocation();
   const search = useSearch();
   const params = new URLSearchParams(search);
   const initialType = (params.get("type") as WizardAnswers["transactionType"]) || "purchase";
 
+  // High-level step (1=Property Details, 2=Your Situation, 3=Contact)
   const [step, setStep] = useState(1);
-  const [animating, setAnimating] = useState(false);
+  // Sub-question index within step 1 and step 2
+  const [subQ, setSubQ] = useState(0);
+  const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [answers, setAnswers] = useState<Partial<WizardAnswers>>({
@@ -237,62 +293,453 @@ export default function QuoteWizard() {
   });
 
   const [contactDetails, setContactDetails] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    mortgageLender: "",
+    firstName: "", lastName: "", email: "", phone: "", mortgageLender: "",
   });
 
   const set = (key: keyof WizardAnswers, value: unknown) =>
     setAnswers((prev) => ({ ...prev, [key]: value }));
 
-  const goNext = () => {
+  const isSale = answers.transactionType === "sale" || answers.transactionType === "sale_purchase";
+  const isPurchase = answers.transactionType === "purchase" || answers.transactionType === "sale_purchase";
+  const isRemortgage = answers.transactionType === "remortgage";
+
+  // ── STEP 1 QUESTIONS ──────────────────────────────────────────────────────
+  const step1Questions: Array<{ id: QuestionId; condition?: () => boolean }> = [
+    { id: "transactionType" },
+    { id: "tenure", condition: () => !isRemortgage },
+    { id: "propertyValue" },
+    { id: "postcode" },
+    { id: "completionTimeline" },
+  ];
+
+  // ── STEP 2 QUESTIONS ──────────────────────────────────────────────────────
+  const step2Questions: Array<{ id: QuestionId; condition?: () => boolean }> = [
+    { id: "hasMortgage", condition: () => isPurchase },
+    { id: "mortgageLender", condition: () => isPurchase && answers.hasMortgage === true },
+    { id: "isFirstTimeBuyer", condition: () => isPurchase },
+    { id: "isSecondHome", condition: () => isPurchase && answers.isFirstTimeBuyer === false },
+    { id: "isBuyToLet", condition: () => isPurchase && answers.isFirstTimeBuyer === false },
+    { id: "isNewBuild", condition: () => isPurchase },
+    { id: "isSharedOwnership", condition: () => isPurchase },
+    { id: "hasGiftedDeposit", condition: () => isPurchase },
+    { id: "hasHelpToBuyISA", condition: () => isPurchase },
+    { id: "isRightToBuy", condition: () => isPurchase },
+    { id: "buyerCount", condition: () => isPurchase },
+    { id: "hasMortgageOnProperty", condition: () => isSale && !isPurchase },
+    { id: "remortgageValue", condition: () => isRemortgage },
+    { id: "remortgageTenure", condition: () => isRemortgage },
+  ];
+
+  const activeStep1Qs = step1Questions.filter((q) => !q.condition || q.condition());
+  const activeStep2Qs = step2Questions.filter((q) => !q.condition || q.condition());
+
+  const currentQuestions = step === 1 ? activeStep1Qs : step === 2 ? activeStep2Qs : [];
+  const totalSubQs = currentQuestions.length;
+  const currentQId = currentQuestions[subQ]?.id;
+
+  // ── VALIDATION ────────────────────────────────────────────────────────────
+  const validateCurrentQ = (): boolean => {
     const errs: Record<string, string> = {};
-
-    if (step === 1) {
-      if (!answers.propertyValue || answers.propertyValue < 10000) errs.propertyValue = "Please enter a valid property value (minimum £10,000)";
-      if (!answers.postcode || answers.postcode.length < 5) errs.postcode = "Please enter a valid UK postcode";
-      if (!answers.completionTimeline) errs.completionTimeline = "Please select a timeline";
+    if (currentQId === "propertyValue") {
+      if (!answers.propertyValue || answers.propertyValue < 10000)
+        errs.propertyValue = "Please enter a valid property value (minimum £10,000)";
     }
-
+    if (currentQId === "postcode") {
+      if (!answers.postcode || answers.postcode.replace(/\s/g, "").length < 5)
+        errs.postcode = "Please enter a valid UK postcode";
+    }
+    if (currentQId === "completionTimeline") {
+      if (!answers.completionTimeline)
+        errs.completionTimeline = "Please select a timeline to continue";
+    }
     if (step === 3) {
       if (!contactDetails.firstName.trim()) errs.firstName = "First name is required";
       if (!contactDetails.lastName.trim()) errs.lastName = "Last name is required";
       if (!contactDetails.email.includes("@")) errs.email = "Please enter a valid email address";
       if (!contactDetails.phone.trim() || contactDetails.phone.length < 10) errs.phone = "Please enter a valid phone number";
     }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
 
-    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
-    setErrors({});
+  // ── NAVIGATION ────────────────────────────────────────────────────────────
+  const goNext = () => {
+    if (!validateCurrentQ()) return;
 
     if (step === 3) {
-      // Save to sessionStorage and navigate to results
       sessionStorage.setItem("quoteAnswers", JSON.stringify(answers));
       sessionStorage.setItem("contactDetails", JSON.stringify(contactDetails));
       navigate("/results");
       return;
     }
 
-    setAnimating(true);
-    setTimeout(() => { setStep((s) => s + 1); setAnimating(false); }, 200);
+    setDirection("forward");
+    setErrors({});
+
+    if (step < 3 && subQ < totalSubQs - 1) {
+      // Move to next sub-question within same step
+      setSubQ((s) => s + 1);
+    } else {
+      // Move to next high-level step
+      setStep((s) => s + 1);
+      setSubQ(0);
+    }
   };
 
   const goBack = () => {
-    if (step === 1) { navigate("/"); return; }
-    setAnimating(true);
-    setTimeout(() => { setStep((s) => s - 1); setAnimating(false); }, 200);
+    setErrors({});
+    setDirection("backward");
+
+    if (step === 1 && subQ === 0) {
+      navigate("/");
+      return;
+    }
+
+    if (subQ > 0) {
+      setSubQ((s) => s - 1);
+    } else {
+      // Go back to previous step, last sub-question
+      const prevStep = step - 1;
+      const prevQs = prevStep === 1 ? activeStep1Qs : activeStep2Qs;
+      setStep(prevStep);
+      setSubQ(prevQs.length - 1);
+    }
   };
 
-  const isSale = answers.transactionType === "sale" || answers.transactionType === "sale_purchase";
-  const isPurchase = answers.transactionType === "purchase" || answers.transactionType === "sale_purchase";
+  // ── QUESTION RENDERER ─────────────────────────────────────────────────────
+  const renderQuestion = (qId: QuestionId) => {
+    switch (qId) {
+      case "transactionType":
+        return (
+          <div>
+            <QLabel subtitle="This determines which questions we ask and how your quote is calculated.">
+              What type of transaction is this?
+            </QLabel>
+            <div className="grid grid-cols-2 gap-3">
+              {(["purchase", "sale", "sale_purchase", "remortgage"] as const).map((t) => (
+                <OptionBtn key={t} label={transactionLabels[t]} selected={answers.transactionType === t}
+                  onClick={() => set("transactionType", t)} fullWidth />
+              ))}
+            </div>
+          </div>
+        );
 
-  const transactionLabels: Record<string, string> = {
-    purchase: "Property Purchase",
-    sale: "Property Sale",
-    sale_purchase: "Sale & Purchase",
-    remortgage: "Remortgage",
+      case "tenure":
+        return (
+          <div>
+            <QLabel
+              tooltip="Freehold means you own the property and land outright. Leasehold means you own the property for a fixed term but not the land — additional legal work is required."
+              subtitle="This affects your legal fees."
+            >
+              What is the property tenure?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Freehold" selected={answers.tenure === "freehold"} onClick={() => set("tenure", "freehold")} fullWidth />
+              <OptionBtn label="Leasehold" selected={answers.tenure === "leasehold"} onClick={() => set("tenure", "leasehold")} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "propertyValue":
+        return (
+          <div>
+            <QLabel subtitle="Used to calculate your Stamp Duty Land Tax (SDLT) and Land Registry fee.">
+              {isRemortgage ? "What is the current value of the property?" : "What is the purchase / sale price of the property?"}
+            </QLabel>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base font-bold"
+                style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'JetBrains Mono', monospace" }}>£</span>
+              <input
+                type="number"
+                value={answers.propertyValue || ""}
+                onChange={(e) => set("propertyValue", Number(e.target.value))}
+                placeholder="350000"
+                className="w-full pl-8 pr-4 py-4 rounded-xl text-lg border-2 outline-none transition-all"
+                style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  borderColor: errors.propertyValue ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)",
+                }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = errors.propertyValue ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)")}
+              />
+            </div>
+            {errors.propertyValue && <p className="text-xs mt-2" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.propertyValue}</p>}
+          </div>
+        );
+
+      case "postcode":
+        return (
+          <div>
+            <QLabel subtitle="Used to match you with conveyancers who operate in your area.">
+              What is the property postcode?
+            </QLabel>
+            <PostcodeInput value={answers.postcode || ""} onChange={(v) => set("postcode", v)} />
+            {errors.postcode && <p className="text-xs mt-2" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.postcode}</p>}
+          </div>
+        );
+
+      case "completionTimeline":
+        return (
+          <div>
+            <QLabel subtitle="This helps conveyancers understand your urgency.">
+              When do you expect to complete?
+            </QLabel>
+            <div className="flex flex-col gap-2">
+              {TIMELINES.map((t) => (
+                <OptionBtn key={t} label={t} selected={answers.completionTimeline === t}
+                  onClick={() => set("completionTimeline", t)} fullWidth />
+              ))}
+            </div>
+            {errors.completionTimeline && <p className="text-xs mt-2" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.completionTimeline}</p>}
+          </div>
+        );
+
+      case "hasMortgage":
+        return (
+          <div>
+            <QLabel
+              tooltip="If you are using a mortgage, your conveyancer will also act for your lender, which incurs an additional fee."
+              subtitle="This affects your legal fees."
+            >
+              Are you using a mortgage to fund the purchase?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — I have a mortgage offer" selected={answers.hasMortgage === true} onClick={() => set("hasMortgage", true)} fullWidth />
+              <OptionBtn label="No — I am a cash buyer" selected={answers.hasMortgage === false} onClick={() => set("hasMortgage", false)} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "mortgageLender":
+        return (
+          <div>
+            <QLabel subtitle="Your conveyancer needs to be on your lender's approved panel.">
+              Which mortgage lender are you using?
+            </QLabel>
+            <select
+              value={contactDetails.mortgageLender}
+              onChange={(e) => setContactDetails((prev) => ({ ...prev, mortgageLender: e.target.value }))}
+              className="w-full px-4 py-4 rounded-xl text-sm border-2 outline-none transition-all bg-white"
+              style={{ fontFamily: "'DM Sans', sans-serif", borderColor: "oklch(0.88 0.015 80)" }}
+              onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+              onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+            >
+              <option value="">Select your lender...</option>
+              {MORTGAGE_LENDERS.map((l) => <option key={l} value={l}>{l}</option>)}
+            </select>
+          </div>
+        );
+
+      case "isFirstTimeBuyer":
+        return (
+          <div>
+            <QLabel
+              tooltip="First-time buyers may be eligible for Stamp Duty Land Tax (SDLT) relief on properties up to £625,000."
+              subtitle="This affects your Stamp Duty calculation."
+            >
+              Are you a first-time buyer?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — this is my first property" selected={answers.isFirstTimeBuyer === true}
+                onClick={() => { set("isFirstTimeBuyer", true); set("isBuyToLet", false); set("isSecondHome", false); }} fullWidth />
+              <OptionBtn label="No — I have owned property before" selected={answers.isFirstTimeBuyer === false}
+                onClick={() => set("isFirstTimeBuyer", false)} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "isSecondHome":
+        return (
+          <div>
+            <QLabel
+              tooltip="A 3% SDLT surcharge applies if you already own a property and are buying an additional one."
+              subtitle="A 3% Stamp Duty surcharge may apply."
+            >
+              Is this a second home or additional property?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — I already own another property" selected={answers.isSecondHome === true} onClick={() => set("isSecondHome", true)} fullWidth />
+              <OptionBtn label="No — this will be my only property" selected={answers.isSecondHome === false} onClick={() => set("isSecondHome", false)} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "isBuyToLet":
+        return (
+          <div>
+            <QLabel
+              tooltip="Buy-to-let properties are subject to the 3% SDLT surcharge and require specialist conveyancing."
+              subtitle="This affects your Stamp Duty and legal fees."
+            >
+              Is this a buy-to-let investment property?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — I am purchasing to rent out" selected={answers.isBuyToLet === true} onClick={() => set("isBuyToLet", true)} fullWidth />
+              <OptionBtn label="No — this is for my own occupation" selected={answers.isBuyToLet === false} onClick={() => set("isBuyToLet", false)} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "isNewBuild":
+        return (
+          <div>
+            <QLabel
+              tooltip="New build properties require additional legal work, including reviewing the developer's contract pack and liaising with the developer's solicitors."
+              subtitle="New builds require additional legal work."
+            >
+              Is this a new build property?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — it is a new build" selected={answers.isNewBuild === true} onClick={() => set("isNewBuild", true)} fullWidth />
+              <OptionBtn label="No — it is an existing property" selected={answers.isNewBuild === false} onClick={() => set("isNewBuild", false)} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "isSharedOwnership":
+        return (
+          <div>
+            <QLabel
+              tooltip="Shared ownership means you buy a share of the property (usually 25–75%) and pay rent on the remaining share. This requires specialist legal work."
+              subtitle="Specialist legal work is required for shared ownership."
+            >
+              Is this a shared ownership purchase?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — shared ownership scheme" selected={answers.isSharedOwnership === true} onClick={() => set("isSharedOwnership", true)} fullWidth />
+              <OptionBtn label="No — full ownership" selected={answers.isSharedOwnership === false} onClick={() => set("isSharedOwnership", false)} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "hasGiftedDeposit":
+        return (
+          <div>
+            <QLabel
+              tooltip="If part of your deposit is a gift (e.g. from a family member), your conveyancer will need to verify the source of funds to comply with anti-money laundering regulations."
+              subtitle="Your conveyancer will need to verify the source of funds."
+            >
+              Are you using a gifted deposit?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — part of my deposit is a gift" selected={answers.hasGiftedDeposit === true} onClick={() => set("hasGiftedDeposit", true)} fullWidth />
+              <OptionBtn label="No — all funds are my own" selected={answers.hasGiftedDeposit === false} onClick={() => set("hasGiftedDeposit", false)} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "hasHelpToBuyISA":
+        return (
+          <div>
+            <QLabel
+              tooltip="If you have a Help to Buy ISA, your conveyancer will need to claim the government bonus on your behalf at completion."
+              subtitle="Your conveyancer will claim the government bonus at completion."
+            >
+              Are you using a Help to Buy ISA?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — I have a Help to Buy ISA" selected={answers.hasHelpToBuyISA === true} onClick={() => set("hasHelpToBuyISA", true)} fullWidth />
+              <OptionBtn label="No" selected={answers.hasHelpToBuyISA === false} onClick={() => set("hasHelpToBuyISA", false)} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "isRightToBuy":
+        return (
+          <div>
+            <QLabel
+              tooltip="Right to Buy allows council and housing association tenants to purchase their home at a discount. This requires specialist legal work."
+              subtitle="Specialist legal work is required for Right to Buy."
+            >
+              Is this a Right to Buy purchase?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — Right to Buy scheme" selected={answers.isRightToBuy === true} onClick={() => set("isRightToBuy", true)} fullWidth />
+              <OptionBtn label="No — standard purchase" selected={answers.isRightToBuy === false} onClick={() => set("isRightToBuy", false)} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "buyerCount":
+        return (
+          <div>
+            <QLabel subtitle="Joint purchases require additional identity checks for each buyer.">
+              How many people are purchasing the property?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              {[
+                { n: 1, label: "Just me — sole purchaser" },
+                { n: 2, label: "Two of us — joint purchase" },
+                { n: 3, label: "Three or more buyers" },
+              ].map(({ n, label }) => (
+                <OptionBtn key={n} label={label} selected={answers.buyerCount === n} onClick={() => set("buyerCount", n)} fullWidth />
+              ))}
+            </div>
+          </div>
+        );
+
+      case "hasMortgageOnProperty":
+        return (
+          <div>
+            <QLabel
+              tooltip="If there is an outstanding mortgage on the property you are selling, your conveyancer will need to redeem it at completion."
+              subtitle="Your conveyancer will redeem the mortgage at completion."
+            >
+              Is there a mortgage on the property you are selling?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — there is an outstanding mortgage" selected={answers.hasMortgageOnProperty === true} onClick={() => set("hasMortgageOnProperty", true)} fullWidth />
+              <OptionBtn label="No — the property is mortgage-free" selected={answers.hasMortgageOnProperty === false} onClick={() => set("hasMortgageOnProperty", false)} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "remortgageValue":
+        return (
+          <div>
+            <QLabel subtitle="Used to calculate your Land Registry fee.">
+              What is the value of the new mortgage?
+            </QLabel>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base font-bold"
+                style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'JetBrains Mono', monospace" }}>£</span>
+              <input
+                type="number"
+                value={(answers as any).newMortgageValue || ""}
+                onChange={(e) => set("newMortgageValue" as any, Number(e.target.value))}
+                placeholder="200000"
+                className="w-full pl-8 pr-4 py-4 rounded-xl text-lg border-2 outline-none transition-all"
+                style={{ fontFamily: "'JetBrains Mono', monospace", borderColor: "oklch(0.88 0.015 80)" }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+              />
+            </div>
+          </div>
+        );
+
+      case "remortgageTenure":
+        return (
+          <div>
+            <QLabel
+              tooltip="Leasehold remortgages require additional legal work to obtain the freeholder's consent."
+              subtitle="This affects your legal fees."
+            >
+              Is the property freehold or leasehold?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Freehold" selected={answers.tenure === "freehold"} onClick={() => set("tenure", "freehold")} fullWidth />
+              <OptionBtn label="Leasehold" selected={answers.tenure === "leasehold"} onClick={() => set("tenure", "leasehold")} fullWidth />
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
   };
+
+  // ── MINI PROGRESS DOTS (sub-questions) ────────────────────────────────────
+  const showDots = step < 3 && totalSubQs > 1;
 
   return (
     <div className="min-h-screen" style={{ background: "oklch(0.975 0.008 80)" }}>
@@ -307,13 +754,14 @@ export default function QuoteWizard() {
               Compare the Conveyancing Market
             </span>
           </div>
-          <button onClick={() => navigate("/")} className="text-sm flex items-center gap-1" style={{ color: "oklch(0.975 0.008 80 / 0.5)", fontFamily: "'DM Sans', sans-serif" }}>
+          <button onClick={() => navigate("/")} className="text-sm flex items-center gap-1"
+            style={{ color: "oklch(0.975 0.008 80 / 0.5)", fontFamily: "'DM Sans', sans-serif" }}>
             <X size={14} /> Cancel
           </button>
         </div>
       </div>
 
-      <div className="container py-12 max-w-2xl mx-auto">
+      <div className="container py-12 max-w-xl mx-auto">
         {/* Transaction type badge */}
         <div className="flex items-center justify-center mb-6">
           <span className="px-4 py-1.5 rounded-full text-xs font-semibold"
@@ -322,387 +770,117 @@ export default function QuoteWizard() {
           </span>
         </div>
 
-        <ProgressBar step={step} total={3} />
+        <ProgressBar step={step} />
 
         {/* Card */}
-        <div
-          className="bg-white rounded-2xl shadow-lg p-8 transition-all duration-200"
-          style={{
-            border: "1px solid oklch(0.88 0.015 80)",
-            opacity: animating ? 0 : 1,
-            transform: animating ? "translateY(8px)" : "translateY(0)",
-          }}
-        >
-          {/* ── STEP 1: Property Details ── */}
-          {step === 1 && (
-            <div>
-              <h2 className="text-2xl font-bold mb-1" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
-                Property Details
-              </h2>
-              <p className="text-sm mb-8" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                Tell us about the property and your transaction.
-              </p>
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden" style={{ border: "1px solid oklch(0.88 0.015 80)" }}>
+          {/* Gold top accent */}
+          <div className="h-1" style={{ background: "linear-gradient(90deg, oklch(0.18 0.06 250), oklch(0.72 0.12 75))" }} />
 
-              {/* Transaction Type */}
-              <div className="mb-6">
-                <QLabel>What type of transaction is this?</QLabel>
-                <div className="flex flex-wrap gap-2">
-                  {(["purchase", "sale", "sale_purchase", "remortgage"] as const).map((t) => (
-                    <OptionBtn
-                      key={t}
-                      label={transactionLabels[t]}
-                      selected={answers.transactionType === t}
-                      onClick={() => set("transactionType", t)}
-                    />
+          <div className="p-8">
+            {/* Step header */}
+            <div className="mb-6">
+              <div className="text-xs font-semibold tracking-widest uppercase mb-1"
+                style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'DM Sans', sans-serif" }}>
+                {step === 1 ? "Step 1 — Property Details" : step === 2 ? "Step 2 — Your Situation" : "Step 3 — Contact Details"}
+              </div>
+              {showDots && (
+                <div className="flex items-center gap-1.5 mt-2">
+                  {currentQuestions.map((_, i) => (
+                    <div key={i} className="rounded-full transition-all duration-300"
+                      style={{
+                        width: i === subQ ? "20px" : "6px",
+                        height: "6px",
+                        background: i < subQ
+                          ? "oklch(0.72 0.12 75)"
+                          : i === subQ
+                            ? "oklch(0.18 0.06 250)"
+                            : "oklch(0.88 0.015 80)",
+                      }} />
                   ))}
+                  <span className="text-xs ml-1" style={{ color: "oklch(0.65 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                    {subQ + 1} of {totalSubQs}
+                  </span>
                 </div>
-              </div>
-
-              {/* Tenure */}
-              {answers.transactionType !== "remortgage" && (
-                <div className="mb-6">
-                  <QLabel tooltip="Freehold means you own the property and land outright. Leasehold means you own the property for a fixed term but not the land.">
-                    What is the property tenure?
-                  </QLabel>
-                  <div className="flex gap-2">
-                    <OptionBtn label="Freehold" selected={answers.tenure === "freehold"} onClick={() => set("tenure", "freehold")} />
-                    <OptionBtn label="Leasehold" selected={answers.tenure === "leasehold"} onClick={() => set("tenure", "leasehold")} />
-                  </div>
-                </div>
-              )}
-
-              {/* Property Value */}
-              <div className="mb-6">
-                <QLabel>
-                  {answers.transactionType === "remortgage" ? "Current property value (£)" : "Property value (£)"}
-                </QLabel>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'JetBrains Mono', monospace" }}>£</span>
-                  <input
-                    type="number"
-                    value={answers.propertyValue || ""}
-                    onChange={(e) => set("propertyValue", Number(e.target.value))}
-                    placeholder="350000"
-                    className="w-full pl-7 pr-4 py-3 rounded-xl text-sm border-2 outline-none transition-all"
-                    style={{
-                      fontFamily: "'JetBrains Mono', monospace",
-                      borderColor: errors.propertyValue ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)",
-                    }}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = errors.propertyValue ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)")}
-                  />
-                </div>
-                {errors.propertyValue && <p className="text-xs mt-1" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.propertyValue}</p>}
-              </div>
-
-              {/* Postcode */}
-              <div className="mb-6">
-                <QLabel>Property postcode</QLabel>
-                <PostcodeInput value={answers.postcode || ""} onChange={(v) => set("postcode", v)} />
-                {errors.postcode && <p className="text-xs mt-1" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.postcode}</p>}
-              </div>
-
-              {/* Timeline */}
-              <div className="mb-2">
-                <QLabel>When do you expect to complete?</QLabel>
-                <div className="flex flex-wrap gap-2">
-                  {TIMELINES.map((t) => (
-                    <OptionBtn key={t} label={t} selected={answers.completionTimeline === t} onClick={() => set("completionTimeline", t)} />
-                  ))}
-                </div>
-                {errors.completionTimeline && <p className="text-xs mt-2" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.completionTimeline}</p>}
-              </div>
-            </div>
-          )}
-
-          {/* ── STEP 2: Your Situation ── */}
-          {step === 2 && (
-            <div>
-              <h2 className="text-2xl font-bold mb-1" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
-                Your Situation
-              </h2>
-              <p className="text-sm mb-8" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                These details help us calculate your accurate quote. Only answer what applies to you.
-              </p>
-
-              {/* PURCHASE-SPECIFIC QUESTIONS */}
-              {isPurchase && (
-                <>
-                  {/* Mortgage */}
-                  <div className="mb-6">
-                    <QLabel tooltip="If you are using a mortgage to fund the purchase, your conveyancer will need to act for the lender too, which incurs an additional fee.">
-                      Are you using a mortgage to fund the purchase?
-                    </QLabel>
-                    <div className="flex gap-2">
-                      <OptionBtn label="Yes" selected={answers.hasMortgage === true} onClick={() => set("hasMortgage", true)} />
-                      <OptionBtn label="No (Cash Buyer)" selected={answers.hasMortgage === false} onClick={() => set("hasMortgage", false)} />
-                    </div>
-                  </div>
-
-                  {/* Mortgage lender dropdown — only if using mortgage */}
-                  {answers.hasMortgage && (
-                    <div className="mb-6 pl-4" style={{ borderLeft: "3px solid oklch(0.72 0.12 75 / 0.3)" }}>
-                      <QLabel>Which lender are you using?</QLabel>
-                      <select
-                        value={contactDetails.mortgageLender}
-                        onChange={(e) => setContactDetails((prev) => ({ ...prev, mortgageLender: e.target.value }))}
-                        className="w-full px-4 py-3 rounded-xl text-sm border-2 outline-none transition-all bg-white"
-                        style={{ fontFamily: "'DM Sans', sans-serif", borderColor: "oklch(0.88 0.015 80)" }}
-                        onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
-                        onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
-                      >
-                        <option value="">Select your lender...</option>
-                        {MORTGAGE_LENDERS.map((l) => <option key={l} value={l}>{l}</option>)}
-                      </select>
-                    </div>
-                  )}
-
-                  {/* First Time Buyer */}
-                  <div className="mb-6">
-                    <QLabel tooltip="First-time buyers may be eligible for Stamp Duty Land Tax (SDLT) relief on properties up to £625,000.">
-                      Are you a first-time buyer?
-                    </QLabel>
-                    <div className="flex gap-2">
-                      <OptionBtn label="Yes" selected={answers.isFirstTimeBuyer === true} onClick={() => { set("isFirstTimeBuyer", true); set("isBuyToLet", false); set("isSecondHome", false); }} />
-                      <OptionBtn label="No" selected={answers.isFirstTimeBuyer === false} onClick={() => set("isFirstTimeBuyer", false)} />
-                    </div>
-                  </div>
-
-                  {/* If NOT first time buyer — show second home / buy to let */}
-                  {answers.isFirstTimeBuyer === false && (
-                    <>
-                      <div className="mb-6 pl-4" style={{ borderLeft: "3px solid oklch(0.72 0.12 75 / 0.3)" }}>
-                        <QLabel tooltip="A 3% SDLT surcharge applies if you already own a property and are buying an additional one.">
-                          Is this a second home or additional property?
-                        </QLabel>
-                        <div className="flex gap-2">
-                          <OptionBtn label="Yes" selected={answers.isSecondHome === true} onClick={() => set("isSecondHome", true)} />
-                          <OptionBtn label="No" selected={answers.isSecondHome === false} onClick={() => set("isSecondHome", false)} />
-                        </div>
-                      </div>
-                      <div className="mb-6 pl-4" style={{ borderLeft: "3px solid oklch(0.72 0.12 75 / 0.3)" }}>
-                        <QLabel tooltip="Buy-to-let properties are subject to the 3% SDLT surcharge and require specialist conveyancing.">
-                          Is this a buy-to-let investment property?
-                        </QLabel>
-                        <div className="flex gap-2">
-                          <OptionBtn label="Yes" selected={answers.isBuyToLet === true} onClick={() => set("isBuyToLet", true)} />
-                          <OptionBtn label="No" selected={answers.isBuyToLet === false} onClick={() => set("isBuyToLet", false)} />
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {/* New Build */}
-                  <div className="mb-6">
-                    <QLabel tooltip="New build properties require additional legal work, including reviewing the developer's contract pack and liaising with the developer's solicitors.">
-                      Is this a new build property?
-                    </QLabel>
-                    <div className="flex gap-2">
-                      <OptionBtn label="Yes" selected={answers.isNewBuild === true} onClick={() => set("isNewBuild", true)} />
-                      <OptionBtn label="No" selected={answers.isNewBuild === false} onClick={() => set("isNewBuild", false)} />
-                    </div>
-                  </div>
-
-                  {/* Shared Ownership */}
-                  <div className="mb-6">
-                    <QLabel tooltip="Shared ownership means you buy a share of the property (usually 25–75%) and pay rent on the remaining share. This requires specialist legal work.">
-                      Is this a shared ownership purchase?
-                    </QLabel>
-                    <div className="flex gap-2">
-                      <OptionBtn label="Yes" selected={answers.isSharedOwnership === true} onClick={() => set("isSharedOwnership", true)} />
-                      <OptionBtn label="No" selected={answers.isSharedOwnership === false} onClick={() => set("isSharedOwnership", false)} />
-                    </div>
-                  </div>
-
-                  {/* Gifted Deposit */}
-                  <div className="mb-6">
-                    <QLabel tooltip="If part of your deposit is a gift (e.g. from a family member), your conveyancer will need to verify the source of funds.">
-                      Are you using a gifted deposit?
-                    </QLabel>
-                    <div className="flex gap-2">
-                      <OptionBtn label="Yes" selected={answers.hasGiftedDeposit === true} onClick={() => set("hasGiftedDeposit", true)} />
-                      <OptionBtn label="No" selected={answers.hasGiftedDeposit === false} onClick={() => set("hasGiftedDeposit", false)} />
-                    </div>
-                  </div>
-
-                  {/* Help to Buy ISA */}
-                  <div className="mb-6">
-                    <QLabel tooltip="If you have a Help to Buy ISA, your conveyancer will need to claim the government bonus on your behalf at completion.">
-                      Are you using a Help to Buy ISA?
-                    </QLabel>
-                    <div className="flex gap-2">
-                      <OptionBtn label="Yes" selected={answers.hasHelpToBuyISA === true} onClick={() => set("hasHelpToBuyISA", true)} />
-                      <OptionBtn label="No" selected={answers.hasHelpToBuyISA === false} onClick={() => set("hasHelpToBuyISA", false)} />
-                    </div>
-                  </div>
-
-                  {/* Right to Buy */}
-                  <div className="mb-6">
-                    <QLabel tooltip="Right to Buy allows council and housing association tenants to purchase their home at a discount. This requires specialist legal work.">
-                      Is this a Right to Buy purchase?
-                    </QLabel>
-                    <div className="flex gap-2">
-                      <OptionBtn label="Yes" selected={answers.isRightToBuy === true} onClick={() => set("isRightToBuy", true)} />
-                      <OptionBtn label="No" selected={answers.isRightToBuy === false} onClick={() => set("isRightToBuy", false)} />
-                    </div>
-                  </div>
-
-                  {/* Number of buyers */}
-                  <div className="mb-2">
-                    <QLabel>How many people are purchasing?</QLabel>
-                    <div className="flex gap-2">
-                      {[1, 2, 3].map((n) => (
-                        <OptionBtn key={n} label={n === 1 ? "Just me" : n === 2 ? "Two buyers" : "Three or more"} selected={answers.buyerCount === n} onClick={() => set("buyerCount", n)} />
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* SALE-SPECIFIC QUESTIONS */}
-              {isSale && !isPurchase && (
-                <>
-                  <div className="mb-6">
-                    <QLabel tooltip="If there is an outstanding mortgage on the property being sold, your conveyancer will need to redeem it at completion.">
-                      Is there a mortgage on the property you are selling?
-                    </QLabel>
-                    <div className="flex gap-2">
-                      <OptionBtn label="Yes" selected={answers.hasMortgageOnProperty === true} onClick={() => set("hasMortgageOnProperty", true)} />
-                      <OptionBtn label="No" selected={answers.hasMortgageOnProperty === false} onClick={() => set("hasMortgageOnProperty", false)} />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* REMORTGAGE QUESTIONS */}
-              {answers.transactionType === "remortgage" && (
-                <>
-                  <div className="mb-6">
-                    <QLabel>What is the value of the new mortgage?</QLabel>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'JetBrains Mono', monospace" }}>£</span>
-                      <input
-                        type="number"
-                        value={answers.newMortgageValue || ""}
-                        onChange={(e) => set("newMortgageValue", Number(e.target.value))}
-                        placeholder="200000"
-                        className="w-full pl-7 pr-4 py-3 rounded-xl text-sm border-2 outline-none transition-all"
-                        style={{ fontFamily: "'JetBrains Mono', monospace", borderColor: "oklch(0.88 0.015 80)" }}
-                        onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
-                        onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-6">
-                    <QLabel tooltip="Leasehold remortgages require additional legal work to obtain the freeholder's consent.">
-                      Is the property freehold or leasehold?
-                    </QLabel>
-                    <div className="flex gap-2">
-                      <OptionBtn label="Freehold" selected={answers.tenure === "freehold"} onClick={() => set("tenure", "freehold")} />
-                      <OptionBtn label="Leasehold" selected={answers.tenure === "leasehold"} onClick={() => set("tenure", "leasehold")} />
-                    </div>
-                  </div>
-                </>
               )}
             </div>
-          )}
 
-          {/* ── STEP 3: Contact Details ── */}
-          {step === 3 && (
-            <div>
-              <h2 className="text-2xl font-bold mb-1" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
-                Your Contact Details
-              </h2>
-              <p className="text-sm mb-8" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                We will use these details to send you your quotes and allow firms to contact you.
-              </p>
-
-              <div className="grid grid-cols-2 gap-4 mb-4">
+            {/* Animated question area */}
+            <div style={{ minHeight: "280px" }}>
+              {step < 3 && currentQId ? (
+                <QuestionSlide direction={direction} questionKey={`${step}-${subQ}-${currentQId}`}>
+                  {renderQuestion(currentQId)}
+                </QuestionSlide>
+              ) : step === 3 ? (
                 <div>
-                  <QLabel>First name</QLabel>
-                  <input
-                    type="text"
-                    value={contactDetails.firstName}
-                    onChange={(e) => setContactDetails((p) => ({ ...p, firstName: e.target.value }))}
-                    placeholder="Jane"
-                    className="w-full px-4 py-3 rounded-xl text-sm border-2 outline-none transition-all"
-                    style={{ fontFamily: "'DM Sans', sans-serif", borderColor: errors.firstName ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)" }}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = errors.firstName ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)")}
-                  />
-                  {errors.firstName && <p className="text-xs mt-1" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.firstName}</p>}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="text-sm font-semibold mb-2 block" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>First name</label>
+                      <input type="text" value={contactDetails.firstName}
+                        onChange={(e) => setContactDetails((p) => ({ ...p, firstName: e.target.value }))}
+                        placeholder="Jane"
+                        className="w-full px-4 py-3 rounded-xl text-sm border-2 outline-none transition-all"
+                        style={{ fontFamily: "'DM Sans', sans-serif", borderColor: errors.firstName ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)" }}
+                        onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                        onBlur={(e) => (e.currentTarget.style.borderColor = errors.firstName ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)")} />
+                      {errors.firstName && <p className="text-xs mt-1" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.firstName}</p>}
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold mb-2 block" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Last name</label>
+                      <input type="text" value={contactDetails.lastName}
+                        onChange={(e) => setContactDetails((p) => ({ ...p, lastName: e.target.value }))}
+                        placeholder="Smith"
+                        className="w-full px-4 py-3 rounded-xl text-sm border-2 outline-none transition-all"
+                        style={{ fontFamily: "'DM Sans', sans-serif", borderColor: errors.lastName ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)" }}
+                        onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                        onBlur={(e) => (e.currentTarget.style.borderColor = errors.lastName ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)")} />
+                      {errors.lastName && <p className="text-xs mt-1" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.lastName}</p>}
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <label className="text-sm font-semibold mb-2 block" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Email address</label>
+                    <input type="email" value={contactDetails.email}
+                      onChange={(e) => setContactDetails((p) => ({ ...p, email: e.target.value }))}
+                      placeholder="jane.smith@email.com"
+                      className="w-full px-4 py-3 rounded-xl text-sm border-2 outline-none transition-all"
+                      style={{ fontFamily: "'DM Sans', sans-serif", borderColor: errors.email ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)" }}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = errors.email ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)")} />
+                    {errors.email && <p className="text-xs mt-1" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.email}</p>}
+                  </div>
+                  <div className="mb-6">
+                    <label className="text-sm font-semibold mb-2 block" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Phone number</label>
+                    <input type="tel" value={contactDetails.phone}
+                      onChange={(e) => setContactDetails((p) => ({ ...p, phone: e.target.value }))}
+                      placeholder="07700 900000"
+                      className="w-full px-4 py-3 rounded-xl text-sm border-2 outline-none transition-all"
+                      style={{ fontFamily: "'DM Sans', sans-serif", borderColor: errors.phone ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)" }}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = errors.phone ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)")} />
+                    {errors.phone && <p className="text-xs mt-1" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.phone}</p>}
+                  </div>
+                  <div className="rounded-xl p-4 text-xs" style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.88 0.015 80)", color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                    By clicking "Show My Quotes" you agree to our Terms & Conditions and Privacy Policy. Your details will only be shared with the conveyancing firm you choose to instruct.
+                  </div>
                 </div>
-                <div>
-                  <QLabel>Last name</QLabel>
-                  <input
-                    type="text"
-                    value={contactDetails.lastName}
-                    onChange={(e) => setContactDetails((p) => ({ ...p, lastName: e.target.value }))}
-                    placeholder="Smith"
-                    className="w-full px-4 py-3 rounded-xl text-sm border-2 outline-none transition-all"
-                    style={{ fontFamily: "'DM Sans', sans-serif", borderColor: errors.lastName ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)" }}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = errors.lastName ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)")}
-                  />
-                  {errors.lastName && <p className="text-xs mt-1" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.lastName}</p>}
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <QLabel>Email address</QLabel>
-                <input
-                  type="email"
-                  value={contactDetails.email}
-                  onChange={(e) => setContactDetails((p) => ({ ...p, email: e.target.value }))}
-                  placeholder="jane.smith@email.com"
-                  className="w-full px-4 py-3 rounded-xl text-sm border-2 outline-none transition-all"
-                  style={{ fontFamily: "'DM Sans', sans-serif", borderColor: errors.email ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)" }}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = errors.email ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)")}
-                />
-                {errors.email && <p className="text-xs mt-1" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.email}</p>}
-              </div>
-
-              <div className="mb-6">
-                <QLabel>Phone number</QLabel>
-                <input
-                  type="tel"
-                  value={contactDetails.phone}
-                  onChange={(e) => setContactDetails((p) => ({ ...p, phone: e.target.value }))}
-                  placeholder="07700 900000"
-                  className="w-full px-4 py-3 rounded-xl text-sm border-2 outline-none transition-all"
-                  style={{ fontFamily: "'DM Sans', sans-serif", borderColor: errors.phone ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)" }}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = errors.phone ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)")}
-                />
-                {errors.phone && <p className="text-xs mt-1" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.phone}</p>}
-              </div>
-
-              <div className="rounded-xl p-4 text-xs" style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.88 0.015 80)", color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                By clicking "Show My Quotes" you agree to our Terms & Conditions and Privacy Policy. Your details will be shared with the conveyancing firms you choose to instruct.
-              </div>
+              ) : null}
             </div>
-          )}
+          </div>
         </div>
 
         {/* Navigation */}
         <div className="flex items-center justify-between mt-6">
-          <button
-            onClick={goBack}
+          <button onClick={goBack}
             className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium transition-all"
             style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif", border: "1px solid oklch(0.88 0.015 80)", background: "white" }}
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = "oklch(0.18 0.06 250)"; e.currentTarget.style.color = "oklch(0.18 0.06 250)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)"; e.currentTarget.style.color = "oklch(0.45 0.04 250)"; }}
-          >
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)"; e.currentTarget.style.color = "oklch(0.45 0.04 250)"; }}>
             <ChevronLeft size={16} />
             Back
           </button>
 
-          <button
-            onClick={goNext}
-            className="btn-gold flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold"
-          >
-            {step === 3 ? "Show My Quotes" : "Continue"}
+          <button onClick={goNext} className="btn-gold flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold">
+            {step === 3 ? "Show My Quotes" : subQ === totalSubQs - 1 ? "Continue to Next Step" : "Next Question"}
             <ChevronRight size={16} />
           </button>
         </div>

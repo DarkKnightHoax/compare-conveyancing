@@ -531,6 +531,59 @@ function QuoteCard({
   );
 }
 
+// ─── EXCLUSIVE PRICING POPUP ─────────────────────────────────────────────────
+function ExclusivePricingPopup({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "oklch(0.12 0.05 250 / 0.75)", backdropFilter: "blur(6px)" }}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+        style={{ border: "2px solid oklch(0.72 0.12 75 / 0.4)" }}
+      >
+        {/* Gold header bar */}
+        <div className="px-8 py-5" style={{ background: "oklch(0.18 0.06 250)" }}>
+          <div className="flex items-center gap-3 mb-1">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "oklch(0.72 0.12 75)" }}>
+              <Shield size={18} style={{ color: "oklch(0.12 0.05 250)" }} />
+            </div>
+            <h3 className="text-xl font-bold" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
+              Exclusive Member Pricing
+            </h3>
+          </div>
+          <p className="text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.6)", fontFamily: "'DM Sans', sans-serif", paddingLeft: "3rem" }}>
+            Important notice regarding your quoted fees
+          </p>
+        </div>
+
+        {/* Body */}
+        <div className="px-8 py-6">
+          <p className="text-sm leading-relaxed mb-4" style={{ color: "oklch(0.25 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+            The fees displayed on this page represent <strong>exclusive rates negotiated solely for clients who instruct through Compare the Conveyancing Market</strong>. These prices are not available if you approach the law firm directly.
+          </p>
+          <p className="text-sm leading-relaxed mb-4" style={{ color: "oklch(0.25 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+            By instructing through our platform, you benefit from our panel agreements, which include preferential pricing, guaranteed service standards, and our client protection commitment. Should any firm fail to meet the agreed service level, we will assist you in resolving the matter at no additional cost.
+          </p>
+          <div className="rounded-xl p-4 mb-5" style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.88 0.015 80)" }}>
+            <p className="text-xs font-semibold mb-1" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Legal Notice</p>
+            <p className="text-xs" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif", lineHeight: "1.6" }}>
+              These quoted fees are conditional upon instruction being placed via Compare the Conveyancing Market. Direct instruction to any firm listed herein will not entitle you to the rates shown. Compare the Conveyancing Market acts as an introducer only and does not provide legal advice. All firms are independently regulated by the Solicitors Regulation Authority (SRA) or the Council for Licensed Conveyancers (CLC).
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="btn-gold w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2"
+          >
+            <CheckCircle size={16} />
+            I Understand — Show My Quotes
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── MAIN RESULTS PAGE ────────────────────────────────────────────────────────
 export default function QuoteResults() {
   const [, navigate] = useLocation();
@@ -540,6 +593,7 @@ export default function QuoteResults() {
   const [callbackFirm, setCallbackFirm] = useState<FirmQuote | null>(null);
   const [answers, setAnswers] = useState<Partial<WizardAnswers>>({});
   const [contactDetails, setContactDetails] = useState({ firstName: "", lastName: "", email: "", phone: "" });
+  const [showExclusivePopup, setShowExclusivePopup] = useState(false);
 
   useEffect(() => {
     const savedAnswers = sessionStorage.getItem("quoteAnswers");
@@ -574,6 +628,8 @@ export default function QuoteResults() {
     setAnswers(parsedAnswers);
     const calculated = calculateQuotes(parsedAnswers as WizardAnswers);
     setQuotes(calculated);
+    // Show the exclusive pricing popup after a short delay for dramatic effect
+    setTimeout(() => setShowExclusivePopup(true), 800);
   }, []);
 
   const sorted = [...quotes].sort((a, b) =>
@@ -589,6 +645,9 @@ export default function QuoteResults() {
 
   return (
     <div className="min-h-screen" style={{ background: "oklch(0.975 0.008 80)" }}>
+      {/* Exclusive Pricing Popup */}
+      {showExclusivePopup && <ExclusivePricingPopup onClose={() => setShowExclusivePopup(false)} />}
+
       {/* Header */}
       <div style={{ background: "oklch(0.18 0.06 250)", borderBottom: "1px solid oklch(0.72 0.12 75 / 0.2)" }}>
         <div className="container py-4 flex items-center justify-between">

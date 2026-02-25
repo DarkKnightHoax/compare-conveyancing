@@ -194,17 +194,21 @@ function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-8">
-          {["How It Works", "About Us", "Contact"].map((item) => (
-            <a
-              key={item}
-              href="#"
+          {([
+            { label: "How It Works", path: "/how-it-works" },
+            { label: "About Us", path: "/contact" },
+            { label: "Contact", path: "/contact" },
+          ] as { label: string; path: string }[]).map(({ label, path }) => (
+            <button
+              key={label}
+              onClick={() => navigate(path)}
               className="text-sm font-medium transition-colors"
-              style={{ color: "oklch(0.975 0.008 80 / 0.8)", fontFamily: "'DM Sans', sans-serif" }}
+              style={{ color: "oklch(0.975 0.008 80 / 0.8)", fontFamily: "'DM Sans', sans-serif", background: "none", border: "none" }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "oklch(0.72 0.12 75)")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "oklch(0.975 0.008 80 / 0.8)")}
             >
-              {item}
-            </a>
+              {label}
+            </button>
           ))}
         </div>
 
@@ -528,12 +532,12 @@ export default function Home() {
               </span>
             </div>
             <div className="flex gap-6 text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.4)", fontFamily: "'DM Sans', sans-serif" }}>
-              <a href="#" className="hover:text-white transition-colors">Terms & Conditions</a>
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-white transition-colors">Contact Us</a>
+              <button onClick={() => navigate("/terms")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>Terms & Conditions</button>
+              <button onClick={() => navigate("/privacy-policy")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>Privacy Policy</button>
+              <button onClick={() => navigate("/contact")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>Contact Us</button>
             </div>
             <div className="text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.3)", fontFamily: "'DM Sans', sans-serif" }}>
-              © 2025 Compare the Conveyancing Market
+              © {new Date().getFullYear()} Compare the Conveyancing Market
             </div>
           </div>
         </div>

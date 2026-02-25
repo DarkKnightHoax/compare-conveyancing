@@ -7,6 +7,10 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import QuoteWizard from "./pages/QuoteWizard";
 import QuoteResults from "./pages/QuoteResults";
+import HowItWorks from "./pages/HowItWorks";
+import ContactUs from "./pages/ContactUs";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/Terms";
 
 function Router() {
   return (
@@ -14,6 +18,10 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/get-quote"} component={QuoteWizard} />
       <Route path={"/results"} component={QuoteResults} />
+      <Route path={"/how-it-works"} component={HowItWorks} />
+      <Route path={"/contact"} component={ContactUs} />
+      <Route path={"/privacy-policy"} component={PrivacyPolicy} />
+      <Route path={"/terms"} component={Terms} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
