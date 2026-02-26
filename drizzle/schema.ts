@@ -178,3 +178,14 @@ export const firmNotes = mysqlTable("firm_notes", {
 
 export type FirmNote = typeof firmNotes.$inferSelect;
 export type InsertFirmNote = typeof firmNotes.$inferInsert;
+
+// ─── FIRM LENDER PANELS ───────────────────────────────────────────────────────
+// Which mortgage lenders each firm is approved to act for
+export const firmLenderPanels = mysqlTable("firm_lender_panels", {
+  id: int("id").autoincrement().primaryKey(),
+  firmId: int("firmId").notNull(),
+  lenderName: varchar("lenderName", { length: 255 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type FirmLenderPanel = typeof firmLenderPanels.$inferSelect;
+export type InsertFirmLenderPanel = typeof firmLenderPanels.$inferInsert;

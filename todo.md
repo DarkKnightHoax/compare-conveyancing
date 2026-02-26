@@ -140,3 +140,11 @@
 - [ ] Land Registry fee: multiply by number of purchasers (buyerCount)
 - [ ] Split "Help to Buy ISA or LISA?" into two separate wizard questions: (1) Are you using a Help to Buy ISA? (2) Are you using a Lifetime ISA (LISA)?
 - [ ] Moving home / additional property question: remove "Neither" option and remove the 3%/5% surcharge labels from the answer buttons
+
+## Lender Panel Filtering
+- [ ] Add firm_lender_panels table to schema (firmId, lenderName)
+- [ ] Seed Burtons Solicitors panel with 27 lenders from David J Foster & Co - London column
+- [ ] Seed other 3 firms (PCS Legal, Easy Choice, TQ Law) with full standard lender list
+- [ ] Update liveQuotes router to filter firms by chosen mortgage lender
+- [ ] Update wizard to pass mortgageLender to results query
+- [ ] Results page shows only firms that work with the chosen lender (with explanatory message)

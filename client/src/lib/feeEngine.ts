@@ -8,6 +8,7 @@ export interface WizardAnswers {
   transactionType: 'purchase' | 'sale' | 'sale_purchase' | 'remortgage';
   tenure: 'freehold' | 'leasehold';
   hasMortgage: boolean;
+  mortgageLender?: string;
   isFirstTimeBuyer: boolean;
   isNewBuild: boolean;
   isSharedOwnership: boolean;

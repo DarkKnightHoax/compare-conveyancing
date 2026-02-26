@@ -198,6 +198,7 @@ export async function updateInstructStatus(id: number, status: "submitted" | "co
 import {
   firmFeeStructures, InsertFirmFeeStructure,
   firmNotes, InsertFirmNote,
+  firmLenderPanels,
 } from "../drizzle/schema";
 
 export async function getFeeStructuresForFirm(firmId: number) {
@@ -291,6 +292,7 @@ export interface LiveQuoteInput {
   hasMortgageOnProperty?: boolean;
   newMortgageValue?: number;
   buyerCount?: number;
+  mortgageLender?: string;
 }
 
 export interface LiveQuoteResult {
@@ -413,8 +415,20 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
   if (!db) return [];
 
   // Fetch all active firms with their fee structures for the given transaction type
-  const firms = await db.select().from(lawFirms).where(eq(lawFirms.isActive, true));
+  let firms = await db.select().from(lawFirms).where(eq(lawFirms.isActive, true));
   if (firms.length === 0) return [];
+
+  // Filter firms by mortgage lender panel when a lender has been chosen
+  if (input.hasMortgage && input.mortgageLender) {
+    const panelRows = await db.select().from(firmLenderPanels);
+    const lenderNorm = input.mortgageLender.toLowerCase().trim();
+    const approvedFirmIds = new Set(
+      panelRows
+        .filter(row => row.lenderName.toLowerCase().trim() === lenderNorm)
+        .map(row => row.firmId)
+    );
+    firms = firms.filter(f => approvedFirmIds.has(f.id));
+  }
 
   const feeRows = await db.select().from(firmFeeStructures)
     .where(and(

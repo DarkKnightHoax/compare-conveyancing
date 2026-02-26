@@ -820,6 +820,7 @@ export default function QuoteResults() {
     hasMortgageOnProperty?: boolean;
     newMortgageValue?: number;
     buyerCount?: number;
+    mortgageLender?: string;
   } | null>(null);
 
   const { data: liveQuotes, isLoading: quotesLoading } = trpc.quotes.getLive.useQuery(
@@ -850,11 +851,12 @@ export default function QuoteResults() {
       completionTimeline: "Within 1 month",
     };
 
+    let parsedContact: { mortgageLender?: string } = {};
     if (savedAnswers) {
       try { parsedAnswers = JSON.parse(savedAnswers); } catch { /* use defaults */ }
     }
     if (savedContact) {
-      try { setContactDetails(JSON.parse(savedContact)); } catch { /* use defaults */ }
+      try { const cd = JSON.parse(savedContact); setContactDetails(cd); parsedContact = cd; } catch { /* use defaults */ }
     }
 
     setAnswers(parsedAnswers);
@@ -871,6 +873,7 @@ export default function QuoteResults() {
       isSecondHome: parsedAnswers.isSecondHome ?? false,
       hasMortgageOnProperty: parsedAnswers.hasMortgageOnProperty,
       buyerCount: parsedAnswers.buyerCount ?? 1,
+      mortgageLender: parsedContact.mortgageLender || undefined,
     });
     // Show the exclusive pricing popup after a short delay for dramatic effect
     setTimeout(() => setShowExclusivePopup(true), 800);
