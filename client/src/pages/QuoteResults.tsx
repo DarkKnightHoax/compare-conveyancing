@@ -819,6 +819,7 @@ export default function QuoteResults() {
     isSecondHome: boolean;
     hasMortgageOnProperty?: boolean;
     newMortgageValue?: number;
+    buyerCount?: number;
   } | null>(null);
 
   const { data: liveQuotes, isLoading: quotesLoading } = trpc.quotes.getLive.useQuery(
@@ -869,6 +870,7 @@ export default function QuoteResults() {
       isBuyToLet: parsedAnswers.isBuyToLet ?? false,
       isSecondHome: parsedAnswers.isSecondHome ?? false,
       hasMortgageOnProperty: parsedAnswers.hasMortgageOnProperty,
+      buyerCount: parsedAnswers.buyerCount ?? 1,
     });
     // Show the exclusive pricing popup after a short delay for dramatic effect
     setTimeout(() => setShowExclusivePopup(true), 800);

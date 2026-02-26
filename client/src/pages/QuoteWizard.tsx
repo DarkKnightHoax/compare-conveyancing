@@ -353,6 +353,7 @@ type QuestionId =
   | "isSharedOwnership"
   | "hasGiftedDeposit"
   | "hasHelpToBuyISA"
+  | "hasLISA"
   | "isRightToBuy"
   | "buyerCount"
   | "hasMortgageOnProperty"
@@ -423,6 +424,7 @@ export default function QuoteWizard() {
     { id: "isSharedOwnership", condition: () => isPurchase },
     { id: "hasGiftedDeposit", condition: () => isPurchase },
     { id: "hasHelpToBuyISA", condition: () => isPurchase },
+    { id: "hasLISA", condition: () => isPurchase },
     { id: "isRightToBuy", condition: () => isPurchase },
     { id: "buyerCount", condition: () => isPurchase },
     { id: "hasMortgageOnProperty", condition: () => isSale && !isPurchase },
@@ -683,21 +685,15 @@ export default function QuoteWizard() {
             </QLabel>
             <div className="flex flex-col gap-3">
               <OptionBtn
-                label="Moving home — selling my current home and buying a new one (3% SDLT surcharge)"
+                label="Moving home"
                 selected={answers.isSecondHome === true && answers.isBuyToLet !== true}
                 onClick={() => { set("isSecondHome", true); set("isBuyToLet", false); }}
                 fullWidth
               />
               <OptionBtn
-                label="Purchasing an additional property — keeping my existing home (5% SDLT surcharge)"
+                label="Purchasing an additional property"
                 selected={answers.isBuyToLet === true}
                 onClick={() => { set("isBuyToLet", true); set("isSecondHome", false); }}
-                fullWidth
-              />
-              <OptionBtn
-                label="Neither — this will be my only property"
-                selected={answers.isSecondHome === false && answers.isBuyToLet !== true}
-                onClick={() => { set("isSecondHome", false); set("isBuyToLet", false); }}
                 fullWidth
               />
             </div>
@@ -759,11 +755,26 @@ export default function QuoteWizard() {
               tooltip="If you have a Help to Buy ISA, your conveyancer will need to claim the government bonus on your behalf at completion."
               subtitle="Your conveyancer will claim the government bonus at completion."
             >
-              Are you using a Help to Buy ISA or a Lifetime ISA (LISA)?
+              Are you using a Help to Buy ISA?
             </QLabel>
             <div className="flex flex-col gap-3">
-              <OptionBtn label="Yes — I have a Help to Buy ISA or Lifetime LISA" selected={answers.hasHelpToBuyISA === true} onClick={() => set("hasHelpToBuyISA", true)} fullWidth />
+              <OptionBtn label="Yes" selected={answers.hasHelpToBuyISA === true} onClick={() => set("hasHelpToBuyISA", true)} fullWidth />
               <OptionBtn label="No" selected={answers.hasHelpToBuyISA === false} onClick={() => set("hasHelpToBuyISA", false)} fullWidth />
+            </div>
+          </div>
+        );
+      case "hasLISA":
+        return (
+          <div>
+            <QLabel
+              tooltip="A Lifetime ISA (LISA) can be used towards your first home purchase. Your conveyancer will need to arrange the withdrawal and claim the government bonus at completion."
+              subtitle="Your conveyancer will arrange the LISA withdrawal at completion."
+            >
+              Are you using a Lifetime ISA (LISA)?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes" selected={(answers as any).hasLISA === true} onClick={() => setAnswers(prev => ({ ...prev, hasLISA: true }))} fullWidth />
+              <OptionBtn label="No" selected={(answers as any).hasLISA !== true} onClick={() => setAnswers(prev => ({ ...prev, hasLISA: false }))} fullWidth />
             </div>
           </div>
         );

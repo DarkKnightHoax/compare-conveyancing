@@ -13,6 +13,7 @@ export interface WizardAnswers {
   isSharedOwnership: boolean;
   hasGiftedDeposit: boolean;
   hasHelpToBuyISA: boolean;
+  hasLISA?: boolean;
   isRightToBuy: boolean;
   isBuyToLet: boolean;
   isSecondHome: boolean;

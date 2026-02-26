@@ -134,3 +134,9 @@
 - [x] Show firm logos on results page quote cards
 - [x] Add "Email me the quote" as third CTA option on results page (alongside Instruct Directly and Request Callback)
 - [x] Update business registration: ComparetheConveyancingMarket Ltd, 71-75 Shelton Street, Covent Garden, London WC2H 9JQ across all footers, Terms, Privacy Policy, and Contact pages
+
+## Fee & Wizard Fixes Batch 3 (Feb 2026)
+- [ ] AML check fee: multiply by number of purchasers (buyerCount)
+- [ ] Land Registry fee: multiply by number of purchasers (buyerCount)
+- [ ] Split "Help to Buy ISA or LISA?" into two separate wizard questions: (1) Are you using a Help to Buy ISA? (2) Are you using a Lifetime ISA (LISA)?
+- [ ] Moving home / additional property question: remove "Neither" option and remove the 3%/5% surcharge labels from the answer buttons

@@ -378,6 +378,7 @@ export const appRouter = router({
         isSecondHome: z.boolean().default(false),
         hasMortgageOnProperty: z.boolean().optional(),
         newMortgageValue: z.number().optional(),
+        buyerCount: z.number().min(1).max(15).optional(),
       }))
       .query(({ input }) => calculateLiveQuotes(input)),
 

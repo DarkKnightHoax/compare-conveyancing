@@ -290,6 +290,7 @@ export interface LiveQuoteInput {
   isSecondHome: boolean;
   hasMortgageOnProperty?: boolean;
   newMortgageValue?: number;
+  buyerCount?: number;
 }
 
 export interface LiveQuoteResult {
@@ -466,8 +467,17 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
     }
 
     // ── DISBURSEMENTS ──
-    if (Number(band.antiMoneyLaunderingFee) > 0)
-      disbursements.push({ name: 'Anti-Money Laundering (AML) Check', price: Number(band.antiMoneyLaunderingFee), includesVat: true });
+    const numBuyers = Math.max(1, input.buyerCount ?? 1);
+    if (Number(band.antiMoneyLaunderingFee) > 0) {
+      const amlPerPerson = Number(band.antiMoneyLaunderingFee);
+      disbursements.push({
+        name: numBuyers > 1
+          ? `Anti-Money Laundering (AML) Check × ${numBuyers} purchasers`
+          : 'Anti-Money Laundering (AML) Check',
+        price: amlPerPerson * numBuyers,
+        includesVat: true,
+      });
+    }
     if (Number(band.searchFee) > 0)
       disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: Number(band.searchFee), includesVat: true });
     if (Number(band.officialCopiesFee) > 0)
@@ -490,9 +500,10 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
     const sdlt = (transactionType === 'purchase' || transactionType === 'sale_purchase')
       ? calcSDLT(value, input.isFirstTimeBuyer, input.isSecondHome, input.isBuyToLet)
       : 0;
-    const landRegistryFee = (transactionType === 'purchase' || transactionType === 'sale_purchase')
+    const lrBase = (transactionType === 'purchase' || transactionType === 'sale_purchase')
       ? calcLandRegistry(value)
       : 0;
+    const landRegistryFee = lrBase * numBuyers;
 
     const grandTotal = totalIncVat + disbursementTotal + sdlt + landRegistryFee;
 
