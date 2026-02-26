@@ -29,6 +29,13 @@
       "when": 1772030134653,
       "tag": "0003_absent_typhoid_mary",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1772116464971,
+      "tag": "0004_curious_power_pack",
+      "breakpoints": true
     }
   ]
 }

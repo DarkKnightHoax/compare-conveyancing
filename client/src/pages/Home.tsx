@@ -242,7 +242,6 @@ export default function Home() {
     { icon: HomeIcon, label: "Property Purchase", desc: "Buying a home", path: "/get-quote?type=purchase" },
     { icon: ArrowRight, label: "Property Sale", desc: "Selling a home", path: "/get-quote?type=sale" },
     { icon: RefreshCw, label: "Sale & Purchase", desc: "Moving home", path: "/get-quote?type=sale_purchase" },
-    { icon: Scale, label: "Remortgage", desc: "Re-financing", path: "/get-quote?type=remortgage" },
   ];
 
   return (
@@ -571,13 +570,21 @@ export default function Home() {
       <footer className="py-10" style={{ background: "oklch(0.12 0.05 250)", borderTop: "1px solid oklch(0.72 0.12 75 / 0.2)" }}>
         <div className="container">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "oklch(0.72 0.12 75)" }}>
-                <Scale size={15} style={{ color: "oklch(0.12 0.05 250)" }} />
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "oklch(0.72 0.12 75)" }}>
+                  <Scale size={15} style={{ color: "oklch(0.12 0.05 250)" }} />
+                </div>
+                <span className="text-sm font-semibold" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
+                  Compare the Conveyancing Market
+                </span>
               </div>
-              <span className="text-sm font-semibold" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
-                Compare the Conveyancing Market
-              </span>
+              <div className="text-xs leading-relaxed" style={{ color: "oklch(0.975 0.008 80 / 0.45)", fontFamily: "'DM Sans', sans-serif" }}>
+                <div className="font-semibold mb-0.5" style={{ color: "oklch(0.975 0.008 80 / 0.65)" }}>ComparetheConveyancingMarket Ltd</div>
+                <div>71-75 Shelton Street, Covent Garden</div>
+                <div>London, United Kingdom, WC2H 9JQ</div>
+                <div>Registered in England &amp; Wales</div>
+              </div>
             </div>
             <div className="flex gap-6 text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.4)", fontFamily: "'DM Sans', sans-serif" }}>
               <button onClick={() => navigate("/terms")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>Terms & Conditions</button>
@@ -587,7 +594,7 @@ export default function Home() {
               <button onClick={() => navigate("/blog")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>Blog</button>
             </div>
             <div className="text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.3)", fontFamily: "'DM Sans', sans-serif" }}>
-              © {new Date().getFullYear()} Compare the Conveyancing Market
+              © {new Date().getFullYear()} ComparetheConveyancingMarket Ltd. All rights reserved.
             </div>
           </div>
         </div>

@@ -14,7 +14,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import {
   Star, Shield, Award, ChevronDown, ChevronUp, Phone, ArrowLeft,
-  Scale, CheckCircle, X, CreditCard, Clock, MapPin, ArrowUpDown
+  Scale, CheckCircle, X, CreditCard, Clock, MapPin, ArrowUpDown, Mail
 } from "lucide-react";
 import { formatCurrency, type WizardAnswers } from "../lib/feeEngine";
 
@@ -22,6 +22,7 @@ export interface LiveQuoteResult {
   firmId: number;
   firmName: string;
   firmLocation: string;
+  logoUrl: string | null;
   rating: number;
   reviewCount: number;
   sraNumber: string;
@@ -375,17 +376,131 @@ function CallbackModal({ firm, onClose, contactDetails }: {
   );
 }
 
+// ─── EMAIL QUOTE MODAL ──────────────────────────────────────────────────────
+function EmailQuoteModal({ firm, onClose, contactDetails, answers }: {
+  firm: LiveQuoteResult;
+  onClose: () => void;
+  contactDetails: { firstName: string; lastName: string; email: string; phone: string };
+  answers: Partial<WizardAnswers>;
+}) {
+  const [submitted, setSubmitted] = useState(false);
+  const [email, setEmail] = useState(contactDetails.email || "");
+  const emailQuote = trpc.quotes.emailQuote.useMutation();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    emailQuote.mutate({
+      recipientEmail: email,
+      firmName: firm.firmName,
+      firmLocation: firm.firmLocation,
+      legalFee: firm.legalFee,
+      totalIncVat: firm.totalIncVat,
+      sdlt: firm.sdlt,
+      landRegistryFee: firm.landRegistryFee,
+      grandTotal: firm.grandTotal,
+      propertyValue: (answers.propertyValue as number) ?? 0,
+      transactionType: (answers.transactionType as string) ?? 'purchase',
+    });
+    setSubmitted(true);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "oklch(0.12 0.05 250 / 0.7)", backdropFilter: "blur(4px)" }}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md" style={{ border: "1px solid oklch(0.88 0.015 80)" }}>
+        <div className="flex items-center justify-between p-6" style={{ borderBottom: "1px solid oklch(0.88 0.015 80)" }}>
+          <div>
+            <h3 className="text-xl font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+              Email Me This Quote
+            </h3>
+            <p className="text-xs mt-0.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              Receive a full quote summary from {firm.firmName}
+            </p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "oklch(0.94 0.012 80)" }}>
+            <X size={15} style={{ color: "oklch(0.45 0.04 250)" }} />
+          </button>
+        </div>
+
+        {submitted ? (
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "oklch(0.18 0.06 250)" }}>
+              <Mail size={28} style={{ color: "oklch(0.72 0.12 75)" }} />
+            </div>
+            <h4 className="text-xl font-bold mb-2" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+              Quote Sent!
+            </h4>
+            <p className="text-sm mb-6" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              Your quote from {firm.firmName} has been sent to <strong>{email}</strong>. Check your inbox — it should arrive within a few minutes.
+            </p>
+            <button onClick={onClose} className="btn-gold px-6 py-3 rounded-xl text-sm font-bold">Close</button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            {/* Quote summary */}
+            <div className="rounded-xl p-4 space-y-1" style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.88 0.015 80)" }}>
+              <div className="flex justify-between text-sm">
+                <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Legal fees (inc. VAT)</span>
+                <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(firm.totalIncVat)}</span>
+              </div>
+              {firm.sdlt > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Stamp Duty (SDLT)</span>
+                  <span style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(firm.sdlt)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-sm">
+                <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Land Registry</span>
+                <span style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(firm.landRegistryFee)}</span>
+              </div>
+              <div className="flex justify-between text-sm font-bold pt-1" style={{ borderTop: "1px solid oklch(0.88 0.015 80)" }}>
+                <span style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Grand Total</span>
+                <span style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(firm.grandTotal)}</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Your email address</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="jane.smith@email.com"
+                className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none"
+                style={{ fontFamily: "'DM Sans', sans-serif", borderColor: "oklch(0.88 0.015 80)" }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+              />
+            </div>
+
+            <button type="submit" disabled={emailQuote.isPending} className="btn-gold w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
+              <Mail size={16} />
+              {emailQuote.isPending ? 'Sending...' : 'Send Me This Quote'}
+            </button>
+
+            <p className="text-xs text-center" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              We will only use your email to send this quote. No spam, ever.
+            </p>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── QUOTE CARD ───────────────────────────────────────────────────────────────
 function QuoteCard({
   quote,
   rank,
   onInstruct,
   onCallback,
+  onEmail,
 }: {
   quote: LiveQuoteResult;
   rank: number;
   onInstruct: () => void;
   onCallback: () => void;
+  onEmail: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -408,6 +523,17 @@ function QuoteCard({
         <div className="flex items-start justify-between gap-4 mb-4">
           {/* Firm info */}
           <div className="flex-1">
+            {/* Logo */}
+            {quote.logoUrl && (
+              <div className="mb-2">
+                <img
+                  src={quote.logoUrl}
+                  alt={`${quote.firmName} logo`}
+                  className="h-10 w-auto object-contain"
+                  style={{ maxWidth: '140px' }}
+                />
+              </div>
+            )}
             <div className="flex items-center gap-2 mb-1">
               <h3 className="text-lg font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
                 {quote.firmName}
@@ -473,6 +599,19 @@ function QuoteCard({
           >
             <Phone size={15} />
             Request Callback
+          </button>
+        </div>
+        {/* Email me the quote */}
+        <div className="mb-4">
+          <button
+            onClick={onEmail}
+            className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all"
+            style={{ border: "1.5px solid oklch(0.72 0.12 75 / 0.5)", color: "oklch(0.58 0.14 75)", background: "oklch(0.72 0.12 75 / 0.06)", fontFamily: "'DM Sans', sans-serif" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "oklch(0.72 0.12 75 / 0.12)"; e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "oklch(0.72 0.12 75 / 0.06)"; e.currentTarget.style.borderColor = "oklch(0.72 0.12 75 / 0.5)"; }}
+          >
+            <Mail size={14} />
+            Email Me This Quote
           </button>
         </div>
 
@@ -663,6 +802,7 @@ export default function QuoteResults() {
   const [sortBy, setSortBy] = useState<"price" | "rating">("price");
   const [instructFirm, setInstructFirm] = useState<LiveQuoteResult | null>(null);
   const [callbackFirm, setCallbackFirm] = useState<LiveQuoteResult | null>(null);
+  const [emailFirm, setEmailFirm] = useState<LiveQuoteResult | null>(null);
   const [answers, setAnswers] = useState<Partial<WizardAnswers>>({});
   const [contactDetails, setContactDetails] = useState({ firstName: "", lastName: "", email: "", phone: "" });
   const [showExclusivePopup, setShowExclusivePopup] = useState(false);
@@ -869,6 +1009,7 @@ export default function QuoteResults() {
               rank={i + 1}
               onInstruct={() => setInstructFirm(quote)}
               onCallback={() => setCallbackFirm(quote)}
+              onEmail={() => setEmailFirm(quote)}
             />
           ))}
         </div>
@@ -897,6 +1038,14 @@ export default function QuoteResults() {
           firm={callbackFirm}
           onClose={() => setCallbackFirm(null)}
           contactDetails={contactDetails}
+        />
+      )}
+      {emailFirm && (
+        <EmailQuoteModal
+          firm={emailFirm}
+          onClose={() => setEmailFirm(null)}
+          contactDetails={contactDetails}
+          answers={answers}
         />
       )}
     </div>

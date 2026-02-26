@@ -188,7 +188,7 @@ export default function HowItWorks() {
 
       {/* Footer */}
       <div className="py-6 text-center text-xs" style={{ borderTop: "1px solid oklch(0.88 0.015 80)", color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-        © {new Date().getFullYear()} Compare the Conveyancing Market. All rights reserved.
+        © {new Date().getFullYear()} ComparetheConveyancingMarket Ltd. All rights reserved.
         <span className="mx-2">·</span>
         <button onClick={() => navigate("/privacy-policy")} className="hover:underline">Privacy Policy</button>
         <span className="mx-2">·</span>

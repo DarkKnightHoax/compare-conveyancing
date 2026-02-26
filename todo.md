@@ -112,3 +112,25 @@
 - [x] Replace SDLT calculation engine with accurate April 2025 rates (standard/FTB/additional property) matching stampdutycalculator.org.uk — built into results page automatically
 - [x] SDLT engine integrated into server db.ts and client feeEngine.ts — correct stamp duty shown automatically on every quote card
 - [x] Correct SDLT rate bands: standard (0/2/5/10/12%), FTB relief (£0-£300k=0%, £300k-£500k=5%, over £500k=full rates), additional property (+5% surcharge on all bands)
+
+## Website Corrections Batch (Feb 2026)
+- [x] Remove Remortgage option from homepage and from Step 1 transaction type question
+- [x] Mortgage question: change to simple Yes / No (no sub-options)
+- [x] Second home question: rephrase to "Are you moving home? or are you purchasing an additional property?" — moving home = 3% surcharge, additional property = 5% surcharge
+- [x] Help to Buy ISA question: add "or a Lifetime LISA?" to the question text
+- [x] Buyer count question: change to dropdown of numbers 1–15
+- [x] Upload firm logos to S3 and store URLs in DB; show logos on results page quote cards
+- [x] Add "Email me the quote" as third CTA on results page (client receives quote by email)
+- [x] Update business registration: ComparetheConveyancingMarket Ltd, 71-75 Shelton Street, Covent Garden, London WC2H 9JQ — apply to footer and all relevant pages
+
+## Website Corrections Batch 2 (Feb 2026)
+- [x] Remove Remortgage from homepage quote type selector
+- [x] Remove Remortgage from Step 1 transaction type question in wizard
+- [x] Change "Are you using a mortgage to fund the purchase?" to Yes/No buttons only
+- [x] Change "Is this a second home or additional property?" to "Are you moving home? / Are you purchasing an additional property?" with correct SDLT rates (moving home 3%, additional property 5%)
+- [x] Add "or a Lifetime LISA?" to the Help to Buy ISA question
+- [x] Change "How many people are purchasing?" to a dropdown 1-15
+- [x] Upload firm logos to S3 CDN and store in database (PCS Legal, TQ Law, Easy Choice, Burtons)
+- [x] Show firm logos on results page quote cards
+- [x] Add "Email me the quote" as third CTA option on results page (alongside Instruct Directly and Request Callback)
+- [x] Update business registration: ComparetheConveyancingMarket Ltd, 71-75 Shelton Street, Covent Garden, London WC2H 9JQ across all footers, Terms, Privacy Policy, and Contact pages

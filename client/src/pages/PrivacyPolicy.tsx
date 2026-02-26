@@ -94,7 +94,7 @@ You can set your browser to refuse all or some browser cookies. However, if you 
       content: `If you have any questions about this privacy policy or our privacy practices, please contact our Data Protection Officer at:
 
 Email: privacy@comparetheconveyancingmarket.co.uk
-Post: Compare the Conveyancing Market Ltd, England & Wales`,
+Post: ComparetheConveyancingMarket Ltd, 71-75 Shelton Street, Covent Garden, London, United Kingdom, WC2H 9JQ`,
     },
   ];
 
@@ -154,7 +154,7 @@ Post: Compare the Conveyancing Market Ltd, England & Wales`,
 
       {/* Footer */}
       <div className="py-6 text-center text-xs" style={{ borderTop: "1px solid oklch(0.88 0.015 80)", color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-        © {new Date().getFullYear()} Compare the Conveyancing Market. All rights reserved.
+        © {new Date().getFullYear()} ComparetheConveyancingMarket Ltd. All rights reserved.
         <span className="mx-2">·</span>
         <button onClick={() => navigate("/terms")} className="hover:underline">Terms & Conditions</button>
         <span className="mx-2">·</span>

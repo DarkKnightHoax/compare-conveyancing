@@ -30,6 +30,7 @@ export const lawFirms = mysqlTable("law_firms", {
   speciality: varchar("speciality", { length: 255 }),
   yearsEstablished: int("yearsEstablished").default(0),
   accreditations: text("accreditations"), // JSON array stored as text
+  logoUrl: varchar("logoUrl", { length: 1000 }),
   isActive: boolean("isActive").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -154,6 +155,7 @@ export const firmFeeStructures = mysqlTable("firm_fee_structures", {
   // Margin / commission earned by the platform (£)
   platformCommission: decimal("platformCommission", { precision: 10, scale: 2 }).default("0"),
   // Whether this band is currently active
+  logoUrl: varchar("logoUrl", { length: 1000 }),
   isActive: boolean("isActive").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

@@ -419,7 +419,6 @@ export default function QuoteWizard() {
     { id: "mortgageLender", condition: () => isPurchase && answers.hasMortgage === true },
     { id: "isFirstTimeBuyer", condition: () => isPurchase },
     { id: "isSecondHome", condition: () => isPurchase && answers.isFirstTimeBuyer === false },
-    { id: "isBuyToLet", condition: () => isPurchase && answers.isFirstTimeBuyer === false },
     { id: "isNewBuild", condition: () => isPurchase },
     { id: "isSharedOwnership", condition: () => isPurchase },
     { id: "hasGiftedDeposit", condition: () => isPurchase },
@@ -541,7 +540,7 @@ export default function QuoteWizard() {
               What type of transaction is this?
             </QLabel>
             <div className="grid grid-cols-2 gap-3">
-              {(["purchase", "sale", "sale_purchase", "remortgage"] as const).map((t) => (
+              {(["purchase", "sale", "sale_purchase"] as const).map((t) => (
                 <OptionBtn key={t} label={transactionLabels[t]} selected={answers.transactionType === t}
                   onClick={() => set("transactionType", t)} fullWidth />
               ))}
@@ -629,8 +628,8 @@ export default function QuoteWizard() {
               Are you using a mortgage to fund the purchase?
             </QLabel>
             <div className="flex flex-col gap-3">
-              <OptionBtn label="Yes — I have a mortgage offer" selected={answers.hasMortgage === true} onClick={() => set("hasMortgage", true)} fullWidth />
-              <OptionBtn label="No — I am a cash buyer" selected={answers.hasMortgage === false} onClick={() => set("hasMortgage", false)} fullWidth />
+              <OptionBtn label="Yes" selected={answers.hasMortgage === true} onClick={() => set("hasMortgage", true)} fullWidth />
+              <OptionBtn label="No" selected={answers.hasMortgage === false} onClick={() => set("hasMortgage", false)} fullWidth />
             </div>
           </div>
         );
@@ -677,33 +676,33 @@ export default function QuoteWizard() {
         return (
           <div>
             <QLabel
-              tooltip="A 3% SDLT surcharge applies if you already own a property and are buying an additional one."
-              subtitle="A 3% Stamp Duty surcharge may apply."
+              tooltip="Moving home: you are selling your current home and buying a new one — a 3% SDLT surcharge applies temporarily but may be reclaimed once your old home is sold. Additional property: you are keeping your existing home and buying another — a 5% SDLT surcharge applies."
+              subtitle="Your answer determines the Stamp Duty surcharge that applies."
             >
-              Is this a second home or additional property?
+              Are you moving home, or are you purchasing an additional property?
             </QLabel>
             <div className="flex flex-col gap-3">
-              <OptionBtn label="Yes — I already own another property" selected={answers.isSecondHome === true} onClick={() => set("isSecondHome", true)} fullWidth />
-              <OptionBtn label="No — this will be my only property" selected={answers.isSecondHome === false} onClick={() => set("isSecondHome", false)} fullWidth />
+              <OptionBtn
+                label="Moving home — selling my current home and buying a new one (3% SDLT surcharge)"
+                selected={answers.isSecondHome === true && answers.isBuyToLet !== true}
+                onClick={() => { set("isSecondHome", true); set("isBuyToLet", false); }}
+                fullWidth
+              />
+              <OptionBtn
+                label="Purchasing an additional property — keeping my existing home (5% SDLT surcharge)"
+                selected={answers.isBuyToLet === true}
+                onClick={() => { set("isBuyToLet", true); set("isSecondHome", false); }}
+                fullWidth
+              />
+              <OptionBtn
+                label="Neither — this will be my only property"
+                selected={answers.isSecondHome === false && answers.isBuyToLet !== true}
+                onClick={() => { set("isSecondHome", false); set("isBuyToLet", false); }}
+                fullWidth
+              />
             </div>
           </div>
-        );
-
-      case "isBuyToLet":
-        return (
-          <div>
-            <QLabel
-              tooltip="Buy-to-let properties are subject to the 3% SDLT surcharge and require specialist conveyancing."
-              subtitle="This affects your Stamp Duty and legal fees."
-            >
-              Is this a buy-to-let investment property?
-            </QLabel>
-            <div className="flex flex-col gap-3">
-              <OptionBtn label="Yes — I am purchasing to rent out" selected={answers.isBuyToLet === true} onClick={() => set("isBuyToLet", true)} fullWidth />
-              <OptionBtn label="No — this is for my own occupation" selected={answers.isBuyToLet === false} onClick={() => set("isBuyToLet", false)} fullWidth />
-            </div>
-          </div>
-        );
+        );;
 
       case "isNewBuild":
         return (
@@ -760,10 +759,10 @@ export default function QuoteWizard() {
               tooltip="If you have a Help to Buy ISA, your conveyancer will need to claim the government bonus on your behalf at completion."
               subtitle="Your conveyancer will claim the government bonus at completion."
             >
-              Are you using a Help to Buy ISA?
+              Are you using a Help to Buy ISA or a Lifetime ISA (LISA)?
             </QLabel>
             <div className="flex flex-col gap-3">
-              <OptionBtn label="Yes — I have a Help to Buy ISA" selected={answers.hasHelpToBuyISA === true} onClick={() => set("hasHelpToBuyISA", true)} fullWidth />
+              <OptionBtn label="Yes — I have a Help to Buy ISA or Lifetime LISA" selected={answers.hasHelpToBuyISA === true} onClick={() => set("hasHelpToBuyISA", true)} fullWidth />
               <OptionBtn label="No" selected={answers.hasHelpToBuyISA === false} onClick={() => set("hasHelpToBuyISA", false)} fullWidth />
             </div>
           </div>
@@ -792,13 +791,29 @@ export default function QuoteWizard() {
               How many people are purchasing the property?
             </QLabel>
             <div className="flex flex-col gap-3">
-              {[
-                { n: 1, label: "Just me — sole purchaser" },
-                { n: 2, label: "Two of us — joint purchase" },
-                { n: 3, label: "Three or more buyers" },
-              ].map(({ n, label }) => (
-                <OptionBtn key={n} label={label} selected={answers.buyerCount === n} onClick={() => set("buyerCount", n)} fullWidth />
-              ))}
+              <select
+                value={answers.buyerCount ?? 1}
+                onChange={(e) => set("buyerCount", Number(e.target.value))}
+                className="w-full px-4 py-3.5 rounded-xl text-sm font-medium"
+                style={{
+                  borderColor: "oklch(0.88 0.015 80)",
+                  borderWidth: "2px",
+                  borderStyle: "solid",
+                  background: "white",
+                  color: "oklch(0.18 0.06 250)",
+                  fontFamily: "'DM Sans', sans-serif",
+                  outline: "none",
+                  appearance: "auto",
+                }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+              >
+                {Array.from({ length: 15 }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>
+                    {n === 1 ? "1 person — sole purchaser" : `${n} people`}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         );

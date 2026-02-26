@@ -1,0 +1,8 @@
+{
+  "query": "\nUPDATE law_firms SET logo_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/xStcFiCQOmRmxEuk.png' WHERE name = 'PCS Legal';\nUPDATE law_firms SET logo_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/qtfYxkgKnIEcvAme.png' WHERE name = 'TQ Law';\nUPDATE law_firms SET logo_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/cgvsizqNeCEguvVu.png' WHERE name = 'Easy Choice Conveyancing';\nUPDATE law_firms SET logo_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/mjMWPJYpvtTQVtLV.png' WHERE name = 'Burtons Solicitors';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute \nUPDATE law_firms SET logo_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/xStcFiCQOmRmxEuk.png' WHERE name = 'PCS Legal';\nUPDATE law_firms SET logo_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/qtfYxkgKnIEcvAme.png' WHERE name = 'TQ Law';\nUPDATE law_firms SET logo_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/cgvsizqNeCEguvVu.png' WHERE name = 'Easy Choice Conveyancing';\nUPDATE law_firms SET logo_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/mjMWPJYpvtTQVtLV.png' WHERE name = 'Burtons Solicitors';\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 2: Unknown column 'logo_url' in 'field list'"
+  ]
+}

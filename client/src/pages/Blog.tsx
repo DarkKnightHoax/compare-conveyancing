@@ -234,7 +234,7 @@ export default function Blog() {
               ))}
             </div>
             <div className="text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.3)", fontFamily: "'DM Sans', sans-serif" }}>
-              © {new Date().getFullYear()} Compare the Conveyancing Market
+              © {new Date().getFullYear()} ComparetheConveyancingMarket Ltd. All rights reserved.
             </div>
           </div>
         </div>

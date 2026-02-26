@@ -296,6 +296,7 @@ export interface LiveQuoteResult {
   firmId: number;
   firmName: string;
   firmLocation: string;
+  logoUrl: string | null;
   rating: number;
   reviewCount: number;
   sraNumber: string;
@@ -502,6 +503,7 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
       firmId: firm.id,
       firmName: firm.name,
       firmLocation: firm.location ?? '',
+      logoUrl: firm.logoUrl ?? null,
       rating: Number(firm.rating),
       reviewCount: firm.reviewCount ?? 0,
       sraNumber: firm.sraNumber ?? '',

@@ -1,0 +1,30 @@
+{
+  "query": "\nUPDATE law_firms SET logoUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/xStcFiCQOmRmxEuk.png' WHERE name = 'PCS Legal';\nUPDATE law_firms SET logoUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/qtfYxkgKnIEcvAme.png' WHERE name = 'TQ Law';\nUPDATE law_firms SET logoUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/cgvsizqNeCEguvVu.png' WHERE name = 'Easy Choice Conveyancing';\nUPDATE law_firms SET logoUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/mjMWPJYpvtTQVtLV.png' WHERE name = 'Burtons Solicitors';\nSELECT id, name, logoUrl FROM law_firms;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute \nUPDATE law_firms SET logoUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/xStcFiCQOmRmxEuk.png' WHERE name = 'PCS Legal';\nUPDATE law_firms SET logoUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/qtfYxkgKnIEcvAme.png' WHERE name = 'TQ Law';\nUPDATE law_firms SET logoUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/cgvsizqNeCEguvVu.png' WHERE name = 'Easy Choice Conveyancing';\nUPDATE law_firms SET logoUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/109506846/mjMWPJYpvtTQVtLV.png' WHERE name = 'Burtons Solicitors';\nSELECT id, name, logoUrl FROM law_firms;\n",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "logoUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/109506846/cgvsizqNeCEguvVu.png"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "logoUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/109506846/xStcFiCQOmRmxEuk.png"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "logoUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/109506846/qtfYxkgKnIEcvAme.png"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "logoUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/109506846/mjMWPJYpvtTQVtLV.png"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tlogoUrl\n30001\tEasy Choice Conveyancing\thttps://files.manuscdn.com/user_upload_by_module/session_file/109506846/cgvsizqNeCEguvVu.png\n30002\tPCS Legal\thttps://files.manuscdn.com/user_upload_by_module/session_file/109506846/xStcFiCQOmRmxEuk.png\n30006\tTQ Law\thttps://files.manuscdn.com/user_upload_by_module/session_file/109506846/qtfYxkgKnIEcvAme.png\n60001\tBurtons Solicitors\thttps://files.manuscdn.com/user_upload_by_module/session_file/109506846/mjMWPJYpvtTQVtLV.png\n",
+  "stderr": "",
+  "execution_time_ms": 96
+}

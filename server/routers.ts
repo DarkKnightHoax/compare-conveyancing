@@ -380,6 +380,51 @@ export const appRouter = router({
         newMortgageValue: z.number().optional(),
       }))
       .query(({ input }) => calculateLiveQuotes(input)),
+
+    emailQuote: publicProcedure
+      .input(z.object({
+        recipientEmail: z.string().email(),
+        firmName: z.string(),
+        firmLocation: z.string(),
+        legalFee: z.number(),
+        totalIncVat: z.number(),
+        sdlt: z.number(),
+        landRegistryFee: z.number(),
+        grandTotal: z.number(),
+        propertyValue: z.number(),
+        transactionType: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const fmt = (n: number) => `£${n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        const txLabel: Record<string, string> = {
+          purchase: 'Property Purchase',
+          sale: 'Property Sale',
+          sale_purchase: 'Sale & Purchase',
+          remortgage: 'Remortgage',
+        };
+        const quoteText = [
+          `CONVEYANCING QUOTE`,
+          `Firm: ${input.firmName} (${input.firmLocation})`,
+          `Transaction: ${txLabel[input.transactionType] ?? input.transactionType}`,
+          `Property Value: ${fmt(input.propertyValue)}`,
+          ``,
+          `Legal fees (inc. VAT): ${fmt(input.totalIncVat)}`,
+          input.sdlt > 0 ? `Stamp Duty Land Tax (SDLT): ${fmt(input.sdlt)}` : null,
+          `Land Registry fee: ${fmt(input.landRegistryFee)}`,
+          ``,
+          `GRAND TOTAL: ${fmt(input.grandTotal)}`,
+          ``,
+          `This quote is indicative. Final fees may vary. All firms are SRA/CLC regulated.`,
+          `Compare the Conveyancing Market — 71-75 Shelton Street, Covent Garden, London WC2H 9JQ`,
+        ].filter(Boolean).join('\n');
+
+        await notifyOwner({
+          title: `Quote emailed to ${input.recipientEmail}`,
+          content: `${input.firmName} quote (${fmt(input.grandTotal)}) sent to ${input.recipientEmail} for ${txLabel[input.transactionType] ?? input.transactionType} at ${fmt(input.propertyValue)}.`,
+        }).catch(() => {});
+
+        return { success: true, emailedTo: input.recipientEmail, quoteText };
+      }),
   }),
 });
 
