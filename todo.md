@@ -148,3 +148,11 @@
 - [ ] Update liveQuotes router to filter firms by chosen mortgage lender
 - [ ] Update wizard to pass mortgageLender to results query
 - [ ] Results page shows only firms that work with the chosen lender (with explanatory message)
+
+## Fee & Wizard Corrections Batch 4
+- [x] Add "Gifted Deposit" question (yes/no) and "How many gifts?" dropdown (0-10); multiply gifted deposit fee by count in results
+- [x] Multiply bankruptcy searches by number of purchasers (same as AML)
+- [x] Format all fee numbers to 2 decimal places (e.g. £3.00, £349.00, £3,773.00)
+- [x] Initial payment on account = search packs + AML fees + £100 file opening fee (auto-calculated total shown)
+- [x] Grand total: split into "Legal Fees Total" and "Stamp Duty Land Tax" as separate line items in the black box
+- [x] Remove SRA sign/badge from results page

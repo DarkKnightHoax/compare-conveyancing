@@ -287,6 +287,7 @@ export interface LiveQuoteInput {
   isNewBuild: boolean;
   isSharedOwnership: boolean;
   hasGiftedDeposit: boolean;
+  giftCount?: number;
   isBuyToLet: boolean;
   isSecondHome: boolean;
   hasMortgageOnProperty?: boolean;
@@ -464,8 +465,11 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
         supplements.push({ name: 'New Build Supplement', price: Number(band.newBuildSupplement) });
       if (input.isSharedOwnership && Number(band.sharedOwnershipSupplement) > 0)
         supplements.push({ name: 'Shared Ownership', price: Number(band.sharedOwnershipSupplement) });
-      if (input.hasGiftedDeposit && Number(band.giftedDepositSupplement) > 0)
-        supplements.push({ name: 'Gifted Deposit', price: Number(band.giftedDepositSupplement) });
+      if (input.hasGiftedDeposit && Number(band.giftedDepositSupplement) > 0) {
+        const giftCount = Math.max(1, input.giftCount ?? 1);
+        const giftPrice = Number(band.giftedDepositSupplement) * giftCount;
+        supplements.push({ name: giftCount > 1 ? `Gifted Deposit (x${giftCount})` : 'Gifted Deposit', price: giftPrice });
+      }
       if (input.hasMortgage)
         supplements.push({ name: 'Mortgage / Re-mortgage', price: 234 });
       if (input.isBuyToLet)
@@ -502,7 +506,11 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
     if (transactionType === 'purchase' || transactionType === 'sale_purchase')
       disbursements.push({ name: 'Land Registry Searches', price: 3, includesVat: true });
     if (transactionType === 'purchase' || transactionType === 'sale_purchase')
-      disbursements.push({ name: 'Bankruptcy Search', price: 4, includesVat: true });
+      disbursements.push({
+        name: numBuyers > 1 ? `Bankruptcy Search (x${numBuyers})` : 'Bankruptcy Search',
+        price: 4 * numBuyers,
+        includesVat: true,
+      });
 
     // ── TOTALS ──
     const supplementTotal = supplements.reduce((s, x) => s + x.price, 0);

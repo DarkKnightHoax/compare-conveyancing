@@ -68,12 +68,19 @@ function InstructModal({ firm, onClose, contactDetails }: {
   contactDetails: { firstName: string; lastName: string; email: string; phone: string };
 }) {
   const [submitted, setSubmitted] = useState(false);
+
+  // Initial payment on account = Search Pack + AML fees + £100 file opening fee
+  const searchPackFee = firm.disbursements.find(d => d.name.toLowerCase().includes('search'))?.price ?? 0;
+  const amlFee = firm.disbursements.find(d => d.name.toLowerCase().includes('aml') || d.name.toLowerCase().includes('anti-money'))?.price ?? 0;
+  const fileOpeningFee = 100;
+  const initialPayment = searchPackFee + amlFee + fileOpeningFee;
+
   const [form, setForm] = useState({
     firstName: contactDetails.firstName || "",
     lastName: contactDetails.lastName || "",
     email: contactDetails.email || "",
     phone: contactDetails.phone || "",
-    paymentAmount: "150",
+    paymentAmount: String(initialPayment),
     cardNumber: "",
     expiry: "",
     cvv: "",
@@ -137,7 +144,10 @@ function InstructModal({ firm, onClose, contactDetails }: {
               </div>
               <div className="flex justify-between text-xs">
                 <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Initial payment on account</span>
-                <span className="font-semibold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(150)}</span>
+                <span className="font-semibold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(initialPayment)}</span>
+              </div>
+              <div className="text-xs mt-1" style={{ color: "oklch(0.65 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                Includes: Search Pack ({formatCurrency(searchPackFee)}) + AML ({formatCurrency(amlFee)}) + File Opening (£100.00)
               </div>
             </div>
 
@@ -188,7 +198,7 @@ function InstructModal({ firm, onClose, contactDetails }: {
               <div className="flex items-center gap-2 mb-3">
                 <CreditCard size={15} style={{ color: "oklch(0.72 0.12 75)" }} />
                 <span className="text-sm font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                  Payment on Account — {formatCurrency(150)}
+                  Payment on Account — {formatCurrency(initialPayment)}
                 </span>
               </div>
               <div className="space-y-3">
@@ -244,7 +254,7 @@ function InstructModal({ firm, onClose, contactDetails }: {
 
             <button type="submit" className="btn-gold w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
               <CheckCircle size={16} />
-              Confirm Instruction & Pay {formatCurrency(150)}
+              Confirm Instruction & Pay {formatCurrency(initialPayment)}
             </button>
 
             <p className="text-xs text-center" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
@@ -538,9 +548,6 @@ function QuoteCard({
               <h3 className="text-lg font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
                 {quote.firmName}
               </h3>
-              <span className="px-2 py-0.5 rounded text-xs font-bold" style={{ background: quote.regulated === "SRA" ? "oklch(0.18 0.06 250 / 0.08)" : "oklch(0.72 0.12 75 / 0.15)", color: quote.regulated === "SRA" ? "oklch(0.18 0.06 250)" : "oklch(0.58 0.14 75)", fontFamily: "'DM Sans', sans-serif" }}>
-                {quote.regulated}
-              </span>
             </div>
             <div className="flex items-center gap-1 text-xs mb-1" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
               <MapPin size={11} />
@@ -694,13 +701,23 @@ function QuoteCard({
             )}
 
             {/* Grand Total */}
-            <div className="rounded-xl p-3" style={{ background: "oklch(0.18 0.06 250)" }}>
-              <div className="flex justify-between items-center">
+            <div className="rounded-xl overflow-hidden" style={{ background: "oklch(0.18 0.06 250)" }}>
+              {/* Legal Fees Total row */}
+              <div className="flex justify-between items-center px-3 pt-3 pb-2" style={{ borderBottom: "1px solid oklch(0.975 0.008 80 / 0.15)" }}>
+                <span className="text-sm" style={{ color: "oklch(0.975 0.008 80 / 0.75)", fontFamily: "'DM Sans', sans-serif" }}>Legal Fees Total (inc. VAT + Disbursements)</span>
+                <span className="text-sm font-semibold" style={{ color: "oklch(0.975 0.008 80 / 0.9)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.totalIncVat + quote.disbursements.reduce((s, d) => s + d.price, 0))}</span>
+              </div>
+              {/* SDLT row */}
+              {quote.sdlt > 0 && (
+                <div className="flex justify-between items-center px-3 py-2" style={{ borderBottom: "1px solid oklch(0.975 0.008 80 / 0.15)" }}>
+                  <span className="text-sm" style={{ color: "oklch(0.975 0.008 80 / 0.75)", fontFamily: "'DM Sans', sans-serif" }}>Stamp Duty Land Tax (SDLT)</span>
+                  <span className="text-sm font-semibold" style={{ color: "oklch(0.975 0.008 80 / 0.9)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.sdlt)}</span>
+                </div>
+              )}
+              {/* Grand Total row */}
+              <div className="flex justify-between items-center px-3 pt-2 pb-3">
                 <span className="text-sm font-bold" style={{ color: "white", fontFamily: "'DM Sans', sans-serif" }}>Grand Total</span>
                 <span className="text-lg font-bold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.grandTotal)}</span>
-              </div>
-              <div className="text-xs mt-0.5" style={{ color: "oklch(0.975 0.008 80 / 0.5)", fontFamily: "'DM Sans', sans-serif" }}>
-                All fees, disbursements, SDLT & Land Registry included
               </div>
             </div>
           </div>
@@ -815,6 +832,7 @@ export default function QuoteResults() {
     isNewBuild: boolean;
     isSharedOwnership: boolean;
     hasGiftedDeposit: boolean;
+    giftCount?: number;
     isBuyToLet: boolean;
     isSecondHome: boolean;
     hasMortgageOnProperty?: boolean;
@@ -869,6 +887,7 @@ export default function QuoteResults() {
       isNewBuild: parsedAnswers.isNewBuild ?? false,
       isSharedOwnership: parsedAnswers.isSharedOwnership ?? false,
       hasGiftedDeposit: parsedAnswers.hasGiftedDeposit ?? false,
+      giftCount: parsedAnswers.giftCount ?? 0,
       isBuyToLet: parsedAnswers.isBuyToLet ?? false,
       isSecondHome: parsedAnswers.isSecondHome ?? false,
       hasMortgageOnProperty: parsedAnswers.hasMortgageOnProperty,
@@ -945,7 +964,7 @@ export default function QuoteResults() {
             <div className="flex items-center gap-2">
               <Shield size={14} style={{ color: "oklch(0.72 0.12 75)" }} />
               <span className="text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.6)", fontFamily: "'DM Sans', sans-serif" }}>
-                All firms SRA / CLC regulated
+                All firms regulated
               </span>
             </div>
           </div>

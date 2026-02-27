@@ -13,6 +13,7 @@ export interface WizardAnswers {
   isNewBuild: boolean;
   isSharedOwnership: boolean;
   hasGiftedDeposit: boolean;
+  giftCount?: number;
   hasHelpToBuyISA: boolean;
   hasLISA?: boolean;
   isRightToBuy: boolean;
@@ -278,6 +279,8 @@ const LAW_FIRMS = [
 export function calculateQuotes(answers: WizardAnswers): FirmQuote[] {
   const { transactionType, propertyValue } = answers;
   const value = propertyValue || 0;
+  const buyerCount = answers.buyerCount || 1;
+  const giftCount = answers.giftCount || 0;
 
   return LAW_FIRMS.map((firm) => {
     let baseFee = 0;
@@ -304,7 +307,11 @@ export function calculateQuotes(answers: WizardAnswers): FirmQuote[] {
       if (answers.hasMortgage) supplements.push({ ...PURCHASE_SUPPLEMENTS.mortgage, price: Math.round(PURCHASE_SUPPLEMENTS.mortgage.price * firm.feeMultiplier) });
       if (answers.isNewBuild) supplements.push({ ...PURCHASE_SUPPLEMENTS.newBuild, price: Math.round(PURCHASE_SUPPLEMENTS.newBuild.price * firm.feeMultiplier) });
       if (answers.isSharedOwnership) supplements.push({ ...PURCHASE_SUPPLEMENTS.sharedOwnership, price: Math.round(PURCHASE_SUPPLEMENTS.sharedOwnership.price * firm.feeMultiplier) });
-      if (answers.hasGiftedDeposit) supplements.push({ ...PURCHASE_SUPPLEMENTS.giftedDeposit, price: Math.round(PURCHASE_SUPPLEMENTS.giftedDeposit.price * firm.feeMultiplier) });
+      if (answers.hasGiftedDeposit) {
+        // Multiply gifted deposit fee by number of gifts (minimum 1)
+        const count = Math.max(1, giftCount);
+        supplements.push({ ...PURCHASE_SUPPLEMENTS.giftedDeposit, name: `Gifted Deposit${count > 1 ? ` (x${count})` : ''}`, price: Math.round(PURCHASE_SUPPLEMENTS.giftedDeposit.price * firm.feeMultiplier) * count });
+      }
       if (answers.hasHelpToBuyISA) supplements.push({ ...PURCHASE_SUPPLEMENTS.helpToBuyISA, price: Math.round(PURCHASE_SUPPLEMENTS.helpToBuyISA.price * firm.feeMultiplier) });
       if (answers.isRightToBuy) supplements.push({ ...PURCHASE_SUPPLEMENTS.rightToBuy, price: Math.round(PURCHASE_SUPPLEMENTS.rightToBuy.price * firm.feeMultiplier) });
       if (answers.isBuyToLet) supplements.push({ ...PURCHASE_SUPPLEMENTS.buyToLet, price: Math.round(PURCHASE_SUPPLEMENTS.buyToLet.price * firm.feeMultiplier) });
@@ -318,11 +325,30 @@ export function calculateQuotes(answers: WizardAnswers): FirmQuote[] {
 
     // ── DISBURSEMENTS ──
     if (transactionType === 'purchase' || transactionType === 'sale_purchase') {
-      disbursements = [...PURCHASE_DISBURSEMENTS];
+      // AML and Bankruptcy Search multiply by buyer count
+      disbursements = PURCHASE_DISBURSEMENTS.map(d => {
+        if (d.name === 'Anti-Money Laundering (AML) Check') {
+          return { ...d, name: `AML Check${buyerCount > 1 ? ` (x${buyerCount})` : ''}`, price: d.price * buyerCount };
+        }
+        if (d.name === 'Bankruptcy Search') {
+          return { ...d, name: `Bankruptcy Search${buyerCount > 1 ? ` (x${buyerCount})` : ''}`, price: d.price * buyerCount };
+        }
+        return { ...d };
+      });
     } else if (transactionType === 'sale') {
-      disbursements = [...SALE_DISBURSEMENTS];
+      disbursements = SALE_DISBURSEMENTS.map(d => {
+        if (d.name === 'Anti-Money Laundering (AML) Check') {
+          return { ...d, name: `AML Check${buyerCount > 1 ? ` (x${buyerCount})` : ''}`, price: d.price * buyerCount };
+        }
+        return { ...d };
+      });
     } else if (transactionType === 'remortgage') {
-      disbursements = [...REMORTGAGE_DISBURSEMENTS];
+      disbursements = REMORTGAGE_DISBURSEMENTS.map(d => {
+        if (d.name === 'Anti-Money Laundering (AML) Check') {
+          return { ...d, name: `AML Check${buyerCount > 1 ? ` (x${buyerCount})` : ''}`, price: d.price * buyerCount };
+        }
+        return { ...d };
+      });
     }
 
     // ── TOTALS ──
@@ -339,7 +365,7 @@ export function calculateQuotes(answers: WizardAnswers): FirmQuote[] {
       : 0;
 
     const landRegistryFee = (transactionType === 'purchase' || transactionType === 'sale_purchase')
-      ? calculateLandRegistryFee(value)
+      ? calculateLandRegistryFee(value) * buyerCount
       : 0;
 
     const grandTotal = totalIncVat + disbursementTotal + sdlt + landRegistryFee;
@@ -372,7 +398,7 @@ export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: 'GBP',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount);
 }

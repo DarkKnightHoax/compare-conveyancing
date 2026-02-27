@@ -352,6 +352,7 @@ type QuestionId =
   | "isNewBuild"
   | "isSharedOwnership"
   | "hasGiftedDeposit"
+  | "giftCount"
   | "hasHelpToBuyISA"
   | "hasLISA"
   | "isRightToBuy"
@@ -383,6 +384,7 @@ export default function QuoteWizard() {
     isNewBuild: false,
     isSharedOwnership: false,
     hasGiftedDeposit: false,
+    giftCount: 0,
     hasHelpToBuyISA: false,
     isRightToBuy: false,
     isBuyToLet: false,
@@ -423,6 +425,7 @@ export default function QuoteWizard() {
     { id: "isNewBuild", condition: () => isPurchase },
     { id: "isSharedOwnership", condition: () => isPurchase },
     { id: "hasGiftedDeposit", condition: () => isPurchase },
+    { id: "giftCount", condition: () => isPurchase && answers.hasGiftedDeposit === true },
     { id: "hasHelpToBuyISA", condition: () => isPurchase },
     { id: "hasLISA", condition: () => isPurchase },
     { id: "isRightToBuy", condition: () => isPurchase },
@@ -744,6 +747,43 @@ export default function QuoteWizard() {
             <div className="flex flex-col gap-3">
               <OptionBtn label="Yes — part of my deposit is a gift" selected={answers.hasGiftedDeposit === true} onClick={() => set("hasGiftedDeposit", true)} fullWidth />
               <OptionBtn label="No — all funds are my own" selected={answers.hasGiftedDeposit === false} onClick={() => set("hasGiftedDeposit", false)} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "giftCount":
+        return (
+          <div>
+            <QLabel
+              tooltip="Each gift requires separate source-of-funds verification. Select the total number of gifted deposits you are receiving."
+              subtitle="Each gift requires a separate verification check."
+            >
+              How many gifted deposits are you using?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <select
+                value={answers.giftCount ?? 1}
+                onChange={(e) => set("giftCount", Number(e.target.value))}
+                className="w-full px-4 py-3.5 rounded-xl text-sm font-medium"
+                style={{
+                  borderColor: "oklch(0.88 0.015 80)",
+                  borderWidth: "2px",
+                  borderStyle: "solid",
+                  background: "white",
+                  color: "oklch(0.18 0.06 250)",
+                  fontFamily: "'DM Sans', sans-serif",
+                  outline: "none",
+                  appearance: "auto",
+                }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+              >
+                {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>
+                    {n === 1 ? "1 gift" : `${n} gifts`}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         );

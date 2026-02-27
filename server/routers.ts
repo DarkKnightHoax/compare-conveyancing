@@ -374,6 +374,7 @@ export const appRouter = router({
         isNewBuild: z.boolean().default(false),
         isSharedOwnership: z.boolean().default(false),
         hasGiftedDeposit: z.boolean().default(false),
+        giftCount: z.number().min(0).max(10).optional(),
         isBuyToLet: z.boolean().default(false),
         isSecondHome: z.boolean().default(false),
         hasMortgageOnProperty: z.boolean().optional(),
