@@ -341,8 +341,14 @@ const transactionLabels: Record<string, string> = {
 type QuestionId =
   | "transactionType"
   | "tenure"
+  | "saleTenure"
+  | "purchaseTenure"
   | "propertyValue"
+  | "salePrice"
+  | "purchasePrice"
   | "postcode"
+  | "salePostcode"
+  | "purchasePostcode"
   | "completionTimeline"
   | "hasMortgage"
   | "mortgageLender"
@@ -356,8 +362,12 @@ type QuestionId =
   | "hasHelpToBuyISA"
   | "hasLISA"
   | "isRightToBuy"
+  | "isAuctionPurchase"
+  | "isLimitedCompanyPurchase"
   | "buyerCount"
   | "hasMortgageOnProperty"
+  | "isAuctionSale"
+  | "isLimitedCompanySale"
   | "remortgageValue"
   | "remortgageTenure";
 
@@ -379,6 +389,8 @@ export default function QuoteWizard() {
   const [answers, setAnswers] = useState<Partial<WizardAnswers>>({
     transactionType: initialType,
     tenure: "freehold",
+    saleTenure: "freehold",
+    purchaseTenure: "freehold",
     hasMortgage: false,
     isFirstTimeBuyer: false,
     isNewBuild: false,
@@ -390,9 +402,17 @@ export default function QuoteWizard() {
     isBuyToLet: false,
     isSecondHome: false,
     hasMortgageOnProperty: false,
+    isAuctionSale: false,
+    isLimitedCompanySale: false,
+    isAuctionPurchase: false,
+    isLimitedCompanyPurchase: false,
     buyerCount: 1,
     propertyValue: 0,
+    salePrice: 0,
+    purchasePrice: 0,
     postcode: "",
+    salePostcode: "",
+    purchasePostcode: "",
     completionTimeline: "",
   });
 
@@ -410,9 +430,21 @@ export default function QuoteWizard() {
   // ── STEP 1 QUESTIONS ──────────────────────────────────────────────────────
   const step1Questions: Array<{ id: QuestionId; condition?: () => boolean }> = [
     { id: "transactionType" },
-    { id: "tenure", condition: () => !isRemortgage },
-    { id: "propertyValue" },
-    { id: "postcode" },
+    // For sale_purchase: two separate tenure questions
+    { id: "saleTenure", condition: () => answers.transactionType === "sale_purchase" },
+    { id: "purchaseTenure", condition: () => answers.transactionType === "sale_purchase" },
+    // For purchase or sale only: single tenure question
+    { id: "tenure", condition: () => answers.transactionType === "purchase" || answers.transactionType === "sale" },
+    // For sale_purchase: two separate price questions
+    { id: "salePrice", condition: () => answers.transactionType === "sale_purchase" },
+    { id: "purchasePrice", condition: () => answers.transactionType === "sale_purchase" },
+    // For purchase or sale only: single price question
+    { id: "propertyValue", condition: () => answers.transactionType !== "sale_purchase" },
+    // For sale_purchase: two separate postcode questions
+    { id: "salePostcode", condition: () => answers.transactionType === "sale_purchase" },
+    { id: "purchasePostcode", condition: () => answers.transactionType === "sale_purchase" },
+    // For purchase or sale only: single postcode question
+    { id: "postcode", condition: () => answers.transactionType !== "sale_purchase" },
     { id: "completionTimeline" },
   ];
 
@@ -429,8 +461,14 @@ export default function QuoteWizard() {
     { id: "hasHelpToBuyISA", condition: () => isPurchase },
     { id: "hasLISA", condition: () => isPurchase },
     { id: "isRightToBuy", condition: () => isPurchase },
+    // Auction and limited company questions for purchase (and sale_purchase)
+    { id: "isAuctionPurchase", condition: () => isPurchase },
+    { id: "isLimitedCompanyPurchase", condition: () => isPurchase },
     { id: "buyerCount", condition: () => isPurchase },
-    { id: "hasMortgageOnProperty", condition: () => isSale && !isPurchase },
+    // Sale-only questions
+    { id: "hasMortgageOnProperty", condition: () => isSale },
+    { id: "isAuctionSale", condition: () => isSale },
+    { id: "isLimitedCompanySale", condition: () => isSale },
     { id: "remortgageValue", condition: () => isRemortgage },
     { id: "remortgageTenure", condition: () => isRemortgage },
   ];
@@ -442,16 +480,32 @@ export default function QuoteWizard() {
   const totalSubQs = currentQuestions.length;
   const currentQId = currentQuestions[subQ]?.id;
 
-  // ── VALIDATION ────────────────────────────────────────────────────────────
+    // ── VALIDATION ──────────────────────────────────────────────────────
   const validateCurrentQ = (): boolean => {
     const errs: Record<string, string> = {};
     if (currentQId === "propertyValue") {
       if (!answers.propertyValue || answers.propertyValue < 10000)
         errs.propertyValue = "Please enter a valid property value (minimum £10,000)";
     }
+    if (currentQId === "salePrice") {
+      if (!answers.salePrice || answers.salePrice < 10000)
+        errs.salePrice = "Please enter a valid sale price (minimum £10,000)";
+    }
+    if (currentQId === "purchasePrice") {
+      if (!answers.purchasePrice || answers.purchasePrice < 10000)
+        errs.purchasePrice = "Please enter a valid purchase price (minimum £10,000)";
+    }
     if (currentQId === "postcode") {
       if (!answers.postcode || answers.postcode.replace(/\s/g, "").length < 5)
         errs.postcode = "Please enter a valid UK postcode";
+    }
+    if (currentQId === "salePostcode") {
+      if (!answers.salePostcode || answers.salePostcode.replace(/\s/g, "").length < 5)
+        errs.salePostcode = "Please enter a valid UK postcode for the property you are selling";
+    }
+    if (currentQId === "purchasePostcode") {
+      if (!answers.purchasePostcode || answers.purchasePostcode.replace(/\s/g, "").length < 5)
+        errs.purchasePostcode = "Please enter a valid UK postcode for the property you are buying";
     }
     if (currentQId === "completionTimeline") {
       if (!answers.completionTimeline)
@@ -560,7 +614,7 @@ export default function QuoteWizard() {
               tooltip="Freehold means you own the property and land outright. Leasehold means you own the property for a fixed term but not the land — additional legal work is required."
               subtitle="This affects your legal fees."
             >
-              What is the property tenure?
+              {answers.transactionType === "sale" ? "Is the property you are selling freehold or leasehold?" : "What is the property tenure?"}
             </QLabel>
             <div className="flex flex-col gap-3">
               <OptionBtn label="Freehold" selected={answers.tenure === "freehold"} onClick={() => set("tenure", "freehold")} fullWidth />
@@ -569,11 +623,43 @@ export default function QuoteWizard() {
           </div>
         );
 
+      case "saleTenure":
+        return (
+          <div>
+            <QLabel
+              tooltip="Freehold means you own the property and land outright. Leasehold means you own the property for a fixed term but not the land — additional legal work is required."
+              subtitle="This affects your legal fees for the sale."
+            >
+              Is the property you are selling freehold or leasehold?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Freehold" selected={(answers as any).saleTenure === "freehold"} onClick={() => setAnswers(prev => ({ ...prev, saleTenure: "freehold", tenure: "freehold" }))} fullWidth />
+              <OptionBtn label="Leasehold" selected={(answers as any).saleTenure === "leasehold"} onClick={() => setAnswers(prev => ({ ...prev, saleTenure: "leasehold" }))} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "purchaseTenure":
+        return (
+          <div>
+            <QLabel
+              tooltip="Freehold means you own the property and land outright. Leasehold means you own the property for a fixed term but not the land — additional legal work is required."
+              subtitle="This affects your legal fees for the purchase."
+            >
+              Is the property you are purchasing freehold or leasehold?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Freehold" selected={(answers as any).purchaseTenure === "freehold"} onClick={() => setAnswers(prev => ({ ...prev, purchaseTenure: "freehold" }))} fullWidth />
+              <OptionBtn label="Leasehold" selected={(answers as any).purchaseTenure === "leasehold"} onClick={() => setAnswers(prev => ({ ...prev, purchaseTenure: "leasehold", tenure: "leasehold" }))} fullWidth />
+            </div>
+          </div>
+        );
+
       case "propertyValue":
         return (
           <div>
             <QLabel subtitle="Used to calculate your Stamp Duty Land Tax (SDLT) and Land Registry fee.">
-              {isRemortgage ? "What is the current value of the property?" : "What is the purchase / sale price of the property?"}
+              {isRemortgage ? "What is the current value of the property?" : answers.transactionType === "sale" ? "What is the sale price of the property?" : "What is the purchase price of the property?"}
             </QLabel>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base font-bold"
@@ -596,14 +682,90 @@ export default function QuoteWizard() {
           </div>
         );
 
+      case "salePrice":
+        return (
+          <div>
+            <QLabel subtitle="Used to calculate your legal fees for the sale.">
+              What is the sale price of the property you are selling?
+            </QLabel>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base font-bold"
+                style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'JetBrains Mono', monospace" }}>£</span>
+              <input
+                type="number"
+                value={(answers as any).salePrice || ""}
+                onChange={(e) => setAnswers(prev => ({ ...prev, salePrice: Number(e.target.value), propertyValue: Number(e.target.value) }))}
+                placeholder="350000"
+                className="w-full pl-8 pr-4 py-4 rounded-xl text-lg border-2 outline-none transition-all"
+                style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  borderColor: errors.salePrice ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)",
+                }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = errors.salePrice ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)")}
+              />
+            </div>
+            {errors.salePrice && <p className="text-xs mt-2" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.salePrice}</p>}
+          </div>
+        );
+
+      case "purchasePrice":
+        return (
+          <div>
+            <QLabel subtitle="Used to calculate your Stamp Duty Land Tax (SDLT) and Land Registry fee.">
+              What is the purchase price of the property you are buying?
+            </QLabel>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base font-bold"
+                style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'JetBrains Mono', monospace" }}>£</span>
+              <input
+                type="number"
+                value={(answers as any).purchasePrice || ""}
+                onChange={(e) => setAnswers(prev => ({ ...prev, purchasePrice: Number(e.target.value), propertyValue: Number(e.target.value) }))}
+                placeholder="350000"
+                className="w-full pl-8 pr-4 py-4 rounded-xl text-lg border-2 outline-none transition-all"
+                style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  borderColor: errors.purchasePrice ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)",
+                }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = errors.purchasePrice ? "oklch(0.577 0.245 27.325)" : "oklch(0.88 0.015 80)")}
+              />
+            </div>
+            {errors.purchasePrice && <p className="text-xs mt-2" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.purchasePrice}</p>}
+          </div>
+        );
+
       case "postcode":
         return (
           <div>
             <QLabel subtitle="Used to match you with conveyancers who operate in your area.">
-              What is the property postcode?
+              {answers.transactionType === "sale" ? "What is the postcode of the property you are selling?" : "What is the property postcode?"}
             </QLabel>
             <PostcodeInput value={answers.postcode || ""} onChange={(v) => set("postcode", v)} />
             {errors.postcode && <p className="text-xs mt-2" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.postcode}</p>}
+          </div>
+        );
+
+      case "salePostcode":
+        return (
+          <div>
+            <QLabel subtitle="Used to match you with conveyancers who operate in your area.">
+              What is the postcode of the property you are selling?
+            </QLabel>
+            <PostcodeInput value={(answers as any).salePostcode || ""} onChange={(v) => setAnswers(prev => ({ ...prev, salePostcode: v, postcode: v }))} />
+            {errors.salePostcode && <p className="text-xs mt-2" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.salePostcode}</p>}
+          </div>
+        );
+
+      case "purchasePostcode":
+        return (
+          <div>
+            <QLabel subtitle="Used to match you with conveyancers who operate in your area.">
+              What is the postcode of the property you are buying?
+            </QLabel>
+            <PostcodeInput value={(answers as any).purchasePostcode || ""} onChange={(v) => setAnswers(prev => ({ ...prev, purchasePostcode: v }))} />
+            {errors.purchasePostcode && <p className="text-xs mt-2" style={{ color: "oklch(0.577 0.245 27.325)", fontFamily: "'DM Sans', sans-serif" }}>{errors.purchasePostcode}</p>}
           </div>
         );
 
@@ -881,6 +1043,70 @@ export default function QuoteWizard() {
             <div className="flex flex-col gap-3">
               <OptionBtn label="Yes — there is an outstanding mortgage" selected={answers.hasMortgageOnProperty === true} onClick={() => set("hasMortgageOnProperty", true)} fullWidth />
               <OptionBtn label="No — the property is mortgage-free" selected={answers.hasMortgageOnProperty === false} onClick={() => set("hasMortgageOnProperty", false)} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "isAuctionSale":
+        return (
+          <div>
+            <QLabel
+              tooltip="Auction sales have strict completion deadlines (usually 28 days). Your conveyancer will need to act quickly to meet the exchange and completion dates."
+              subtitle="Auction sales require expedited legal work."
+            >
+              Are you selling the property via auction?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — selling via auction" selected={(answers as any).isAuctionSale === true} onClick={() => setAnswers(prev => ({ ...prev, isAuctionSale: true }))} fullWidth />
+              <OptionBtn label="No — standard sale" selected={(answers as any).isAuctionSale !== true} onClick={() => setAnswers(prev => ({ ...prev, isAuctionSale: false }))} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "isLimitedCompanySale":
+        return (
+          <div>
+            <QLabel
+              tooltip="If a limited company is the legal owner of the property being sold, additional corporate legal work is required, including reviewing company documents and obtaining board resolutions."
+              subtitle="Corporate ownership requires additional legal work."
+            >
+              Is a limited company selling the property?
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — a limited company is the seller" selected={(answers as any).isLimitedCompanySale === true} onClick={() => setAnswers(prev => ({ ...prev, isLimitedCompanySale: true }))} fullWidth />
+              <OptionBtn label="No — selling as an individual" selected={(answers as any).isLimitedCompanySale !== true} onClick={() => setAnswers(prev => ({ ...prev, isLimitedCompanySale: false }))} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "isAuctionPurchase":
+        return (
+          <div>
+            <QLabel
+              tooltip="Auction purchases have strict completion deadlines (usually 28 days). Your conveyancer will need to act quickly to meet the exchange and completion dates."
+              subtitle="Auction purchases require expedited legal work."
+            >
+              {answers.transactionType === "sale_purchase" ? "Are you purchasing the new property via auction?" : "Are you purchasing the property via auction?"}
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — purchasing via auction" selected={(answers as any).isAuctionPurchase === true} onClick={() => setAnswers(prev => ({ ...prev, isAuctionPurchase: true }))} fullWidth />
+              <OptionBtn label="No — standard purchase" selected={(answers as any).isAuctionPurchase !== true} onClick={() => setAnswers(prev => ({ ...prev, isAuctionPurchase: false }))} fullWidth />
+            </div>
+          </div>
+        );
+
+      case "isLimitedCompanyPurchase":
+        return (
+          <div>
+            <QLabel
+              tooltip="If a limited company is purchasing the property, additional corporate legal work is required, including reviewing company documents and obtaining board resolutions."
+              subtitle="Corporate purchasing requires additional legal work."
+            >
+              {answers.transactionType === "sale_purchase" ? "Is a limited company purchasing the new property?" : "Is a limited company purchasing the property?"}
+            </QLabel>
+            <div className="flex flex-col gap-3">
+              <OptionBtn label="Yes — a limited company is the buyer" selected={(answers as any).isLimitedCompanyPurchase === true} onClick={() => setAnswers(prev => ({ ...prev, isLimitedCompanyPurchase: true }))} fullWidth />
+              <OptionBtn label="No — purchasing as an individual" selected={(answers as any).isLimitedCompanyPurchase !== true} onClick={() => setAnswers(prev => ({ ...prev, isLimitedCompanyPurchase: false }))} fullWidth />
             </div>
           </div>
         );

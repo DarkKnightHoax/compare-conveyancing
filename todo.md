@@ -156,3 +156,11 @@
 - [x] Initial payment on account = search packs + AML fees + £100 file opening fee (auto-calculated total shown)
 - [x] Grand total: split into "Legal Fees Total" and "Stamp Duty Land Tax" as separate line items in the black box
 - [x] Remove SRA sign/badge from results page
+
+## Wizard Flow Corrections Batch 5
+- [x] Sale & Purchase: split tenure into 2 questions (selling freehold/leasehold? + buying freehold/leasehold?)
+- [x] Sale & Purchase: split price into 2 questions (sale price? + purchase price?)
+- [x] Sale & Purchase: split postcode into 2 questions (sale postcode? + purchase postcode?)
+- [x] Sale only: rename price question to "What is the sale price of the property?"
+- [x] Sale only: add 2 new questions after mortgage question: "Are you selling via auction?" and "Is a limited company selling?"
+- [x] Purchase and Sale & Purchase: add 2 new questions before buyerCount: "Are you purchasing via auction?" and "Is a limited company purchasing?"

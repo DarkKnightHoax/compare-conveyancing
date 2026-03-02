@@ -7,6 +7,9 @@
 export interface WizardAnswers {
   transactionType: 'purchase' | 'sale' | 'sale_purchase' | 'remortgage';
   tenure: 'freehold' | 'leasehold';
+  // Sale & Purchase split tenure
+  saleTenure?: 'freehold' | 'leasehold';
+  purchaseTenure?: 'freehold' | 'leasehold';
   hasMortgage: boolean;
   mortgageLender?: string;
   isFirstTimeBuyer: boolean;
@@ -21,10 +24,20 @@ export interface WizardAnswers {
   isSecondHome: boolean;
   propertyValue: number;
   postcode: string;
+  // Sale & Purchase split price and postcode
+  salePrice?: number;
+  purchasePrice?: number;
+  salePostcode?: string;
+  purchasePostcode?: string;
   completionTimeline: string;
   buyerCount: number;
   // Sale-specific
   hasMortgageOnProperty?: boolean;
+  isAuctionSale?: boolean;
+  isLimitedCompanySale?: boolean;
+  // Purchase-specific
+  isAuctionPurchase?: boolean;
+  isLimitedCompanyPurchase?: boolean;
   // Remortgage-specific
   newMortgageValue?: number;
 }

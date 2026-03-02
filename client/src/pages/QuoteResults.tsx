@@ -878,10 +878,19 @@ export default function QuoteResults() {
     }
 
     setAnswers(parsedAnswers);
+    // For sale_purchase: use purchasePrice for SDLT/LR calculation (purchase side drives SDLT)
+    const isSalePurchase = parsedAnswers.transactionType === "sale_purchase";
+    const effectivePropertyValue = isSalePurchase
+      ? ((parsedAnswers as any).purchasePrice ?? parsedAnswers.propertyValue ?? 350000)
+      : (parsedAnswers.propertyValue ?? 350000);
+    // For sale_purchase: use purchaseTenure for the purchase side (affects leasehold supplement)
+    const effectiveTenure = isSalePurchase
+      ? (((parsedAnswers as any).purchaseTenure ?? parsedAnswers.tenure ?? "freehold") as "freehold" | "leasehold")
+      : ((parsedAnswers.tenure ?? "freehold") as "freehold" | "leasehold");
     setQueryInput({
       transactionType: (parsedAnswers.transactionType ?? "purchase") as "purchase" | "sale" | "sale_purchase" | "remortgage",
-      propertyValue: parsedAnswers.propertyValue ?? 350000,
-      tenure: (parsedAnswers.tenure ?? "freehold") as "freehold" | "leasehold",
+      propertyValue: effectivePropertyValue,
+      tenure: effectiveTenure,
       hasMortgage: parsedAnswers.hasMortgage ?? false,
       isFirstTimeBuyer: parsedAnswers.isFirstTimeBuyer ?? false,
       isNewBuild: parsedAnswers.isNewBuild ?? false,
