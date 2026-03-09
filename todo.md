@@ -164,3 +164,12 @@
 - [x] Sale only: rename price question to "What is the sale price of the property?"
 - [x] Sale only: add 2 new questions after mortgage question: "Are you selling via auction?" and "Is a limited company selling?"
 - [x] Purchase and Sale & Purchase: add 2 new questions before buyerCount: "Are you purchasing via auction?" and "Is a limited company purchasing?"
+
+## Stripe Payment Integration
+- [x] Create server/stripe/products.ts with initial payment on account product definition
+- [x] Add Stripe checkout session tRPC procedure (payment.createCheckoutSession)
+- [x] Add Stripe webhook handler at /api/stripe/webhook (marks instruct request as paid on checkout.session.completed)
+- [x] Update InstructModal to use Stripe Checkout instead of placeholder card form
+- [x] Add payment success page at /payment/success
+- [x] Add payment cancel page at /payment/cancel
+- [x] Register /payment/success and /payment/cancel routes in App.tsx

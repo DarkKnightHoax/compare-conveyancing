@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { COOKIE_NAME } from "@shared/const";
+import { stripe } from "./stripe/client";
+import { STRIPE_PRODUCT } from "./stripe/products";
 import { parse as parseCookieHeader } from "cookie";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -359,6 +361,54 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         await deleteFirmNote(input.id);
         return { success: true };
+      }),
+  }),
+
+  // ── STRIPE PAYMENTS ──────────────────────────────────────────────────────────
+  payment: router({
+    /**
+     * Creates a Stripe Checkout Session for the initial payment on account.
+     * Returns a checkout URL that the frontend opens in a new tab.
+     */
+    createCheckoutSession: publicProcedure
+      .input(z.object({
+        instructRequestId: z.number(),
+        firmName: z.string(),
+        amountPence: z.number().int().min(50), // Stripe minimum is 50p
+        customerEmail: z.string().email(),
+        customerName: z.string(),
+        origin: z.string().url(),
+      }))
+      .mutation(async ({ input }) => {
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ["card"],
+          mode: "payment",
+          customer_email: input.customerEmail,
+          client_reference_id: input.instructRequestId.toString(),
+          allow_promotion_codes: true,
+          line_items: [
+            {
+              price_data: {
+                currency: STRIPE_PRODUCT.currency,
+                unit_amount: input.amountPence,
+                product_data: {
+                  name: `${STRIPE_PRODUCT.name} — ${input.firmName}`,
+                  description: STRIPE_PRODUCT.description,
+                },
+              },
+              quantity: 1,
+            },
+          ],
+          metadata: {
+            instruct_request_id: input.instructRequestId.toString(),
+            customer_email: input.customerEmail,
+            customer_name: input.customerName,
+            firm_name: input.firmName,
+          },
+          success_url: `${input.origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${input.origin}/payment/cancel`,
+        });
+        return { checkoutUrl: session.url! };
       }),
   }),
 

@@ -12,9 +12,10 @@
 
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { toast } from "sonner";
 import {
   Star, Shield, Award, ChevronDown, ChevronUp, Phone, ArrowLeft,
-  Scale, CheckCircle, X, CreditCard, Clock, MapPin, ArrowUpDown, Mail
+  Scale, CheckCircle, X, CreditCard, Clock, MapPin, ArrowUpDown, Mail, Loader2
 } from "lucide-react";
 import { formatCurrency, type WizardAnswers } from "../lib/feeEngine";
 
@@ -80,26 +81,43 @@ function InstructModal({ firm, onClose, contactDetails }: {
     lastName: contactDetails.lastName || "",
     email: contactDetails.email || "",
     phone: contactDetails.phone || "",
-    paymentAmount: String(initialPayment),
-    cardNumber: "",
-    expiry: "",
-    cvv: "",
   });
   const createInstruct = trpc.instruct.create.useMutation();
+  const createCheckout = trpc.payment.createCheckoutSession.useMutation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    createInstruct.mutate({
+    // Step 1: Create the instruction record
+    const result = await createInstruct.mutateAsync({
       firmId: firm.firmId,
       firmName: firm.firmName,
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.email,
       phone: form.phone,
-      paymentAmount: form.paymentAmount,
+      paymentAmount: String(initialPayment),
     });
+    // Step 2: Create Stripe Checkout session and redirect
+    const amountPence = Math.round(initialPayment * 100);
+    if (amountPence < 50) {
+      // Amount too small for Stripe — mark as submitted without payment
+      setSubmitted(true);
+      return;
+    }
+    toast.info("Redirecting to secure payment...");
+    const { checkoutUrl } = await createCheckout.mutateAsync({
+      instructRequestId: result.id,
+      firmName: firm.firmName,
+      amountPence,
+      customerEmail: form.email,
+      customerName: `${form.firstName} ${form.lastName}`,
+      origin: window.location.origin,
+    });
+    window.open(checkoutUrl, "_blank");
     setSubmitted(true);
   };
+
+  const isLoading = createInstruct.isPending || createCheckout.isPending;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "oklch(0.12 0.05 250 / 0.7)", backdropFilter: "blur(4px)" }}>
@@ -193,72 +211,36 @@ function InstructModal({ firm, onClose, contactDetails }: {
               </div>
             ))}
 
-            {/* Payment section */}
+            {/* Payment summary */}
             <div style={{ borderTop: "1px solid oklch(0.88 0.015 80)", paddingTop: "1rem" }}>
               <div className="flex items-center gap-2 mb-3">
                 <CreditCard size={15} style={{ color: "oklch(0.72 0.12 75)" }} />
                 <span className="text-sm font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                  Payment on Account — {formatCurrency(initialPayment)}
+                  Initial Payment on Account — {formatCurrency(initialPayment)}
                 </span>
               </div>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Card number</label>
-                  <input
-                    type="text"
-                    required
-                    value={form.cardNumber}
-                    onChange={(e) => setForm((p) => ({ ...p, cardNumber: e.target.value.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim() }))}
-                    placeholder="1234 5678 9012 3456"
-                    maxLength={19}
-                    className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none"
-                    style={{ fontFamily: "'JetBrains Mono', monospace", borderColor: "oklch(0.88 0.015 80)" }}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Expiry (MM/YY)</label>
-                    <input
-                      type="text"
-                      required
-                      value={form.expiry}
-                      onChange={(e) => setForm((p) => ({ ...p, expiry: e.target.value }))}
-                      placeholder="12/27"
-                      maxLength={5}
-                      className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none"
-                      style={{ fontFamily: "'JetBrains Mono', monospace", borderColor: "oklch(0.88 0.015 80)" }}
-                      onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
-                      onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>CVV</label>
-                    <input
-                      type="text"
-                      required
-                      value={form.cvv}
-                      onChange={(e) => setForm((p) => ({ ...p, cvv: e.target.value.replace(/\D/g, "").slice(0, 4) }))}
-                      placeholder="123"
-                      maxLength={4}
-                      className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none"
-                      style={{ fontFamily: "'JetBrains Mono', monospace", borderColor: "oklch(0.88 0.015 80)" }}
-                      onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
-                      onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
-                    />
-                  </div>
-                </div>
+              <div
+                className="rounded-lg p-3 text-xs"
+                style={{ background: "oklch(0.97 0.008 80)", border: "1px solid oklch(0.88 0.015 80)", color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}
+              >
+                You will be securely redirected to Stripe to complete your payment. No card details are stored on this site.
               </div>
             </div>
 
-            <button type="submit" className="btn-gold w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
-              <CheckCircle size={16} />
-              Confirm Instruction & Pay {formatCurrency(initialPayment)}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="btn-gold w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {isLoading ? (
+                <><Loader2 size={16} className="animate-spin" /> Processing...</>
+              ) : (
+                <><CheckCircle size={16} /> Confirm & Pay {formatCurrency(initialPayment)}</>
+              )}
             </button>
 
             <p className="text-xs text-center" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-              Secure payment · Your details are encrypted · Cancel anytime before work begins
+              Powered by Stripe · Encrypted & secure · Cancel anytime before work begins
             </p>
           </form>
         )}

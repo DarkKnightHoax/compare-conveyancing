@@ -16,6 +16,8 @@ import FAQ from "./pages/FAQ";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import AdminLogin from "./pages/AdminLogin";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentCancel from "./pages/PaymentCancel";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -32,6 +34,8 @@ function Router() {
       <Route path={"/faq"} component={FAQ} />
       <Route path={"/blog"} component={Blog} />
       <Route path={"/blog/:slug"} component={BlogArticle} />
+      <Route path={"/payment/success"} component={PaymentSuccess} />
+      <Route path={"/payment/cancel"} component={PaymentCancel} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
