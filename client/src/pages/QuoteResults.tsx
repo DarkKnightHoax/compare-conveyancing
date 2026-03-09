@@ -104,16 +104,29 @@ function InstructModal({ firm, onClose, contactDetails }: {
       setSubmitted(true);
       return;
     }
+    // Open a blank tab immediately (direct user gesture) to avoid popup blockers,
+    // then navigate it to the Stripe checkout URL once we have it.
+    const paymentTab = window.open("", "_blank");
     toast.info("Redirecting to secure payment...");
-    const { checkoutUrl } = await createCheckout.mutateAsync({
-      instructRequestId: result.id,
-      firmName: firm.firmName,
-      amountPence,
-      customerEmail: form.email,
-      customerName: `${form.firstName} ${form.lastName}`,
-      origin: window.location.origin,
-    });
-    window.open(checkoutUrl, "_blank");
+    try {
+      const { checkoutUrl } = await createCheckout.mutateAsync({
+        instructRequestId: result.id,
+        firmName: firm.firmName,
+        amountPence,
+        customerEmail: form.email,
+        customerName: `${form.firstName} ${form.lastName}`,
+        origin: window.location.origin,
+      });
+      if (paymentTab) {
+        paymentTab.location.href = checkoutUrl;
+      } else {
+        // Fallback: navigate current tab if popup was blocked
+        window.location.href = checkoutUrl;
+      }
+    } catch (err) {
+      if (paymentTab) paymentTab.close();
+      throw err;
+    }
     setSubmitted(true);
   };
 
