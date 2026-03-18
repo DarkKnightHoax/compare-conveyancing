@@ -320,19 +320,21 @@ export default function Home() {
                       key={label}
                       onClick={() => navigate(path)}
                       className="p-4 rounded-xl text-left transition-all duration-200 group"
-                      style={{ background: "oklch(1 0 0 / 0.06)", border: "1px solid oklch(0.975 0.008 80 / 0.15)" }}
+                      style={{ background: "oklch(0.22 0.07 250 / 0.95)", border: "1.5px solid oklch(0.72 0.12 75 / 0.7)", boxShadow: "0 2px 16px oklch(0 0 0 / 0.4), inset 0 1px 0 oklch(1 0 0 / 0.08)" }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "oklch(0.72 0.12 75 / 0.15)";
-                        e.currentTarget.style.borderColor = "oklch(0.72 0.12 75 / 0.5)";
+                        e.currentTarget.style.background = "oklch(0.72 0.12 75 / 0.18)";
+                        e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)";
+                        e.currentTarget.style.boxShadow = "0 4px 24px oklch(0.72 0.12 75 / 0.25), inset 0 1px 0 oklch(1 0 0 / 0.1)";
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background = "oklch(1 0 0 / 0.06)";
-                        e.currentTarget.style.borderColor = "oklch(0.975 0.008 80 / 0.15)";
+                        e.currentTarget.style.background = "oklch(0.22 0.07 250 / 0.95)";
+                        e.currentTarget.style.borderColor = "oklch(0.72 0.12 75 / 0.7)";
+                        e.currentTarget.style.boxShadow = "0 2px 16px oklch(0 0 0 / 0.4), inset 0 1px 0 oklch(1 0 0 / 0.08)";
                       }}
                     >
-                      <Icon size={20} className="mb-2" style={{ color: "oklch(0.72 0.12 75)" }} />
+                      <Icon size={20} className="mb-2" style={{ color: "oklch(0.82 0.14 75)" }} />
                       <div className="text-sm font-semibold" style={{ color: "white", fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
-                      <div className="text-xs mt-0.5" style={{ color: "oklch(0.975 0.008 80 / 0.5)", fontFamily: "'DM Sans', sans-serif" }}>{desc}</div>
+                      <div className="text-xs mt-0.5" style={{ color: "oklch(0.975 0.008 80 / 0.7)", fontFamily: "'DM Sans', sans-serif" }}>{desc}</div>
                     </button>
                   ))}
                 </div>

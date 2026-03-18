@@ -3,11 +3,16 @@
  * Design: British Legal Prestige — Navy + Gold + Parchment
  */
 
+import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { Scale } from "lucide-react";
 
 export default function Terms() {
   const [, navigate] = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const sections = [
     {

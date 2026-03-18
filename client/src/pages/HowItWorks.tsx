@@ -1,13 +1,22 @@
-/*
+/**
  * HOW IT WORKS PAGE
  * Design: British Legal Prestige — Navy + Gold + Parchment
  */
 
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Scale, Search, FileText, CheckCircle, Shield, Clock, Award, ArrowRight, Phone } from "lucide-react";
 
 export default function HowItWorks() {
   const [, navigate] = useLocation();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const steps = [
     {
@@ -73,28 +82,61 @@ export default function HowItWorks() {
 
   return (
     <div className="min-h-screen" style={{ background: "oklch(0.975 0.008 80)" }}>
-      {/* Header */}
-      <div style={{ background: "oklch(0.18 0.06 250)", borderBottom: "1px solid oklch(0.72 0.12 75 / 0.2)" }}>
-        <div className="container py-4 flex items-center justify-between">
+      {/* Sticky Navbar */}
+      <nav
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        style={{
+          background: scrolled ? "oklch(0.12 0.05 250 / 0.97)" : "oklch(0.18 0.06 250)",
+          backdropFilter: scrolled ? "blur(12px)" : "none",
+          borderBottom: "1px solid oklch(0.72 0.12 75 / 0.2)",
+          boxShadow: scrolled ? "0 4px 20px oklch(0.12 0.05 250 / 0.3)" : "none",
+        }}
+      >
+        <div className="container flex items-center justify-between py-4">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "oklch(0.72 0.12 75)" }}>
-              <Scale size={15} style={{ color: "oklch(0.12 0.05 250)" }} />
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "oklch(0.72 0.12 75)" }}>
+              <Scale size={18} style={{ color: "oklch(0.12 0.05 250)" }} />
             </div>
-            <span className="text-sm font-semibold" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
-              Compare the Conveyancing Market
-            </span>
+            <div>
+              <div className="font-bold text-sm leading-tight" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>Compare</div>
+              <div className="text-xs leading-tight" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'DM Sans', sans-serif" }}>the Conveyancing Market</div>
+            </div>
+          </div>
+          <div className="hidden md:flex items-center gap-8">
+            {([
+              { label: "How It Works", path: "/how-it-works" },
+              { label: "FAQs", path: "/faq" },
+              { label: "Blog", path: "/blog" },
+              { label: "Contact", path: "/contact" },
+            ] as { label: string; path: string }[]).map(({ label, path }) => (
+              <button
+                key={label}
+                onClick={() => navigate(path)}
+                className="text-sm font-medium transition-colors"
+                style={{
+                  color: path === "/how-it-works" ? "oklch(0.82 0.10 75)" : "oklch(0.975 0.008 80 / 0.8)",
+                  fontFamily: "'DM Sans', sans-serif",
+                  background: "none",
+                  border: "none",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "oklch(0.72 0.12 75)")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = path === "/how-it-works" ? "oklch(0.82 0.10 75)" : "oklch(0.975 0.008 80 / 0.8)")}
+              >
+                {label}
+              </button>
+            ))}
           </div>
           <button
             onClick={() => navigate("/get-quote")}
-            className="btn-gold px-5 py-2 rounded-xl text-xs font-bold"
+            className="btn-gold px-5 py-2.5 rounded-lg text-sm font-semibold"
           >
             Get Free Quotes
           </button>
         </div>
-      </div>
+      </nav>
 
-      {/* Hero */}
-      <div className="py-16" style={{ background: "oklch(0.18 0.06 250)" }}>
+      {/* Hero — pt-16 accounts for fixed navbar height */}
+      <div className="pt-32 pb-16" style={{ background: "oklch(0.18 0.06 250)" }}>
         <div className="container max-w-3xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 text-xs font-semibold"
             style={{ background: "oklch(0.72 0.12 75 / 0.15)", color: "oklch(0.72 0.12 75)", border: "1px solid oklch(0.72 0.12 75 / 0.3)", fontFamily: "'DM Sans', sans-serif" }}>

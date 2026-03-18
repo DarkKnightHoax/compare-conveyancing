@@ -173,3 +173,9 @@
 - [x] Add payment success page at /payment/success
 - [x] Add payment cancel page at /payment/cancel
 - [x] Register /payment/success and /payment/cancel routes in App.tsx
+
+## UI Fixes (Mar 2026)
+- [x] Wizard category cards: improve contrast so they pop out from the dark background
+- [x] How It Works page: add full navbar with nav tabs (How It Works, FAQs, Blog, Contact) + always visible
+- [x] Privacy Policy page: auto-scroll to top on load
+- [x] Terms & Conditions page: auto-scroll to top on load
