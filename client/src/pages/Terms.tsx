@@ -88,7 +88,7 @@ Nothing in these Terms excludes or limits our liability for death or personal in
       content: `If you have any questions about these Terms, please contact us at:
 
 Email: legal@comparetheconveyancingmarket.co.uk
-Post: ComparetheConveyancingMarket Ltd, 71-75 Shelton Street, Covent Garden, London, United Kingdom, WC2H 9JQ`,
+Post: ComparetheConveyancingMarket Ltd, Office 17699, 182-184 High Street North, East Ham, London E6 2JA`,
     },
   ];
 

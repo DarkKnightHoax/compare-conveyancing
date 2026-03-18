@@ -3,16 +3,24 @@
  * Design: British Legal Prestige — Navy + Gold + Parchment
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Scale, Phone, Mail, MapPin, Clock, CheckCircle, ArrowRight } from "lucide-react";
 
 export default function ContactUs() {
   const [, navigate] = useLocation();
   const [submitted, setSubmitted] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [form, setForm] = useState({
     firstName: "", lastName: "", email: "", phone: "", subject: "", message: "",
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,13 +37,13 @@ export default function ContactUs() {
     {
       icon: <Mail size={20} />,
       label: "Email",
-      value: "hello@comparetheconveyancingmarket.co.uk",
+      value: "info@comparetheconveyancingmarket.co.uk",
       sub: "We aim to respond within 4 business hours",
     },
     {
       icon: <MapPin size={20} />,
       label: "Registered Address",
-      value: "71-75 Shelton Street, Covent Garden, London WC2H 9JQ",
+      value: "Office 17699, 182-184 High Street North, East Ham, London E6 2JA",
       sub: "ComparetheConveyancingMarket Ltd — Registered in England & Wales",
     },
     {
@@ -48,25 +56,58 @@ export default function ContactUs() {
 
   return (
     <div className="min-h-screen" style={{ background: "oklch(0.975 0.008 80)" }}>
-      {/* Header */}
-      <div style={{ background: "oklch(0.18 0.06 250)", borderBottom: "1px solid oklch(0.72 0.12 75 / 0.2)" }}>
-        <div className="container py-4 flex items-center justify-between">
+      {/* Sticky Navbar */}
+      <nav
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        style={{
+          background: scrolled ? "oklch(0.12 0.05 250 / 0.97)" : "oklch(0.18 0.06 250)",
+          backdropFilter: scrolled ? "blur(12px)" : "none",
+          borderBottom: "1px solid oklch(0.72 0.12 75 / 0.2)",
+          boxShadow: scrolled ? "0 4px 20px oklch(0.12 0.05 250 / 0.3)" : "none",
+        }}
+      >
+        <div className="container flex items-center justify-between py-4">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "oklch(0.72 0.12 75)" }}>
-              <Scale size={15} style={{ color: "oklch(0.12 0.05 250)" }} />
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "oklch(0.72 0.12 75)" }}>
+              <Scale size={18} style={{ color: "oklch(0.12 0.05 250)" }} />
             </div>
-            <span className="text-sm font-semibold" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
-              Compare the Conveyancing Market
-            </span>
+            <div>
+              <div className="font-bold text-sm leading-tight" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>Compare</div>
+              <div className="text-xs leading-tight" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'DM Sans', sans-serif" }}>the Conveyancing Market</div>
+            </div>
           </div>
-          <button onClick={() => navigate("/get-quote")} className="btn-gold px-5 py-2 rounded-xl text-xs font-bold">
+          <div className="hidden md:flex items-center gap-8">
+            {([
+              { label: "How It Works", path: "/how-it-works" },
+              { label: "FAQs", path: "/faq" },
+              { label: "Blog", path: "/blog" },
+              { label: "Contact", path: "/contact" },
+            ] as { label: string; path: string }[]).map(({ label, path }) => (
+              <button
+                key={label}
+                onClick={() => navigate(path)}
+                className="text-sm font-medium transition-colors"
+                style={{
+                  color: path === "/contact" ? "oklch(0.82 0.10 75)" : "oklch(0.975 0.008 80 / 0.8)",
+                  fontFamily: "'DM Sans', sans-serif",
+                  background: "none",
+                  border: "none",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "oklch(0.72 0.12 75)")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = path === "/contact" ? "oklch(0.82 0.10 75)" : "oklch(0.975 0.008 80 / 0.8)")}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <button onClick={() => navigate("/get-quote")} className="btn-gold px-5 py-2.5 rounded-lg text-sm font-semibold">
             Get Free Quotes
           </button>
         </div>
-      </div>
+      </nav>
 
-      {/* Hero */}
-      <div className="py-16" style={{ background: "oklch(0.18 0.06 250)" }}>
+      {/* Hero — pt-32 accounts for fixed navbar */}
+      <div className="pt-32 pb-16" style={{ background: "oklch(0.18 0.06 250)" }}>
         <div className="container max-w-3xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
             Get in Touch
@@ -87,11 +128,11 @@ export default function ContactUs() {
                   <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "oklch(0.18 0.06 250)" }}>
                     <span style={{ color: "oklch(0.72 0.12 75)" }}>{icon}</span>
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <div className="text-xs font-semibold mb-0.5" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'DM Sans', sans-serif", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                       {label}
                     </div>
-                    <div className="text-sm font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>{value}</div>
+                    <div className="text-sm font-semibold break-words" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif", wordBreak: "break-word" }}>{value}</div>
                     <div className="text-xs mt-0.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>{sub}</div>
                   </div>
                 </div>

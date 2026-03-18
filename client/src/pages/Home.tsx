@@ -583,8 +583,8 @@ export default function Home() {
               </div>
               <div className="text-xs leading-relaxed" style={{ color: "oklch(0.975 0.008 80 / 0.45)", fontFamily: "'DM Sans', sans-serif" }}>
                 <div className="font-semibold mb-0.5" style={{ color: "oklch(0.975 0.008 80 / 0.65)" }}>ComparetheConveyancingMarket Ltd</div>
-                <div>71-75 Shelton Street, Covent Garden</div>
-                <div>London, United Kingdom, WC2H 9JQ</div>
+                <div>Office 17699, 182-184 High Street North</div>
+                <div>East Ham, London E6 2JA</div>
                 <div>Registered in England &amp; Wales</div>
               </div>
             </div>

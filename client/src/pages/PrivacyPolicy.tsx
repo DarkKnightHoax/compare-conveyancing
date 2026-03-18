@@ -99,7 +99,7 @@ You can set your browser to refuse all or some browser cookies. However, if you 
       content: `If you have any questions about this privacy policy or our privacy practices, please contact our Data Protection Officer at:
 
 Email: privacy@comparetheconveyancingmarket.co.uk
-Post: ComparetheConveyancingMarket Ltd, 71-75 Shelton Street, Covent Garden, London, United Kingdom, WC2H 9JQ`,
+Post: ComparetheConveyancingMarket Ltd, Office 17699, 182-184 High Street North, East Ham, London E6 2JA`,
     },
   ];
 

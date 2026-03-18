@@ -179,3 +179,13 @@
 - [x] How It Works page: add full navbar with nav tabs (How It Works, FAQs, Blog, Contact) + always visible
 - [x] Privacy Policy page: auto-scroll to top on load
 - [x] Terms & Conditions page: auto-scroll to top on load
+
+## Contact Us & Address Fixes (Mar 2026)
+- [x] Contact Us page: navbar disappears on scroll — made it fixed/sticky with scroll effect
+- [x] Contact Us page: email address overflows the box — added break-words and min-w-0
+- [x] Contact Us page: update email to info@comparetheconveyancingmarket.co.uk
+- [x] Contact Us page: update registered address to Office 17699, 182-184 High Street North, East Ham, London E6 2JA
+- [x] Contact Us page: scroll to top on load (footer link starts from bottom)
+- [x] Update registered address on Terms & Conditions page
+- [x] Update registered address on Privacy Policy page
+- [x] Update registered address in Home.tsx footer
