@@ -174,6 +174,12 @@
 - [x] Add payment cancel page at /payment/cancel
 - [x] Register /payment/success and /payment/cancel routes in App.tsx
 
+## Favicon & Logo (Mar 2026)
+- [x] Generate new CC house+key logo in navy and gold
+- [x] Create favicon.ico, apple-touch-icon.png, favicon-192.png, favicon-512.png
+- [x] Wire favicon into index.html head tags
+- [x] Replace Scale icon in all page navbars with new CC logo image
+
 ## UI Fixes (Mar 2026)
 - [x] Wizard category cards: improve contrast so they pop out from the dark background
 - [x] How It Works page: add full navbar with nav tabs (How It Works, FAQs, Blog, Contact) + always visible

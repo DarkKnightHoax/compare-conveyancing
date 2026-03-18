@@ -94,8 +94,8 @@ export default function HowItWorks() {
       >
         <div className="container flex items-center justify-between py-4">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "oklch(0.72 0.12 75)" }}>
-              <Scale size={18} style={{ color: "oklch(0.12 0.05 250)" }} />
+            <div className="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center">
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/109506846/5ZpoxzgLM5cycU3sThccK4/favicon-logo-v1_d30bdc70.png" alt="CC Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <div className="font-bold text-sm leading-tight" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>Compare</div>
