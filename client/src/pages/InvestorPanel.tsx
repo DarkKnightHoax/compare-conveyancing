@@ -688,7 +688,7 @@ export default function InvestorPanel() {
         <div className="px-6 py-6" style={{ borderBottom: "1px solid oklch(0.72 0.12 75 / 0.15)" }}>
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
             <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center">
-              <img src="https://d2xsxph8kpxj0f.cloudfront.net/109506846/5ZpoxzgLM5cycU3sThccK4/favicon-logo-v1_d30bdc70.png" alt="CC Logo" className="w-full h-full object-cover" />
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/109506846/5ZpoxzgLM5cycU3sThccK4/favicon-logo-v2-VpvW9vnDQBVjC9fgzHCMg6.png" alt="CC Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <div className="text-xs font-bold leading-tight" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>Investor Panel</div>

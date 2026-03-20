@@ -110,7 +110,7 @@ Post: ComparetheConveyancingMarket Ltd, Office 17699, 182-184 High Street North,
         <div className="container py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
             <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center">
-              <img src="https://d2xsxph8kpxj0f.cloudfront.net/109506846/5ZpoxzgLM5cycU3sThccK4/favicon-logo-v1_d30bdc70.png" alt="CC Logo" className="w-full h-full object-cover" />
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/109506846/5ZpoxzgLM5cycU3sThccK4/favicon-logo-v2-VpvW9vnDQBVjC9fgzHCMg6.png" alt="CC Logo" className="w-full h-full object-cover" />
             </div>
             <span className="text-sm font-semibold" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
               Compare the Conveyancing Market
