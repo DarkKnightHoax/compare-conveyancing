@@ -575,15 +575,14 @@ export default function Home() {
       {/* ── FOOTER ── */}
       <footer className="py-10" style={{ background: "oklch(0.12 0.05 250)", borderTop: "1px solid oklch(0.72 0.12 75 / 0.2)" }}>
         <div className="container">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3 mb-3">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-10" style={{ borderBottom: "1px solid oklch(0.72 0.12 75 / 0.12)" }}>
+            {/* Brand */}
+            <div className="md:col-span-1">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center">
                   <img src="https://d2xsxph8kpxj0f.cloudfront.net/109506846/5ZpoxzgLM5cycU3sThccK4/favicon-logo-v2-VpvW9vnDQBVjC9fgzHCMg6.png" alt="CC Logo" className="w-full h-full object-cover" />
                 </div>
-                <span className="text-sm font-semibold" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
-                  Compare the Conveyancing Market
-                </span>
+                <span className="text-sm font-semibold" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>Compare the Conveyancing Market</span>
               </div>
               <div className="text-xs leading-relaxed" style={{ color: "oklch(0.975 0.008 80 / 0.45)", fontFamily: "'DM Sans', sans-serif" }}>
                 <div className="font-semibold mb-0.5" style={{ color: "oklch(0.975 0.008 80 / 0.65)" }}>ComparetheConveyancingMarket Ltd</div>
@@ -592,13 +591,48 @@ export default function Home() {
                 <div>Registered in England &amp; Wales</div>
               </div>
             </div>
-            <div className="flex gap-6 text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.4)", fontFamily: "'DM Sans', sans-serif" }}>
-              <button onClick={() => navigate("/terms")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>Terms & Conditions</button>
-              <button onClick={() => navigate("/privacy-policy")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>Privacy Policy</button>
-              <button onClick={() => navigate("/contact")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>Contact Us</button>
-              <button onClick={() => navigate("/faq")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>FAQs</button>
-              <button onClick={() => navigate("/blog")} className="hover:text-white transition-colors" style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}>Blog</button>
+            {/* Services */}
+            <div>
+              <div className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'DM Sans', sans-serif" }}>Services</div>
+              <div className="flex flex-col gap-2.5">
+                {[
+                  { label: "Compare Conveyancing Fees", path: "/compare-conveyancing-fees" },
+                  { label: "First Time Buyer Conveyancing", path: "/first-time-buyer-conveyancing" },
+                  { label: "Remortgage Conveyancing", path: "/remortgage-conveyancing" },
+                  { label: "Get Free Quotes", path: "/get-quote" },
+                ].map(({ label, path }) => (
+                  <button key={label} onClick={() => navigate(path)} className="text-left hover:text-white transition-colors text-xs" style={{ background: "none", border: "none", color: "oklch(0.975 0.008 80 / 0.5)", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>{label}</button>
+                ))}
+              </div>
             </div>
+            {/* Company */}
+            <div>
+              <div className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'DM Sans', sans-serif" }}>Company</div>
+              <div className="flex flex-col gap-2.5">
+                {[
+                  { label: "How It Works", path: "/how-it-works" },
+                  { label: "FAQs", path: "/faq" },
+                  { label: "Blog", path: "/blog" },
+                  { label: "Contact Us", path: "/contact" },
+                ].map(({ label, path }) => (
+                  <button key={label} onClick={() => navigate(path)} className="text-left hover:text-white transition-colors text-xs" style={{ background: "none", border: "none", color: "oklch(0.975 0.008 80 / 0.5)", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>{label}</button>
+                ))}
+              </div>
+            </div>
+            {/* Legal */}
+            <div>
+              <div className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'DM Sans', sans-serif" }}>Legal</div>
+              <div className="flex flex-col gap-2.5">
+                {[
+                  { label: "Terms & Conditions", path: "/terms" },
+                  { label: "Privacy Policy", path: "/privacy-policy" },
+                ].map(({ label, path }) => (
+                  <button key={label} onClick={() => navigate(path)} className="text-left hover:text-white transition-colors text-xs" style={{ background: "none", border: "none", color: "oklch(0.975 0.008 80 / 0.5)", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>{label}</button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="pt-6 text-center">
             <div className="text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.3)", fontFamily: "'DM Sans', sans-serif" }}>
               © {new Date().getFullYear()} ComparetheConveyancingMarket Ltd. All rights reserved.
             </div>

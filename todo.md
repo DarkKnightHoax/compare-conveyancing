@@ -206,3 +206,12 @@
 - [x] Build SEO landing page 3: Compare Conveyancing Fees Online (/compare-conveyancing-fees)
 - [x] Register 3 new landing page routes in App.tsx
 - [x] Improve wizard outer card container: gradient navy bg + gold border + deep shadow glow
+
+## Internal Linking & Lender Filtering (Mar 2026)
+- [x] Add landing page links to homepage footer Services column (4-column layout)
+- [x] Add "Explore Our Services" block in BlogArticle.tsx linking to 3 landing pages
+- [x] firm_lender_panels table already exists in drizzle schema (4 columns)
+- [x] DB migration already applied (363 panel entries live)
+- [x] Lender panel filtering already implemented in calculateLiveQuotes in db.ts
+- [x] mortgageLender already passed from wizard sessionStorage to results query
+- [x] Results page shows lender panel filter badge when mortgageLender is set

@@ -1,0 +1,100 @@
+{
+  "query": "SELECT DISTINCT lenderName FROM firm_lender_panels ORDER BY lenderName LIMIT 30;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT DISTINCT lenderName FROM firm_lender_panels ORDER BY lenderName LIMIT 30;",
+  "rows": [
+    {
+      "lenderName": "Accord Buy to Let"
+    },
+    {
+      "lenderName": "Accord Mortgages"
+    },
+    {
+      "lenderName": "Aldermore"
+    },
+    {
+      "lenderName": "Alliance & Leicester"
+    },
+    {
+      "lenderName": "Allica Bank"
+    },
+    {
+      "lenderName": "April Mortgages"
+    },
+    {
+      "lenderName": "Atom Bank"
+    },
+    {
+      "lenderName": "Bank of China"
+    },
+    {
+      "lenderName": "Bank of Cyprus"
+    },
+    {
+      "lenderName": "Bank of Ireland"
+    },
+    {
+      "lenderName": "Bank of Scotland"
+    },
+    {
+      "lenderName": "Barclays Bank UK PLC"
+    },
+    {
+      "lenderName": "Barnsley Building Society"
+    },
+    {
+      "lenderName": "Better Homeownership"
+    },
+    {
+      "lenderName": "Bluestone Mortgages"
+    },
+    {
+      "lenderName": "Bradford & Bingley / Mortgage Express"
+    },
+    {
+      "lenderName": "Britannia"
+    },
+    {
+      "lenderName": "Buckinghamshire BS"
+    },
+    {
+      "lenderName": "Buckinghamshire Building Society"
+    },
+    {
+      "lenderName": "CHL Mortgages"
+    },
+    {
+      "lenderName": "Cambridge BS"
+    },
+    {
+      "lenderName": "Canada Life"
+    },
+    {
+      "lenderName": "Chelsea BS"
+    },
+    {
+      "lenderName": "Chorley BS"
+    },
+    {
+      "lenderName": "Clydesdale & Yorkshire Bank"
+    },
+    {
+      "lenderName": "Clydesdale Bank & Yorkshire Bank"
+    },
+    {
+      "lenderName": "Co-op Panel"
+    },
+    {
+      "lenderName": "Co-operative Bank"
+    },
+    {
+      "lenderName": "Coventry BS"
+    },
+    {
+      "lenderName": "Cumberland BS"
+    }
+  ],
+  "messages": [],
+  "stdout": "lenderName\nAccord Buy to Let\nAccord Mortgages\nAldermore\nAlliance & Leicester\nAllica Bank\nApril Mortgages\nAtom Bank\nBank of China\nBank of Cyprus\nBank of Ireland\nBank of Scotland\nBarclays Bank UK PLC\nBarnsley Building Society\nBetter Homeownership\nBluestone Mortgages\nBradford & Bingley / Mortgage Express\nBritannia\nBuckinghamshire BS\nBuckinghamshire Building Society\nCHL Mortgages\nCambridge BS\nCanada Life\nChelsea BS\nChorley BS\nClydesdale & Yorkshire Bank\nClydesdale Bank & Yorkshire Bank\nCo-op Panel\nCo-operative Bank\nCoventry BS\nCumberland BS\n",
+  "stderr": "",
+  "execution_time_ms": 170
+}

@@ -198,6 +198,30 @@ export default function BlogArticle() {
             </button>
           </div>
 
+          {/* Landing page contextual links */}
+          <div className="my-8 rounded-2xl p-6" style={{ background: "white", border: "1px solid oklch(0.88 0.015 80)" }}>
+            <h3 className="text-sm font-bold mb-4" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Explore Our Services</h3>
+            <div className="grid md:grid-cols-3 gap-3">
+              {[
+                { label: "First Time Buyer Conveyancing", desc: "Specialist guidance for first-time buyers", path: "/first-time-buyer-conveyancing" },
+                { label: "Remortgage Conveyancing", desc: "Fast, fixed-fee remortgage solicitors", path: "/remortgage-conveyancing" },
+                { label: "Compare Conveyancing Fees", desc: "See 2026 fee ranges & compare quotes", path: "/compare-conveyancing-fees" },
+              ].map(({ label, desc, path }) => (
+                <button
+                  key={label}
+                  onClick={() => navigate(path)}
+                  className="text-left p-4 rounded-xl transition-all"
+                  style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.88 0.015 80)", cursor: "pointer" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "oklch(0.72 0.12 75 / 0.5)"; e.currentTarget.style.background = "oklch(0.72 0.12 75 / 0.06)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)"; e.currentTarget.style.background = "oklch(0.975 0.008 80)"; }}
+                >
+                  <div className="text-xs font-bold mb-1" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
+                  <div className="text-xs" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>{desc}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Related articles */}
           {related.length > 0 && (
             <div>

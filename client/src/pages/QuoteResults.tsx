@@ -983,6 +983,13 @@ export default function QuoteResults() {
             <p className="text-sm" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
               {sorted.length} regulated firms found · All fees fully itemised
             </p>
+            {queryInput?.mortgageLender && (
+              <div className="flex items-center gap-1.5 mt-2">
+                <span className="text-xs px-2.5 py-1 rounded-full font-semibold" style={{ background: "oklch(0.55 0.18 145 / 0.12)", color: "oklch(0.35 0.18 145)", fontFamily: "'DM Sans', sans-serif", border: "1px solid oklch(0.55 0.18 145 / 0.3)" }}>
+                  ✓ Lender panel approved: {queryInput.mortgageLender}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Sort control */}
