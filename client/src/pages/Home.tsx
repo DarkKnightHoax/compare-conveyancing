@@ -306,7 +306,11 @@ export default function Home() {
             {/* Right: Quote type selector card */}
             <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
               <div className="rounded-2xl p-8 backdrop-blur-sm"
-                style={{ background: "oklch(1 0 0 / 0.06)", border: "1px solid oklch(0.72 0.12 75 / 0.25)" }}>
+                style={{
+                  background: "linear-gradient(145deg, oklch(0.20 0.07 250 / 0.95) 0%, oklch(0.15 0.06 250 / 0.98) 100%)",
+                  border: "1.5px solid oklch(0.72 0.12 75 / 0.55)",
+                  boxShadow: "0 8px 48px oklch(0 0 0 / 0.5), 0 0 0 1px oklch(0.72 0.12 75 / 0.12), inset 0 1px 0 oklch(1 0 0 / 0.08)",
+                }}>
                 <h3 className="text-xl font-semibold mb-2" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
                   What do you need?
                 </h3>

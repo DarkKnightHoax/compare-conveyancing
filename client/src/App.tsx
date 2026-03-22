@@ -18,6 +18,9 @@ import BlogArticle from "./pages/BlogArticle";
 import AdminLogin from "./pages/AdminLogin";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
+import FirstTimeBuyer from "./pages/FirstTimeBuyer";
+import RemortgageConveyancing from "./pages/RemortgageConveyancing";
+import CompareConveyancingFees from "./pages/CompareConveyancingFees";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -36,6 +39,9 @@ function Router() {
       <Route path={"/blog/:slug"} component={BlogArticle} />
       <Route path={"/payment/success"} component={PaymentSuccess} />
       <Route path={"/payment/cancel"} component={PaymentCancel} />
+      <Route path={"/first-time-buyer-conveyancing"} component={FirstTimeBuyer} />
+      <Route path={"/remortgage-conveyancing"} component={RemortgageConveyancing} />
+      <Route path={"/compare-conveyancing-fees"} component={CompareConveyancingFees} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

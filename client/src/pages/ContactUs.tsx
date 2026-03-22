@@ -6,6 +6,8 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Scale, Phone, Mail, MapPin, Clock, CheckCircle, ArrowRight } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 export default function ContactUs() {
   const [, navigate] = useLocation();
@@ -22,16 +24,28 @@ export default function ContactUs() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const submitContact = trpc.contact.submit.useMutation({
+    onSuccess: () => setSubmitted(true),
+    onError: () => toast.error("Failed to send message. Please try again or email us directly."),
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    submitContact.mutate({
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.email,
+      phone: form.phone || undefined,
+      subject: form.subject,
+      message: form.message,
+    });
   };
 
   const contactInfo = [
     {
       icon: <Phone size={20} />,
       label: "Telephone",
-      value: "0800 000 0000",
+      value: "0330 128 9488",
       sub: "Monday to Friday, 9am – 6pm",
     },
     {

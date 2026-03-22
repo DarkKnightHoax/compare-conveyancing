@@ -195,3 +195,14 @@
 - [x] Update registered address on Terms & Conditions page
 - [x] Update registered address on Privacy Policy page
 - [x] Update registered address in Home.tsx footer
+
+## Email, Phone & Landing Pages (Mar 2026)
+- [x] Update phone number to 03301289488 across all pages
+- [x] Wire Contact Us form to send notifyOwner notification on submission
+- [x] Update registered address in server routers.ts emailQuote notification
+- [x] Research top 3 competitors (reallymoving.com, conveyancingindex.co.uk, compareconveyancingquotes.co.uk)
+- [x] Build SEO landing page 1: First Time Buyer Conveyancing (/first-time-buyer-conveyancing)
+- [x] Build SEO landing page 2: Remortgage Conveyancing (/remortgage-conveyancing)
+- [x] Build SEO landing page 3: Compare Conveyancing Fees Online (/compare-conveyancing-fees)
+- [x] Register 3 new landing page routes in App.tsx
+- [x] Improve wizard outer card container: gradient navy bg + gold border + deep shadow glow

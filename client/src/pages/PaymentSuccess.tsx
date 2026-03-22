@@ -99,11 +99,11 @@ export default function PaymentSuccess() {
         >
           Need help? Call us on{" "}
           <a
-            href="tel:02080508050"
+            href="tel:03301289488"
             className="font-semibold"
             style={{ color: "oklch(0.72 0.12 75)" }}
           >
-            0208 050 8050
+            0330 128 9488
           </a>
         </p>
       </div>

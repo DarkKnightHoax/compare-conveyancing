@@ -468,7 +468,7 @@ export const appRouter = router({
           `GRAND TOTAL: ${fmt(input.grandTotal)}`,
           ``,
           `This quote is indicative. Final fees may vary. All firms are SRA/CLC regulated.`,
-          `Compare the Conveyancing Market — 71-75 Shelton Street, Covent Garden, London WC2H 9JQ`,
+          `Compare the Conveyancing Market — Office 17699, 182-184 High Street North, East Ham, London E6 2JA`,
         ].filter(Boolean).join('\n');
 
         await notifyOwner({
@@ -477,6 +477,25 @@ export const appRouter = router({
         }).catch(() => {});
 
         return { success: true, emailedTo: input.recipientEmail, quoteText };
+      }),
+  }),
+
+  contact: router({
+    submit: publicProcedure
+      .input(z.object({
+        firstName: z.string().min(1),
+        lastName: z.string().min(1),
+        email: z.string().email(),
+        phone: z.string().optional(),
+        subject: z.string().min(1),
+        message: z.string().min(1),
+      }))
+      .mutation(async ({ input }) => {
+        await notifyOwner({
+          title: `Contact Enquiry — ${input.firstName} ${input.lastName}: ${input.subject}`,
+          content: `From: ${input.firstName} ${input.lastName}\nEmail: ${input.email}\nPhone: ${input.phone ?? 'Not provided'}\nSubject: ${input.subject}\n\nMessage:\n${input.message}`,
+        }).catch(() => {});
+        return { success: true };
       }),
   }),
 });
