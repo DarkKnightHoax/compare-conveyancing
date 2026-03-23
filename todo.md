@@ -240,3 +240,10 @@
 
 ## Critical Bug Fix (Mar 2026)
 - [x] Fix TiDB Cloud database connection: added SSL (rejectUnauthorized: false), connection pool, and 15s connectTimeout to prevent hanging queries and results page showing 0 firms
+
+## Landing Page Replacement (Mar 2026)
+- [x] Replace /remortgage-conveyancing landing page with /sale-and-purchase-conveyancing (moving home / Sale & Purchase)
+- [x] Update App.tsx route from remortgage-conveyancing to sale-and-purchase-conveyancing
+- [x] Update Home.tsx footer Services links
+- [x] Update BlogArticle.tsx "Explore Our Services" block
+- [x] Delete RemortgageConveyancing.tsx (kept as dead file — no routes point to it)

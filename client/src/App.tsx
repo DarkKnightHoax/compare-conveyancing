@@ -19,7 +19,7 @@ import AdminLogin from "./pages/AdminLogin";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
 import FirstTimeBuyer from "./pages/FirstTimeBuyer";
-import RemortgageConveyancing from "./pages/RemortgageConveyancing";
+import SaleAndPurchaseConveyancing from "./pages/SaleAndPurchaseConveyancing";
 import CompareConveyancingFees from "./pages/CompareConveyancingFees";
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -40,7 +40,7 @@ function Router() {
       <Route path={"/payment/success"} component={PaymentSuccess} />
       <Route path={"/payment/cancel"} component={PaymentCancel} />
       <Route path={"/first-time-buyer-conveyancing"} component={FirstTimeBuyer} />
-      <Route path={"/remortgage-conveyancing"} component={RemortgageConveyancing} />
+      <Route path={"/sale-and-purchase-conveyancing"} component={SaleAndPurchaseConveyancing} />
       <Route path={"/compare-conveyancing-fees"} component={CompareConveyancingFees} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />

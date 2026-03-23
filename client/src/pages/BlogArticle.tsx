@@ -204,7 +204,7 @@ export default function BlogArticle() {
             <div className="grid md:grid-cols-3 gap-3">
               {[
                 { label: "First Time Buyer Conveyancing", desc: "Specialist guidance for first-time buyers", path: "/first-time-buyer-conveyancing" },
-                { label: "Remortgage Conveyancing", desc: "Fast, fixed-fee remortgage solicitors", path: "/remortgage-conveyancing" },
+                { label: "Moving Home Conveyancing", desc: "Sale & purchase quotes for home movers", path: "/sale-and-purchase-conveyancing" },
                 { label: "Compare Conveyancing Fees", desc: "See 2026 fee ranges & compare quotes", path: "/compare-conveyancing-fees" },
               ].map(({ label, desc, path }) => (
                 <button

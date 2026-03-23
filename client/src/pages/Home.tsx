@@ -598,7 +598,7 @@ export default function Home() {
                 {[
                   { label: "Compare Conveyancing Fees", path: "/compare-conveyancing-fees" },
                   { label: "First Time Buyer Conveyancing", path: "/first-time-buyer-conveyancing" },
-                  { label: "Remortgage Conveyancing", path: "/remortgage-conveyancing" },
+                  { label: "Moving Home Conveyancing", path: "/sale-and-purchase-conveyancing" },
                   { label: "Get Free Quotes", path: "/get-quote" },
                 ].map(({ label, path }) => (
                   <button key={label} onClick={() => navigate(path)} className="text-left hover:text-white transition-colors text-xs" style={{ background: "none", border: "none", color: "oklch(0.975 0.008 80 / 0.5)", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>{label}</button>
