@@ -234,3 +234,9 @@
 - [x] Event 1: fire "contact_form_submit" + "ads_conversion_SUBMIT_LEAD_FORM_1" when Contact Us form submitted
 - [x] Event 2: fire "email_quote_request" + "ads_conversion_SUBMIT_LEAD_FORM_1" when "Email Me the Quote" clicked
 - [x] Event 3: fire "instruct_directly" + "ads_conversion_SUBMIT_LEAD_FORM_1" when "Instruct Directly" clicked
+
+## Bug Fixes (Mar 2026)
+- [ ] Results page not showing law firms — diagnose and fix
+
+## Critical Bug Fix (Mar 2026)
+- [x] Fix TiDB Cloud database connection: added SSL (rejectUnauthorized: false), connection pool, and 15s connectTimeout to prevent hanging queries and results page showing 0 firms

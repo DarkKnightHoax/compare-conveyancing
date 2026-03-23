@@ -1,0 +1,8 @@
+{
+  "query": "SELECT COUNT(*) as firm_count FROM law_firms WHERE is_active = true;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT COUNT(*) as firm_count FROM law_firms WHERE is_active = true;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1105 (HY000): No available TiDB instances, please make sure TiDB is available"
+  ]
+}
