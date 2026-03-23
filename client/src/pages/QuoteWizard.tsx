@@ -1179,6 +1179,10 @@ export default function QuoteWizard() {
       </div>
 
       <div className="container py-12 max-w-xl mx-auto">
+        {/* SEO headings — visually subtle but semantically present for crawlers */}
+        <h1 className="sr-only">Compare Conveyancing Quotes Online — Free Instant Quotes from Regulated UK Solicitors</h1>
+        <h2 className="sr-only">Get accurate, no-obligation conveyancing quotes from SRA and CLC regulated firms in under 2 minutes</h2>
+
         {/* Transaction type badge */}
         <div className="flex items-center justify-center mb-6">
           <span className="px-4 py-1.5 rounded-full text-xs font-semibold"

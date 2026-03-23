@@ -224,3 +224,7 @@
 - [x] Send email to info@comparetheconveyancingmarket.co.uk on new instruct request
 - [x] Send email to info@comparetheconveyancingmarket.co.uk on new contact form submission
 - [x] Vitest test confirms Resend API key valid and email delivery working
+
+## SEO Fixes (Mar 2026)
+- [x] /get-quote: Add H1 heading (sr-only, crawlable by Google)
+- [x] /get-quote: Add H2 heading (sr-only, crawlable by Google)
