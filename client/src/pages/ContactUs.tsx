@@ -8,6 +8,7 @@ import { useLocation } from "wouter";
 import { Scale, Phone, Mail, MapPin, Clock, CheckCircle, ArrowRight } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { trackContactFormSubmit } from "@/lib/analytics";
 
 export default function ContactUs() {
   const [, navigate] = useLocation();
@@ -25,7 +26,10 @@ export default function ContactUs() {
   }, []);
 
   const submitContact = trpc.contact.submit.useMutation({
-    onSuccess: () => setSubmitted(true),
+    onSuccess: () => {
+      setSubmitted(true);
+      trackContactFormSubmit({ subject: form.subject });
+    },
     onError: () => toast.error("Failed to send message. Please try again or email us directly."),
   });
 

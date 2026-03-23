@@ -228,3 +228,9 @@
 ## SEO Fixes (Mar 2026)
 - [x] /get-quote: Add H1 heading (sr-only, crawlable by Google)
 - [x] /get-quote: Add H2 heading (sr-only, crawlable by Google)
+
+## GA4 Conversion Tracking (Mar 2026)
+- [x] Create shared gtag analytics helper (client/src/lib/analytics.ts)
+- [x] Event 1: fire "contact_form_submit" + "ads_conversion_SUBMIT_LEAD_FORM_1" when Contact Us form submitted
+- [x] Event 2: fire "email_quote_request" + "ads_conversion_SUBMIT_LEAD_FORM_1" when "Email Me the Quote" clicked
+- [x] Event 3: fire "instruct_directly" + "ads_conversion_SUBMIT_LEAD_FORM_1" when "Instruct Directly" clicked

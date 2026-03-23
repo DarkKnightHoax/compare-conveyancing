@@ -18,6 +18,7 @@ import {
   Scale, CheckCircle, X, CreditCard, Clock, MapPin, ArrowUpDown, Mail, Loader2
 } from "lucide-react";
 import { formatCurrency, type WizardAnswers } from "../lib/feeEngine";
+import { trackEmailQuoteRequest, trackInstructDirectly } from "@/lib/analytics";
 
 export interface LiveQuoteResult {
   firmId: number;
@@ -1042,9 +1043,9 @@ export default function QuoteResults() {
               key={quote.firmId}
               quote={quote}
               rank={i + 1}
-              onInstruct={() => setInstructFirm(quote)}
+              onInstruct={() => { setInstructFirm(quote); trackInstructDirectly({ firmName: quote.firmName }); }}
               onCallback={() => setCallbackFirm(quote)}
-              onEmail={() => setEmailFirm(quote)}
+              onEmail={() => { setEmailFirm(quote); trackEmailQuoteRequest({ firmName: quote.firmName }); }}
             />
           ))}
         </div>
