@@ -21,6 +21,7 @@ import {
   calculateLiveQuotes,
 } from "./db";
 import { notifyOwner } from "./_core/notification";
+import { sendNewLeadEmail, sendNewCallbackEmail, sendNewInstructEmail, sendContactFormEmail } from "./email";
 
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== "admin") {
@@ -201,6 +202,17 @@ export const appRouter = router({
           title: `New Quote Request — ${input.firstName} ${input.lastName}`,
           content: `Transaction: ${input.transactionType} | Property Value: £${input.propertyValue.toLocaleString()} | Postcode: ${input.postcode} | Email: ${input.email}`,
         }).catch(() => {});
+        sendNewLeadEmail({
+          name: `${input.firstName} ${input.lastName}`,
+          email: input.email,
+          phone: input.phone,
+          transactionType: input.transactionType,
+          propertyValue: input.propertyValue,
+          propertyAddress: input.postcode,
+          mortgageLender: input.mortgageLender,
+          hasMortgage: input.hasMortgage,
+          isFirstTimeBuyer: input.isFirstTimeBuyer,
+        }).catch(() => {});
         return { success: true, leadId };
       }),
     list: standaloneAdminProcedure
@@ -238,6 +250,13 @@ export const appRouter = router({
           title: `Callback Request — ${input.name}`,
           content: `Phone: ${input.phone} | Preferred time: ${input.preferredTime ?? "Any time"} | Message: ${input.message ?? "None"}`,
         }).catch(() => {});
+        sendNewCallbackEmail({
+          name: input.name,
+          phone: input.phone,
+          email: input.email,
+          preferredTime: input.preferredTime,
+          notes: input.message,
+        }).catch(() => {});
         return { success: true, id };
       }),
     list: standaloneAdminProcedure
@@ -273,6 +292,14 @@ export const appRouter = router({
         await notifyOwner({
           title: `Instruction Request — ${input.firstName} ${input.lastName} → ${input.firmName}`,
           content: `Email: ${input.email} | Phone: ${input.phone} | Payment on account: £${input.paymentAmount ?? "TBC"}`,
+        }).catch(() => {});
+        sendNewInstructEmail({
+          clientName: `${input.firstName} ${input.lastName}`,
+          clientEmail: input.email,
+          clientPhone: input.phone,
+          firmName: input.firmName,
+          transactionType: "purchase",
+          paymentOnAccount: input.paymentAmount ? parseFloat(input.paymentAmount) : null,
         }).catch(() => {});
         return { success: true, id };
       }),
@@ -494,6 +521,13 @@ export const appRouter = router({
         await notifyOwner({
           title: `Contact Enquiry — ${input.firstName} ${input.lastName}: ${input.subject}`,
           content: `From: ${input.firstName} ${input.lastName}\nEmail: ${input.email}\nPhone: ${input.phone ?? 'Not provided'}\nSubject: ${input.subject}\n\nMessage:\n${input.message}`,
+        }).catch(() => {});
+        sendContactFormEmail({
+          name: `${input.firstName} ${input.lastName}`,
+          email: input.email,
+          phone: input.phone,
+          subject: input.subject,
+          message: input.message,
         }).catch(() => {});
         return { success: true };
       }),

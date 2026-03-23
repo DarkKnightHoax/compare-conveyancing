@@ -215,3 +215,12 @@
 - [x] Lender panel filtering already implemented in calculateLiveQuotes in db.ts
 - [x] mortgageLender already passed from wizard sessionStorage to results query
 - [x] Results page shows lender panel filter badge when mortgageLender is set
+
+## Email Notifications to info@ (Mar 2026)
+- [x] Install Resend SDK and store API key as secret
+- [x] Create branded email helper (server/email.ts) with HTML templates for all 4 notification types
+- [x] Send email to info@comparetheconveyancingmarket.co.uk on new lead (quote submitted)
+- [x] Send email to info@comparetheconveyancingmarket.co.uk on new callback request
+- [x] Send email to info@comparetheconveyancingmarket.co.uk on new instruct request
+- [x] Send email to info@comparetheconveyancingmarket.co.uk on new contact form submission
+- [x] Vitest test confirms Resend API key valid and email delivery working

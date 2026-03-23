@@ -1,0 +1,204 @@
+import { Resend } from "resend";
+import { ENV } from "./_core/env";
+
+const resend = new Resend(ENV.resendApiKey);
+
+const TO = "info@comparetheconveyancingmarket.co.uk";
+const FROM = "onboarding@resend.dev"; // Use this until domain is verified on Resend
+
+// ─── Shared HTML wrapper ───────────────────────────────────────────────────────
+function emailWrapper(title: string, body: string): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${title}</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f1eb;font-family:'DM Sans',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f1eb;padding:32px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background:#0f1f3d;padding:24px 32px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <span style="color:#c9a84c;font-size:20px;font-weight:700;letter-spacing:-0.5px;">Compare</span>
+                    <span style="color:#ffffff;font-size:14px;display:block;margin-top:2px;opacity:0.7;">the Conveyancing Market</span>
+                  </td>
+                  <td align="right">
+                    <span style="background:#c9a84c;color:#0f1f3d;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.5px;">NEW NOTIFICATION</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:32px;">
+              <h1 style="margin:0 0 8px;font-size:22px;color:#0f1f3d;font-weight:700;">${title}</h1>
+              <div style="height:3px;width:48px;background:#c9a84c;border-radius:2px;margin-bottom:24px;"></div>
+              ${body}
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f4f1eb;padding:20px 32px;border-top:1px solid #e8e3d8;">
+              <p style="margin:0;font-size:12px;color:#888;text-align:center;">
+                Compare the Conveyancing Market · Office 17699, 182-184 High Street North, East Ham, London E6 2JA<br/>
+                <a href="https://www.comparetheconveyancingmarket.co.uk" style="color:#c9a84c;text-decoration:none;">www.comparetheconveyancingmarket.co.uk</a> · 0330 128 9488
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+function infoRow(label: string, value: string | number | undefined | null): string {
+  if (!value && value !== 0) return "";
+  return `<tr>
+    <td style="padding:8px 0;border-bottom:1px solid #f0ece4;width:40%;font-size:13px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">${label}</td>
+    <td style="padding:8px 0;border-bottom:1px solid #f0ece4;font-size:14px;color:#1a1a2e;font-weight:500;">${value}</td>
+  </tr>`;
+}
+
+// ─── 1. New Lead (Quote Submitted) ────────────────────────────────────────────
+export async function sendNewLeadEmail(lead: {
+  name: string;
+  email: string;
+  phone?: string | null;
+  transactionType: string;
+  propertyValue?: number | null;
+  propertyAddress?: string | null;
+  mortgageLender?: string | null;
+  hasMortgage?: boolean | null;
+  isFirstTimeBuyer?: boolean | null;
+}) {
+  const body = `
+    <p style="color:#555;font-size:14px;margin:0 0 20px;">A new quote request has been submitted on the website. Details below:</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      ${infoRow("Name", lead.name)}
+      ${infoRow("Email", lead.email)}
+      ${infoRow("Phone", lead.phone)}
+      ${infoRow("Transaction Type", lead.transactionType.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()))}
+      ${infoRow("Property Value", lead.propertyValue ? `£${lead.propertyValue.toLocaleString()}` : null)}
+      ${infoRow("Property Address", lead.propertyAddress)}
+      ${infoRow("Mortgage Lender", lead.mortgageLender)}
+      ${infoRow("First Time Buyer", lead.isFirstTimeBuyer ? "Yes" : lead.isFirstTimeBuyer === false ? "No" : null)}
+    </table>
+    <div style="margin-top:24px;padding:16px;background:#f0f9f4;border-left:4px solid #22c55e;border-radius:4px;">
+      <p style="margin:0;font-size:13px;color:#166534;">You can view and manage this lead in the <a href="https://www.comparetheconveyancingmarket.co.uk/admin" style="color:#166534;font-weight:700;">Admin Panel</a>.</p>
+    </div>`;
+
+  return resend.emails.send({
+    from: FROM,
+    to: TO,
+    subject: `🏠 New Quote Request — ${lead.name}`,
+    html: emailWrapper("New Quote Request", body),
+  });
+}
+
+// ─── 2. New Callback Request ───────────────────────────────────────────────────
+export async function sendNewCallbackEmail(cb: {
+  name: string;
+  phone: string;
+  email?: string | null;
+  preferredTime?: string | null;
+  firmName?: string | null;
+  notes?: string | null;
+}) {
+  const body = `
+    <p style="color:#555;font-size:14px;margin:0 0 20px;">A client has requested a callback. Please contact them as soon as possible.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      ${infoRow("Name", cb.name)}
+      ${infoRow("Phone", cb.phone)}
+      ${infoRow("Email", cb.email)}
+      ${infoRow("Preferred Time", cb.preferredTime)}
+      ${infoRow("Firm Interested In", cb.firmName)}
+      ${infoRow("Notes", cb.notes)}
+    </table>
+    <div style="margin-top:24px;padding:16px;background:#fff7ed;border-left:4px solid #f97316;border-radius:4px;">
+      <p style="margin:0;font-size:13px;color:#9a3412;">Action required: Call <strong>${cb.name}</strong> on <strong>${cb.phone}</strong>${cb.preferredTime ? ` at their preferred time: ${cb.preferredTime}` : ""}.</p>
+    </div>`;
+
+  return resend.emails.send({
+    from: FROM,
+    to: TO,
+    subject: `📞 Callback Request — ${cb.name}`,
+    html: emailWrapper("Callback Request", body),
+  });
+}
+
+// ─── 3. New Instruct Request ───────────────────────────────────────────────────
+export async function sendNewInstructEmail(instr: {
+  clientName: string;
+  clientEmail: string;
+  clientPhone?: string | null;
+  firmName: string;
+  transactionType: string;
+  propertyAddress?: string | null;
+  totalFee?: number | null;
+  paymentOnAccount?: number | null;
+}) {
+  const body = `
+    <p style="color:#555;font-size:14px;margin:0 0 20px;">A client has chosen to instruct a firm directly through the website.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      ${infoRow("Client Name", instr.clientName)}
+      ${infoRow("Client Email", instr.clientEmail)}
+      ${infoRow("Client Phone", instr.clientPhone)}
+      ${infoRow("Firm Instructed", instr.firmName)}
+      ${infoRow("Transaction Type", instr.transactionType.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()))}
+      ${infoRow("Property Address", instr.propertyAddress)}
+      ${infoRow("Total Quoted Fee", instr.totalFee ? `£${instr.totalFee.toLocaleString("en-GB", { minimumFractionDigits: 2 })}` : null)}
+      ${infoRow("Payment on Account", instr.paymentOnAccount ? `£${instr.paymentOnAccount.toLocaleString("en-GB", { minimumFractionDigits: 2 })}` : null)}
+    </table>
+    <div style="margin-top:24px;padding:16px;background:#eff6ff;border-left:4px solid #3b82f6;border-radius:4px;">
+      <p style="margin:0;font-size:13px;color:#1e40af;">Please follow up with <strong>${instr.firmName}</strong> to confirm the instruction and onboard the client.</p>
+    </div>`;
+
+  return resend.emails.send({
+    from: FROM,
+    to: TO,
+    subject: `✅ New Instruction — ${instr.clientName} → ${instr.firmName}`,
+    html: emailWrapper("New Instruction Request", body),
+  });
+}
+
+// ─── 4. Contact Form Submission ────────────────────────────────────────────────
+export async function sendContactFormEmail(contact: {
+  name: string;
+  email: string;
+  phone?: string | null;
+  subject?: string | null;
+  message: string;
+}) {
+  const body = `
+    <p style="color:#555;font-size:14px;margin:0 0 20px;">A new enquiry has been submitted via the Contact Us page.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      ${infoRow("Name", contact.name)}
+      ${infoRow("Email", contact.email)}
+      ${infoRow("Phone", contact.phone)}
+      ${infoRow("Subject", contact.subject)}
+    </table>
+    <div style="margin-top:20px;padding:16px;background:#f9f9f9;border:1px solid #e8e3d8;border-radius:8px;">
+      <p style="margin:0 0 8px;font-size:12px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">Message</p>
+      <p style="margin:0;font-size:14px;color:#1a1a2e;line-height:1.6;">${contact.message.replace(/\n/g, "<br/>")}</p>
+    </div>
+    <div style="margin-top:16px;padding:12px 16px;background:#f0f9f4;border-left:4px solid #22c55e;border-radius:4px;">
+      <p style="margin:0;font-size:13px;color:#166534;">Reply directly to <a href="mailto:${contact.email}" style="color:#166534;font-weight:700;">${contact.email}</a> to respond to this enquiry.</p>
+    </div>`;
+
+  return resend.emails.send({
+    from: FROM,
+    to: TO,
+    subject: `✉️ Contact Enquiry — ${contact.name}`,
+    html: emailWrapper("New Contact Enquiry", body),
+  });
+}
