@@ -105,6 +105,13 @@ export default function CompareConveyancingFees() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    document.title = "Compare Conveyancing Fees Online | Instant Quotes from Regulated Solicitors";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute("content", "Compare conveyancing fees online in seconds. See fully itemised quotes from SRA & CLC regulated UK solicitors — legal fees, searches, SDLT, and Land Registry all included.");
+    return () => {
+      document.title = "Compare the Conveyancing Market | Free Conveyancing Quotes";
+      if (metaDesc) metaDesc.setAttribute("content", "Compare instant conveyancing quotes from SRA & CLC regulated UK solicitors. Free, no-obligation quotes in under 2 minutes.");
+    };
   }, []);
 
   return (

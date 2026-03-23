@@ -104,6 +104,13 @@ export default function FirstTimeBuyer() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    document.title = "First Time Buyer Conveyancing Quotes | Compare Regulated Solicitors";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute("content", "Compare first time buyer conveyancing quotes from SRA & CLC regulated UK solicitors. Fixed fees, no hidden costs, instant results. Save up to £500 on your solicitor fees.");
+    return () => {
+      document.title = "Compare the Conveyancing Market | Free Conveyancing Quotes";
+      if (metaDesc) metaDesc.setAttribute("content", "Compare instant conveyancing quotes from SRA & CLC regulated UK solicitors. Free, no-obligation quotes in under 2 minutes.");
+    };
   }, []);
 
   return (

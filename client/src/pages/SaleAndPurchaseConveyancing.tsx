@@ -106,6 +106,21 @@ export default function SaleAndPurchaseConveyancing() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    // SEO & Google Ads meta tags — optimised for Quality Score
+    document.title = "Moving Home Conveyancing Quotes | Compare Sale & Purchase Solicitors";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute("content", "Compare instant sale and purchase conveyancing quotes from regulated UK solicitors. One fixed fee covers both your sale and purchase. Free, no-obligation quotes in under 2 minutes.");
+    // Open Graph for social sharing
+    let ogTitle = document.querySelector('meta[property="og:title"]');
+    if (!ogTitle) { ogTitle = document.createElement('meta'); (ogTitle as HTMLMetaElement).setAttribute('property', 'og:title'); document.head.appendChild(ogTitle); }
+    ogTitle.setAttribute('content', 'Moving Home? Compare Sale & Purchase Conveyancing Quotes');
+    let ogDesc = document.querySelector('meta[property="og:description"]');
+    if (!ogDesc) { ogDesc = document.createElement('meta'); (ogDesc as HTMLMetaElement).setAttribute('property', 'og:description'); document.head.appendChild(ogDesc); }
+    ogDesc.setAttribute('content', 'Get instant, fixed-fee quotes from SRA & CLC regulated conveyancers for your sale and purchase. One solicitor, both transactions, no hidden fees.');
+    return () => {
+      document.title = "Compare the Conveyancing Market | Free Conveyancing Quotes";
+      if (metaDesc) metaDesc.setAttribute("content", "Compare instant conveyancing quotes from SRA & CLC regulated UK solicitors. Free, no-obligation quotes in under 2 minutes.");
+    };
   }, []);
 
   return (

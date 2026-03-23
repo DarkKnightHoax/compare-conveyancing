@@ -197,4 +197,53 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     ],
     relatedSlugs: ["what-is-conveyancing", "how-much-does-conveyancing-cost"],
   },
+  {
+    slug: "selling-and-buying-at-the-same-time",
+    title: "Selling and Buying at the Same Time: Your Complete Guide",
+    metaTitle: "Selling and Buying a House at the Same Time | Compare the Conveyancing Market",
+    metaDescription: "Everything you need to know about sale and purchase conveyancing — managing a property chain, coordinating exchange and completion, and keeping costs down when moving home.",
+    category: "Conveyancing Basics",
+    readTime: "8 min read",
+    publishDate: "23 March 2026",
+    excerpt: "Moving home means selling and buying at the same time — the most complex conveyancing transaction most people will ever face. This guide explains the process, the pitfalls, and how to get the best deal.",
+    sections: [
+      {
+        heading: "Why Selling and Buying at the Same Time Is Different",
+        body: "When you are selling your current home and buying a new one simultaneously, you are involved in two separate legal transactions that must be carefully coordinated. Unlike a straightforward purchase or sale, you are part of a property chain — a sequence of buyers and sellers who are all dependent on each other completing on the same day. If one link in the chain breaks, every transaction above and below it is affected. Understanding how the chain works, and how to protect yourself within it, is the most important thing you can do before you start.",
+      },
+      {
+        heading: "Should You Use One Solicitor for Both Transactions?",
+        body: "Yes — and it is strongly recommended. Using a single solicitor or licensed conveyancer to handle both your sale and your purchase is more efficient, more cost-effective, and significantly reduces the risk of miscommunication. Your solicitor can monitor progress on both files simultaneously, coordinate exchange and completion dates across the chain, and ensure that the funds from your sale are transferred to your purchase on the same day. Instructing two separate firms doubles the administration and creates an unnecessary bottleneck in the chain. All firms on our panel handle combined sale and purchase transactions as a matter of course.",
+      },
+      {
+        heading: "How Much Does Sale and Purchase Conveyancing Cost?",
+        body: "For a combined sale and purchase, total conveyancing fees typically range from £1,500 to £3,000 including searches, disbursements, and VAT. The exact figure depends on the sale and purchase prices, whether either property is leasehold, and whether you have a mortgage on the purchase. Using one firm for both transactions is cheaper than instructing two separate solicitors. Our comparison tool shows you fully itemised, fixed-fee quotes from regulated UK conveyancers — so you know exactly what you will pay before you commit.",
+      },
+      {
+        heading: "The Sale and Purchase Conveyancing Process: Step by Step",
+        body: "Once your sale and purchase offers are accepted, instruct your solicitor immediately. They will open both files and begin work in parallel. On the sale side, they will obtain your title deeds, draft the contract, and respond to the buyer's enquiries. On the purchase side, they will receive the draft contract from the seller's solicitor, order searches, raise enquiries, and review your mortgage offer. Once both sets of enquiries are resolved and your mortgage offer is in place, your solicitor will report to you on both transactions and request your signature on the contracts. Exchange of contracts happens simultaneously across the whole chain — at this point you are legally committed to both transactions and a completion date is fixed.",
+      },
+      {
+        heading: "What Is a Property Chain and How Do You Manage It?",
+        body: "A property chain forms when multiple buyers and sellers are linked together. For example: you are buying from a family who are buying from a couple who are buying a new build. Each transaction depends on the others completing on the same day. Chains can involve anywhere from two to ten or more parties. The longer the chain, the greater the risk of delay or collapse. Your solicitor manages the chain on your behalf — chasing other solicitors, coordinating exchange, and keeping all parties informed. You can help by responding quickly to requests for information and documents, and by ensuring your mortgage application is progressing smoothly.",
+      },
+      {
+        heading: "What Happens If the Chain Collapses?",
+        body: "Chain collapse is one of the most stressful events in a property transaction. It typically happens when a buyer or seller pulls out, a mortgage offer is withdrawn, or a survey reveals a serious problem. If the chain collapses before exchange, you have no legal recourse — either party can withdraw without penalty. You will lose any money spent on searches, surveys, and legal fees to that point. After exchange, withdrawal triggers significant financial penalties. To reduce the risk of chain collapse, instruct a proactive solicitor, keep your mortgage application on track, and consider taking out home buyers' protection insurance to cover abortive costs.",
+      },
+      {
+        heading: "Stamp Duty When Moving Home",
+        body: "If you are selling your main residence and buying another to replace it, standard Stamp Duty Land Tax (SDLT) rates apply on the purchase price. You will not pay the 5% additional property surcharge as long as you are replacing your main home — even if there is a brief period where you own both properties simultaneously. If you complete on your purchase before your sale, you will initially pay the higher rate, but you can claim a refund within 12 months of selling your previous main residence. Our quote tool calculates your exact SDLT liability automatically based on your circumstances.",
+      },
+      {
+        heading: "How Long Does Sale and Purchase Conveyancing Take?",
+        body: "Moving home typically takes 10 to 16 weeks from offer accepted to completion, depending on the length and complexity of the chain. A straightforward two-property chain with no mortgage complications can complete in 8 to 10 weeks. A longer chain of four or more properties can take 16 to 20 weeks or more. The most common causes of delay are slow mortgage processing, outstanding enquiries, and unresponsive parties in the chain. Instructing an efficient, communicative solicitor and responding promptly to all requests is the single most effective way to speed up your move.",
+      },
+      {
+        heading: "How to Get the Best Quote for Your Move",
+        body: "The best way to ensure you are paying a fair price for your sale and purchase conveyancing is to compare quotes from multiple regulated firms. Our free comparison tool generates instant, itemised quotes from SRA and CLC regulated conveyancers — covering both your sale and your purchase in one fixed fee. The rates on our platform are exclusive to clients who instruct through us and are not available if you approach firms directly. Get your free, no-obligation quote in under two minutes.",
+      },
+    ],
+    relatedSlugs: ["how-much-does-conveyancing-cost", "what-is-conveyancing", "first-time-buyer-conveyancing-guide"],
+  },
 ];
