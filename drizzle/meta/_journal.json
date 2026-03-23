@@ -43,6 +43,13 @@
       "when": 1772120359646,
       "tag": "0005_polite_mimic",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1774309001909,
+      "tag": "0006_wandering_songbird",
+      "breakpoints": true
     }
   ]
 }

@@ -258,3 +258,8 @@
 - [ ] Submit /blog/selling-and-buying-at-the-same-time to Google Search Console
 - [ ] Add Moving Home ad group structured data / keyword meta to sale-and-purchase page
 - [x] Updated sitemap.xml: correct domain (www.comparetheconveyancingmarket.co.uk), all 3 landing pages at priority 0.9, new blog article, removed remortgage URL
+
+## Lead Source Tracking (Mar 2026)
+- [x] Add source fields to leads schema (utmSource, utmMedium, utmCampaign, utmContent, utmTerm, referrerUrl, landingPage)
+- [x] Capture UTM params + referrer in quote wizard and pass to backend on lead creation
+- [x] Display source/UTM data in admin All Leads panel lead cards (Traffic Source section in expanded lead card)

@@ -206,6 +206,27 @@ function LeadsTab() {
                       </div>
                     ))}
                   </div>
+                  {/* Traffic Source / Attribution */}
+                  {(lead.utmSource || lead.utmMedium || lead.utmCampaign || lead.utmTerm || lead.referrerUrl || lead.landingPage) && (
+                    <div className="mt-4 pt-3" style={{ borderTop: "1px solid oklch(0.93 0.01 250)" }}>
+                      <div className="text-xs font-bold mb-2" style={{ color: "oklch(0.45 0.05 250)", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.06em", textTransform: "uppercase" }}>Traffic Source</div>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {[
+                          { label: "Source", value: lead.utmSource },
+                          { label: "Medium", value: lead.utmMedium },
+                          { label: "Campaign", value: lead.utmCampaign },
+                          { label: "Keyword", value: lead.utmTerm },
+                          { label: "Landing Page", value: lead.landingPage },
+                          { label: "Referrer", value: lead.referrerUrl },
+                        ].filter(f => f.value).map(({ label, value }) => (
+                          <div key={label}>
+                            <div className="text-xs font-semibold mb-0.5" style={{ color: "oklch(0.6 0.03 250)", fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
+                            <div className="text-xs break-all" style={{ color: "oklch(0.25 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>{value}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="flex flex-wrap gap-2 mt-3">
                     {(["new", "contacted", "instructed", "lost"] as const).map((s) => (
                       <button

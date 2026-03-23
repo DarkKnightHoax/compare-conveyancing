@@ -8,7 +8,7 @@
  * Animation: each question slides in from the right, exits to the left
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation, useSearch } from "wouter";
 import { ChevronLeft, ChevronRight, Scale, HelpCircle, MapPin, X, Check } from "lucide-react";
 import type { WizardAnswers } from "../lib/feeEngine";
@@ -379,6 +379,31 @@ export default function QuoteWizard() {
   const initialType = (params.get("type") as WizardAnswers["transactionType"]) || "purchase";
   const createLead = trpc.leads.create.useMutation();
 
+  // ── UTM / SOURCE TRACKING ─────────────────────────────────────────────────
+  // Capture once on mount — reads UTM params from URL (Google Ads auto-tagging)
+  // and persists them in sessionStorage so they survive multi-page navigation.
+  const sourceData = useMemo(() => {
+    const stored: Record<string, string> = (() => {
+      try { return JSON.parse(sessionStorage.getItem('_utm') || '{}'); } catch { return {}; }
+    })();
+    const get = (key: string) => params.get(key) || stored[key] || undefined;
+    const data = {
+      utmSource:   get('utm_source'),
+      utmMedium:   get('utm_medium'),
+      utmCampaign: get('utm_campaign'),
+      utmContent:  get('utm_content'),
+      utmTerm:     get('utm_term'),
+      referrerUrl: document.referrer || stored['referrerUrl'] || undefined,
+      landingPage: stored['landingPage'] || window.location.pathname,
+    };
+    // Persist for the lifetime of this browser session
+    sessionStorage.setItem('_utm', JSON.stringify({
+      ...stored, ...data,
+      landingPage: stored['landingPage'] || data.landingPage,
+    }));
+    return data;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // High-level step (1=Property Details, 2=Your Situation, 3=Contact)
   const [step, setStep] = useState(1);
   // Sub-question index within step 1 and step 2
@@ -551,6 +576,14 @@ export default function QuoteWizard() {
         numberOfBuyers: answers.buyerCount,
         hasMortgageOnSale: answers.hasMortgageOnProperty,
         movingTimeline: answers.completionTimeline,
+        // Source attribution
+        utmSource:   sourceData.utmSource,
+        utmMedium:   sourceData.utmMedium,
+        utmCampaign: sourceData.utmCampaign,
+        utmContent:  sourceData.utmContent,
+        utmTerm:     sourceData.utmTerm,
+        referrerUrl: sourceData.referrerUrl,
+        landingPage: sourceData.landingPage,
       });
       navigate("/results");
       return;

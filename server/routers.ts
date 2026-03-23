@@ -195,6 +195,14 @@ export const appRouter = router({
         movingTimeline: z.string().optional(),
         quotedLegalFee: z.string().optional(),
         quotedTotal: z.string().optional(),
+        // Source attribution
+        utmSource: z.string().optional(),
+        utmMedium: z.string().optional(),
+        utmCampaign: z.string().optional(),
+        utmContent: z.string().optional(),
+        utmTerm: z.string().optional(),
+        referrerUrl: z.string().optional(),
+        landingPage: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         const leadId = await createLead(input as any);

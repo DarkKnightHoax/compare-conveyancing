@@ -1,0 +1,24 @@
+{
+  "query": "SELECT id, firstName, lastName, email, phone, transactionType, propertyValue, postcode, isFirstTimeBuyer, actionTaken, status, createdAt FROM leads WHERE firstName LIKE '%Tom%' OR lastName LIKE '%Williams%' ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT id, firstName, lastName, email, phone, transactionType, propertyValue, postcode, isFirstTimeBuyer, actionTaken, status, createdAt FROM leads WHERE firstName LIKE '%Tom%' OR lastName LIKE '%Williams%' ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "780001",
+      "firstName": "Tom",
+      "lastName": "Williams",
+      "email": "tomwilliams006@gmail.com",
+      "phone": "07843668838",
+      "transactionType": "sale",
+      "propertyValue": "375000",
+      "postcode": "SE22 0SE",
+      "isFirstTimeBuyer": "0",
+      "actionTaken": "browsed",
+      "status": "new",
+      "createdAt": "2026-03-23 22:41:43"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tfirstName\tlastName\temail\tphone\ttransactionType\tpropertyValue\tpostcode\tisFirstTimeBuyer\tactionTaken\tstatus\tcreatedAt\n780001\tTom\tWilliams\ttomwilliams006@gmail.com\t07843668838\tsale\t375000\tSE22 0SE\t0\tbrowsed\tnew\t2026-03-23 22:41:43\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

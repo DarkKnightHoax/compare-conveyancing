@@ -79,6 +79,14 @@ export const leads = mysqlTable("leads", {
   quotedTotal: decimal("quotedTotal", { precision: 10, scale: 2 }),
   // Admin notes
   adminNotes: text("adminNotes"),
+  // Source / attribution tracking
+  utmSource: varchar("utmSource", { length: 100 }),      // e.g. "google", "facebook", "email"
+  utmMedium: varchar("utmMedium", { length: 100 }),      // e.g. "cpc", "organic", "referral"
+  utmCampaign: varchar("utmCampaign", { length: 255 }),  // e.g. "first-time-buyer-ads"
+  utmContent: varchar("utmContent", { length: 255 }),    // e.g. ad variant
+  utmTerm: varchar("utmTerm", { length: 255 }),          // e.g. keyword that triggered the ad
+  referrerUrl: varchar("referrerUrl", { length: 1000 }), // full document.referrer
+  landingPage: varchar("landingPage", { length: 500 }),  // first page user landed on
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
