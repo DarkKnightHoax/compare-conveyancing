@@ -117,9 +117,36 @@ export default function SaleAndPurchaseConveyancing() {
     let ogDesc = document.querySelector('meta[property="og:description"]');
     if (!ogDesc) { ogDesc = document.createElement('meta'); (ogDesc as HTMLMetaElement).setAttribute('property', 'og:description'); document.head.appendChild(ogDesc); }
     ogDesc.setAttribute('content', 'Get instant, fixed-fee quotes from SRA & CLC regulated conveyancers for your sale and purchase. One solicitor, both transactions, no hidden fees.');
+    // JSON-LD Service schema — improves Google Ads Quality Score by confirming page relevance
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Sale and Purchase Conveyancing Quotes",
+      "description": "Compare instant, fixed-fee sale and purchase conveyancing quotes from SRA and CLC regulated UK solicitors. One solicitor handles both your sale and purchase.",
+      "provider": {
+        "@type": "Organization",
+        "name": "Compare the Conveyancing Market",
+        "url": "https://www.comparetheconveyancingmarket.co.uk"
+      },
+      "areaServed": { "@type": "Country", "name": "United Kingdom" },
+      "serviceType": "Conveyancing",
+      "offers": {
+        "@type": "Offer",
+        "description": "Free, no-obligation sale and purchase conveyancing quotes",
+        "price": "0",
+        "priceCurrency": "GBP"
+      },
+      "keywords": "moving home conveyancing, sale and purchase conveyancing, conveyancing when selling and buying, home mover conveyancing quotes"
+    };
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'service-schema-sp';
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
     return () => {
       document.title = "Compare the Conveyancing Market | Free Conveyancing Quotes";
       if (metaDesc) metaDesc.setAttribute("content", "Compare instant conveyancing quotes from SRA & CLC regulated UK solicitors. Free, no-obligation quotes in under 2 minutes.");
+      document.getElementById('service-schema-sp')?.remove();
     };
   }, []);
 
@@ -158,6 +185,15 @@ export default function SaleAndPurchaseConveyancing() {
                 className="btn-gold px-8 py-4 rounded-xl text-base font-bold flex items-center gap-3"
               >
                 Get My Moving Home Quote <ChevronRight size={18} />
+              </button>
+              <button
+                onClick={() => navigate("/blog/selling-and-buying-at-the-same-time")}
+                className="mt-4 flex items-center gap-2 text-sm font-medium transition-colors"
+                style={{ background: "none", border: "none", color: "oklch(0.72 0.12 75)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "oklch(0.82 0.10 75)")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "oklch(0.72 0.12 75)")}
+              >
+                Learn more about moving home <ArrowRight size={14} />
               </button>
             </div>
 

@@ -252,3 +252,9 @@
 - [x] 301 redirect: /remortgage-conveyancing → /sale-and-purchase-conveyancing (server-side)
 - [x] New blog article: "Selling and Buying at the Same Time: Your Complete Guide" (/blog/selling-and-buying-at-the-same-time)
 - [x] Update meta title/description on all 3 landing pages for Google Ads Quality Score (sale-and-purchase, first-time-buyer, compare-fees)
+
+## Search Console, Internal Links & Ads (Mar 2026)
+- [ ] Add "Learn more about moving home" internal link from sale-and-purchase landing page hero to blog article
+- [ ] Submit /blog/selling-and-buying-at-the-same-time to Google Search Console
+- [ ] Add Moving Home ad group structured data / keyword meta to sale-and-purchase page
+- [x] Updated sitemap.xml: correct domain (www.comparetheconveyancingmarket.co.uk), all 3 landing pages at priority 0.9, new blog article, removed remortgage URL

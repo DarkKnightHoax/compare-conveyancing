@@ -1,63 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- ── Core pages ─────────────────────────────────────────────────────── -->
   <url>
-    <loc>https://comparetheconveyancingmarket.com/</loc>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/</loc>
+    <lastmod>2026-03-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://comparetheconveyancingmarket.com/get-quote</loc>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/get-quote</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- ── SEO Landing Pages ───────────────────────────────────────────────── -->
+  <url>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/first-time-buyer-conveyancing</loc>
+    <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://comparetheconveyancingmarket.com/faq</loc>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/sale-and-purchase-conveyancing</loc>
+    <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://comparetheconveyancingmarket.com/blog</loc>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/compare-conveyancing-fees</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- ── Blog ───────────────────────────────────────────────────────────── -->
+  <url>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/blog</loc>
+    <lastmod>2026-03-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://comparetheconveyancingmarket.com/blog/how-much-does-conveyancing-cost</loc>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/blog/selling-and-buying-at-the-same-time</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/blog/how-much-does-conveyancing-cost</loc>
+    <lastmod>2026-02-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://comparetheconveyancingmarket.com/blog/what-is-conveyancing</loc>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/blog/what-is-conveyancing</loc>
+    <lastmod>2026-02-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://comparetheconveyancingmarket.com/blog/first-time-buyer-conveyancing-guide</loc>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/blog/first-time-buyer-conveyancing-guide</loc>
+    <lastmod>2026-01-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://comparetheconveyancingmarket.com/blog/leasehold-vs-freehold</loc>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/blog/leasehold-vs-freehold</loc>
+    <lastmod>2026-01-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- ── Supporting pages ───────────────────────────────────────────────── -->
+  <url>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/faq</loc>
+    <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://comparetheconveyancingmarket.com/how-it-works</loc>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/how-it-works</loc>
+    <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://comparetheconveyancingmarket.com/contact</loc>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/contact</loc>
+    <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://comparetheconveyancingmarket.com/privacy-policy</loc>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/privacy-policy</loc>
+    <lastmod>2026-03-23</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://comparetheconveyancingmarket.com/terms</loc>
+    <loc>https://www.comparetheconveyancingmarket.co.uk/terms</loc>
+    <lastmod>2026-03-23</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
+
 </urlset>
