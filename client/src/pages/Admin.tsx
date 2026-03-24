@@ -189,23 +189,87 @@ function LeadsTab() {
 
               {expandedId === lead.id && (
                 <div className="px-5 pb-5 pt-0" style={{ borderTop: "1px solid oklch(0.95 0.01 250)" }}>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 mb-4">
-                    {[
-                      { label: "Phone", value: lead.phone },
-                      { label: "Postcode", value: lead.postcode },
-                      { label: "Tenure", value: lead.propertyTenure ?? "—" },
-                      { label: "Timeline", value: lead.movingTimeline ?? "—" },
-                      { label: "First Time Buyer", value: lead.isFirstTimeBuyer ? "Yes" : "No" },
-                      { label: "Mortgage", value: lead.hasMortgage ? lead.mortgageLender ?? "Yes" : "No" },
-                      { label: "New Build", value: lead.isNewBuild ? "Yes" : "No" },
-                      { label: "Shared Ownership", value: lead.isSharedOwnership ? "Yes" : "No" },
-                    ].map(({ label, value }) => (
-                      <div key={label}>
-                        <div className="text-xs font-semibold mb-0.5" style={{ color: "oklch(0.6 0.03 250)", fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
-                        <div className="text-sm" style={{ color: "oklch(0.25 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>{value}</div>
-                      </div>
-                    ))}
+
+                  {/* ── CONTACT DETAILS ── */}
+                  <div className="mt-4 mb-3">
+                    <div className="text-xs font-bold mb-2" style={{ color: "oklch(0.45 0.05 250)", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.06em", textTransform: "uppercase" }}>Contact Details</div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {[
+                        { label: "Phone", value: lead.phone },
+                        { label: "Email", value: lead.email },
+                      ].map(({ label, value }) => (
+                        <div key={label}>
+                          <div className="text-xs font-semibold mb-0.5" style={{ color: "oklch(0.6 0.03 250)", fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
+                          <div className="text-sm break-all" style={{ color: "oklch(0.25 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>{value}</div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+
+                  {/* ── PROPERTY DETAILS ── */}
+                  <div className="mt-3 pt-3" style={{ borderTop: "1px solid oklch(0.93 0.01 250)" }}>
+                    <div className="text-xs font-bold mb-2" style={{ color: "oklch(0.45 0.05 250)", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.06em", textTransform: "uppercase" }}>Property Details</div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {[
+                        { label: "Transaction", value: { purchase: "Purchase", sale: "Sale", sale_purchase: "Sale & Purchase", remortgage: "Remortgage" }[lead.transactionType] ?? lead.transactionType },
+                        { label: "Property Value", value: `£${Number(lead.propertyValue).toLocaleString('en-GB')}` },
+                        { label: "Postcode", value: lead.postcode },
+                        { label: "Tenure", value: lead.propertyTenure ? lead.propertyTenure.charAt(0).toUpperCase() + lead.propertyTenure.slice(1) : "—" },
+                        { label: "Timeline", value: lead.movingTimeline ?? "—" },
+                        { label: "Number of Buyers", value: String(lead.numberOfBuyers ?? 1) },
+                      ].map(({ label, value }) => (
+                        <div key={label}>
+                          <div className="text-xs font-semibold mb-0.5" style={{ color: "oklch(0.6 0.03 250)", fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
+                          <div className="text-sm" style={{ color: "oklch(0.25 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>{value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ── BUYER SITUATION FLAGS ── */}
+                  <div className="mt-3 pt-3" style={{ borderTop: "1px solid oklch(0.93 0.01 250)" }}>
+                    <div className="text-xs font-bold mb-2" style={{ color: "oklch(0.45 0.05 250)", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.06em", textTransform: "uppercase" }}>Buyer Situation</div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {[
+                        { label: "First Time Buyer", value: lead.isFirstTimeBuyer ? "✅ Yes" : "No" },
+                        { label: "Has Mortgage", value: lead.hasMortgage ? `✅ Yes${lead.mortgageLender ? ` — ${lead.mortgageLender}` : ''}` : "No" },
+                        { label: "New Build", value: lead.isNewBuild ? "✅ Yes" : "No" },
+                        { label: "Shared Ownership", value: lead.isSharedOwnership ? "✅ Yes" : "No" },
+                        { label: "Gifted Deposit", value: lead.isGiftedDeposit ? "✅ Yes" : "No" },
+                        { label: "Help to Buy ISA", value: lead.hasHelpToBuyIsa ? "✅ Yes" : "No" },
+                        { label: "Right to Buy", value: lead.isRightToBuy ? "✅ Yes" : "No" },
+                        { label: "Buy to Let", value: lead.isBuyToLet ? "✅ Yes" : "No" },
+                        { label: "Additional Property", value: lead.isSecondHome ? "✅ Yes" : "No" },
+                        { label: "Mortgage on Sale", value: lead.hasMortgageOnSale ? "✅ Yes" : "No" },
+                      ].map(({ label, value }) => (
+                        <div key={label}>
+                          <div className="text-xs font-semibold mb-0.5" style={{ color: "oklch(0.6 0.03 250)", fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
+                          <div className="text-sm" style={{ color: "oklch(0.25 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>{value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ── QUOTED FEES ── */}
+                  {(lead.quotedLegalFee || lead.quotedTotal || lead.actionTaken) && (
+                    <div className="mt-3 pt-3" style={{ borderTop: "1px solid oklch(0.93 0.01 250)" }}>
+                      <div className="text-xs font-bold mb-2" style={{ color: "oklch(0.45 0.05 250)", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.06em", textTransform: "uppercase" }}>Quoted Fees & Action</div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {[
+                          { label: "Legal Fee (inc. VAT)", value: lead.quotedLegalFee ? `£${Number(lead.quotedLegalFee).toLocaleString('en-GB', { minimumFractionDigits: 2 })}` : "—" },
+                          { label: "Grand Total", value: lead.quotedTotal ? `£${Number(lead.quotedTotal).toLocaleString('en-GB', { minimumFractionDigits: 2 })}` : "—" },
+                          { label: "Action Taken", value: lead.actionTaken ? lead.actionTaken.replace('_', ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) : "—" },
+                        ].map(({ label, value }) => (
+                          <div key={label}>
+                            <div className="text-xs font-semibold mb-0.5" style={{ color: "oklch(0.6 0.03 250)", fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
+                            <div className="text-sm" style={{ color: "oklch(0.25 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>{value}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mb-4" />
                   {/* Traffic Source / Attribution */}
                   {(lead.utmSource || lead.utmMedium || lead.utmCampaign || lead.utmTerm || lead.referrerUrl || lead.landingPage) && (
                     <div className="mt-4 pt-3" style={{ borderTop: "1px solid oklch(0.93 0.01 250)" }}>

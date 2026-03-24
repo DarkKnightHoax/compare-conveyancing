@@ -876,20 +876,32 @@ export default function QuoteWizard() {
         return (
           <div>
             <QLabel
-              tooltip="Moving home: you are selling your current home and buying a new one — a 3% SDLT surcharge applies temporarily but may be reclaimed once your old home is sold. Additional property: you are keeping your existing home and buying another — a 5% SDLT surcharge applies."
-              subtitle="Your answer determines the Stamp Duty surcharge that applies."
+              tooltip="This is my only/main home: standard SDLT rates apply, no surcharge. Moving home (selling your current home to buy a new one): standard rates apply — you are replacing your main residence, not adding an additional property. Additional property (keeping your existing home and buying another): a 5% SDLT surcharge applies. Buy to let: a 5% SDLT surcharge applies."
+              subtitle="Your answer determines whether the Stamp Duty surcharge applies."
             >
-              Are you moving home, or are you purchasing an additional property?
+              Which best describes your situation?
             </QLabel>
             <div className="flex flex-col gap-3">
               <OptionBtn
-                label="Moving home"
+                label="This is my only / main residence"
+                selected={answers.isSecondHome === false && answers.isBuyToLet === false}
+                onClick={() => { set("isSecondHome", false); set("isBuyToLet", false); }}
+                fullWidth
+              />
+              <OptionBtn
+                label="Moving home (selling my current home to buy this one)"
+                selected={answers.isSecondHome === false && answers.isBuyToLet === false}
+                onClick={() => { set("isSecondHome", false); set("isBuyToLet", false); }}
+                fullWidth
+              />
+              <OptionBtn
+                label="Purchasing an additional property (keeping my existing home)"
                 selected={answers.isSecondHome === true && answers.isBuyToLet !== true}
                 onClick={() => { set("isSecondHome", true); set("isBuyToLet", false); }}
                 fullWidth
               />
               <OptionBtn
-                label="Purchasing an additional property"
+                label="Buy to let"
                 selected={answers.isBuyToLet === true}
                 onClick={() => { set("isBuyToLet", true); set("isSecondHome", false); }}
                 fullWidth

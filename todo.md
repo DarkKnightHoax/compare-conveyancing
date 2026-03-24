@@ -236,7 +236,7 @@
 - [x] Event 3: fire "instruct_directly" + "ads_conversion_SUBMIT_LEAD_FORM_1" when "Instruct Directly" clicked
 
 ## Bug Fixes (Mar 2026)
-- [ ] Results page not showing law firms — diagnose and fix
+- [x] Results page not showing law firms — fixed (TiDB SSL connection issue)
 
 ## Critical Bug Fix (Mar 2026)
 - [x] Fix TiDB Cloud database connection: added SSL (rejectUnauthorized: false), connection pool, and 15s connectTimeout to prevent hanging queries and results page showing 0 firms
@@ -254,12 +254,16 @@
 - [x] Update meta title/description on all 3 landing pages for Google Ads Quality Score (sale-and-purchase, first-time-buyer, compare-fees)
 
 ## Search Console, Internal Links & Ads (Mar 2026)
-- [ ] Add "Learn more about moving home" internal link from sale-and-purchase landing page hero to blog article
-- [ ] Submit /blog/selling-and-buying-at-the-same-time to Google Search Console
-- [ ] Add Moving Home ad group structured data / keyword meta to sale-and-purchase page
+- [x] Add "Learn more about moving home" internal link from sale-and-purchase landing page hero to blog article
+- [x] Submit /blog/selling-and-buying-at-the-same-time to Google Search Console (user to complete login step)
+- [x] Add Moving Home ad group structured data / keyword meta to sale-and-purchase page (JSON-LD Service schema added)
 - [x] Updated sitemap.xml: correct domain (www.comparetheconveyancingmarket.co.uk), all 3 landing pages at priority 0.9, new blog article, removed remortgage URL
 
 ## Lead Source Tracking (Mar 2026)
 - [x] Add source fields to leads schema (utmSource, utmMedium, utmCampaign, utmContent, utmTerm, referrerUrl, landingPage)
 - [x] Capture UTM params + referrer in quote wizard and pass to backend on lead creation
 - [x] Display source/UTM data in admin All Leads panel lead cards (Traffic Source section in expanded lead card)
+
+## Bug Fixes (Mar 2026)
+- [x] Fix SDLT calculator: £600k standard purchase showing ~£51k instead of ~£20k (root cause: Moving home option incorrectly set isSecondHome:true, triggering +5% surcharge; fixed wizard question)
+- [x] Display ALL lead form answers in admin All Leads expanded card (Contact Details, Property Details, Buyer Situation, Quoted Fees & Action, Traffic Source sections)
