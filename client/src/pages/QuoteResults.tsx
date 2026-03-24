@@ -71,11 +71,9 @@ function InstructModal({ firm, onClose, contactDetails }: {
 }) {
   const [submitted, setSubmitted] = useState(false);
 
-  // Initial payment on account = Search Pack + AML fees + £100 file opening fee
-  const searchPackFee = firm.disbursements.find(d => d.name.toLowerCase().includes('search'))?.price ?? 0;
-  const amlFee = firm.disbursements.find(d => d.name.toLowerCase().includes('aml') || d.name.toLowerCase().includes('anti-money'))?.price ?? 0;
-  const fileOpeningFee = 100;
-  const initialPayment = searchPackFee + amlFee + fileOpeningFee;
+  // Initial payment on account is fixed at £530 for all firms
+  // (Search Pack £399 + AML £31 × 1 purchaser + File Opening £100)
+  const initialPayment = 530;
 
   const [form, setForm] = useState({
     firstName: contactDetails.firstName || "",
@@ -179,7 +177,7 @@ function InstructModal({ firm, onClose, contactDetails }: {
                 <span className="font-semibold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(initialPayment)}</span>
               </div>
               <div className="text-xs mt-1" style={{ color: "oklch(0.65 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                Includes: Search Pack ({formatCurrency(searchPackFee)}) + AML ({formatCurrency(amlFee)}) + File Opening (£100.00)
+                Includes: Search Pack (£399.00) + AML checks + File Opening (£100.00)
               </div>
             </div>
 

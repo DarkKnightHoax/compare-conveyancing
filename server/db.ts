@@ -452,6 +452,10 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
   const results: LiveQuoteResult[] = [];
 
   for (const firm of firms) {
+    // Exclude TQ Law from new build and leasehold transactions
+    const isTQLaw = firm.name.toLowerCase().includes('tq law');
+    if (isTQLaw && (input.isNewBuild || input.tenure === 'leasehold')) continue;
+
     // Find the matching fee band for this firm + property value
     type FeeRow = typeof feeRows[number];
     const band: FeeRow | undefined = feeRows.find((r: FeeRow) =>
@@ -505,8 +509,8 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
         includesVat: true,
       });
     }
-    if (Number(band.searchFee) > 0)
-      disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: Number(band.searchFee), includesVat: true });
+    // Search Pack is always £399 for all firms (fixed price)
+    disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: 399, includesVat: true });
     if (Number(band.officialCopiesFee) > 0)
       disbursements.push({ name: 'Official Copies (Title Register & Plan)', price: Number(band.officialCopiesFee), includesVat: true });
     if (Number(band.electronicTransferFee) > 0)

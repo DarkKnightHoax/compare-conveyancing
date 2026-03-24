@@ -267,3 +267,9 @@
 ## Bug Fixes (Mar 2026)
 - [x] Fix SDLT calculator: £600k standard purchase showing ~£51k instead of ~£20k (root cause: Moving home option incorrectly set isSecondHome:true, triggering +5% surcharge; fixed wizard question)
 - [x] Display ALL lead form answers in admin All Leads expanded card (Contact Details, Property Details, Buyer Situation, Quoted Fees & Action, Traffic Source sections)
+
+## Fee & Wizard Fixes (Mar 2026 batch 6)
+- [x] Fix dual-selection bug: first two options on "Which best describes your situation?" both select simultaneously (added isMovingHome field to distinguish options 1 & 2)
+- [x] Search Pack (Local, Drainage & Environmental) always £399 across all firms (hardcoded in server/db.ts)
+- [x] Initial payment on account fixed at £530 for all firms (hardcoded in QuoteResults.tsx InstructModal)
+- [x] TQ Law excluded from results when isNewBuild=true or tenure=leasehold (filter in calculateLiveQuotes)

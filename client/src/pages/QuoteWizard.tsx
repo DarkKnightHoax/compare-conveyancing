@@ -354,6 +354,7 @@ type QuestionId =
   | "mortgageLender"
   | "isFirstTimeBuyer"
   | "isSecondHome"
+  | "isMovingHome"
   | "isBuyToLet"
   | "isNewBuild"
   | "isSharedOwnership"
@@ -426,6 +427,7 @@ export default function QuoteWizard() {
     isRightToBuy: false,
     isBuyToLet: false,
     isSecondHome: false,
+    isMovingHome: false,
     hasMortgageOnProperty: false,
     isAuctionSale: false,
     isLimitedCompanySale: false,
@@ -884,14 +886,14 @@ export default function QuoteWizard() {
             <div className="flex flex-col gap-3">
               <OptionBtn
                 label="This is my only / main residence"
-                selected={answers.isSecondHome === false && answers.isBuyToLet === false}
-                onClick={() => { set("isSecondHome", false); set("isBuyToLet", false); }}
+                selected={answers.isMovingHome === false && answers.isSecondHome === false && answers.isBuyToLet === false}
+                onClick={() => { set("isMovingHome", false); set("isSecondHome", false); set("isBuyToLet", false); }}
                 fullWidth
               />
               <OptionBtn
                 label="Moving home (selling my current home to buy this one)"
-                selected={answers.isSecondHome === false && answers.isBuyToLet === false}
-                onClick={() => { set("isSecondHome", false); set("isBuyToLet", false); }}
+                selected={answers.isMovingHome === true}
+                onClick={() => { set("isMovingHome", true); set("isSecondHome", false); set("isBuyToLet", false); }}
                 fullWidth
               />
               <OptionBtn

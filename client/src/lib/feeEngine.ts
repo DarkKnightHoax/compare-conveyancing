@@ -22,6 +22,7 @@ export interface WizardAnswers {
   isRightToBuy: boolean;
   isBuyToLet: boolean;
   isSecondHome: boolean;
+  isMovingHome?: boolean;
   propertyValue: number;
   postcode: string;
   // Sale & Purchase split price and postcode
