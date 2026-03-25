@@ -851,11 +851,19 @@ export default function QuoteResults() {
     if (!contactDetails.email || !contactDetails.firstName) return;
     const snapshot = liveQuotes.map(q => ({
       firmName: q.firmName,
-      legalFee: q.totalIncVat,
-      searchPack: q.disbursements.find(d => d.name.toLowerCase().includes('search'))?.price ?? 399,
+      firmLocation: q.firmLocation,
+      rating: q.rating,
+      // Legal fees breakdown
+      legalFee: q.legalFee,
+      supplements: q.supplements,
+      vat: q.vat,
+      totalIncVat: q.totalIncVat,
+      // Disbursements (AML, bankruptcy, search pack, bank transfer, etc.)
+      disbursements: q.disbursements,
+      // Government fees
       sdlt: q.sdlt,
       landRegistry: q.landRegistryFee,
-      bankTransfer: q.disbursements.find(d => d.name.toLowerCase().includes('transfer') || d.name.toLowerCase().includes('chaps'))?.price ?? 0,
+      // Grand total
       total: q.grandTotal,
     }));
     setSnapshotSaved(true);

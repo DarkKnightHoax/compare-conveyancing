@@ -32,11 +32,15 @@ function InfoRow({ label, value }: { label: string; value: string | null | undef
 
 interface QuoteSnapshotItem {
   firmName: string;
+  firmLocation?: string;
+  rating?: number;
   legalFee: number;
-  searchPack: number;
+  supplements?: { name: string; price: number }[];
+  vat: number;
+  totalIncVat: number;
+  disbursements?: { name: string; price: number; includesVat?: boolean }[];
   sdlt: number;
   landRegistry: number;
-  bankTransfer: number;
   total: number;
 }
 
@@ -51,64 +55,118 @@ function FeeBreakdownTable({ snapshot }: { snapshot: QuoteSnapshotItem[] }) {
         {sorted.length} regulated firms · Sorted by total cost
       </p>
 
-      <div className="space-y-4">
-        {sorted.map((q, i) => (
-          <div
-            key={q.firmName}
-            className="rounded-xl overflow-hidden"
-            style={{
-              border: i === 0 ? "2px solid oklch(0.72 0.12 75)" : "1px solid oklch(0.88 0.015 80)",
-              boxShadow: i === 0 ? "0 4px 16px oklch(0.72 0.12 75 / 0.12)" : "none",
-            }}
-          >
-            {i === 0 && (
-              <div className="px-4 py-1.5 text-xs font-bold text-center" style={{ background: "oklch(0.72 0.12 75)", color: "oklch(0.12 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                ★ Best Value
-              </div>
-            )}
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-bold text-base" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
-                  {q.firmName}
-                </h4>
-                <div className="text-right">
-                  <div className="text-xs" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Grand Total</div>
-                  <div className="text-xl font-bold" style={{ color: i === 0 ? "oklch(0.72 0.12 75)" : "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>
-                    {formatCurrency(q.total)}
-                  </div>
+      <div className="space-y-5">
+        {sorted.map((q, i) => {
+          const disbTotal = (q.disbursements || []).reduce((s, d) => s + d.price, 0);
+          return (
+            <div
+              key={q.firmName}
+              className="rounded-xl overflow-hidden"
+              style={{
+                border: i === 0 ? "2px solid oklch(0.72 0.12 75)" : "1px solid oklch(0.88 0.015 80)",
+                boxShadow: i === 0 ? "0 4px 16px oklch(0.72 0.12 75 / 0.12)" : "none",
+              }}
+            >
+              {/* Firm header */}
+              <div className="flex items-center justify-between px-4 py-3" style={{ background: i === 0 ? "oklch(0.18 0.06 250)" : "oklch(0.975 0.008 80)", borderBottom: "1px solid oklch(0.93 0.01 80)" }}>
+                <div>
+                  <span className="font-bold text-sm" style={{ color: i === 0 ? "white" : "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>{q.firmName}</span>
+                  {q.firmLocation && <span className="text-xs ml-2" style={{ color: i === 0 ? "oklch(0.72 0.12 75)" : "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>{q.firmLocation}</span>}
                 </div>
+                {i === 0 && (
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: "oklch(0.72 0.12 75)", color: "oklch(0.12 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>★ Best Value</span>
+                )}
               </div>
 
-              {/* Fee breakdown rows */}
-              <div className="rounded-lg overflow-hidden" style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.93 0.01 80)" }}>
-                <div className="flex justify-between items-center px-3 py-2 text-sm" style={{ borderBottom: "1px solid oklch(0.93 0.01 80)" }}>
-                  <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Legal fees (inc. VAT)</span>
-                  <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.legalFee)}</span>
+              <div className="p-4 space-y-3">
+                {/* Legal Fees */}
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-wide mb-2" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Legal Fees</div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Base legal fee</span>
+                      <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.legalFee)}</span>
+                    </div>
+                    {(q.supplements || []).map(s => (
+                      <div key={s.name} className="flex justify-between text-sm">
+                        <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>+ {s.name}</span>
+                        <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>+{formatCurrency(s.price)}</span>
+                      </div>
+                    ))}
+                    <div className="flex justify-between text-sm" style={{ borderTop: "1px solid oklch(0.93 0.01 80)", paddingTop: 4 }}>
+                      <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>VAT (20%)</span>
+                      <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.vat)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-bold">
+                      <span style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Total legal fees (inc. VAT)</span>
+                      <span style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.totalIncVat)}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center px-3 py-2 text-sm" style={{ borderBottom: "1px solid oklch(0.93 0.01 80)" }}>
-                  <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Search Pack</span>
-                  <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.searchPack)}</span>
-                </div>
-                {q.sdlt > 0 && (
-                  <div className="flex justify-between items-center px-3 py-2 text-sm" style={{ borderBottom: "1px solid oklch(0.93 0.01 80)" }}>
-                    <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Stamp Duty (SDLT)</span>
-                    <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.sdlt)}</span>
+
+                {/* Disbursements */}
+                {(q.disbursements || []).length > 0 && (
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-wide mb-2" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Disbursements</div>
+                    <div className="space-y-1">
+                      {(q.disbursements || []).map(d => (
+                        <div key={d.name} className="flex justify-between text-sm">
+                          <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>{d.name}</span>
+                          <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(d.price)}</span>
+                        </div>
+                      ))}
+                      <div className="flex justify-between text-sm font-bold" style={{ borderTop: "1px solid oklch(0.93 0.01 80)", paddingTop: 4 }}>
+                        <span style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Legal Fees + Disbursements</span>
+                        <span style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.totalIncVat + disbTotal)}</span>
+                      </div>
+                    </div>
                   </div>
                 )}
-                {q.landRegistry > 0 && (
-                  <div className="flex justify-between items-center px-3 py-2 text-sm" style={{ borderBottom: "1px solid oklch(0.93 0.01 80)" }}>
-                    <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Land Registry Fee</span>
-                    <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.landRegistry)}</span>
+
+                {/* Government Fees */}
+                {(q.sdlt > 0 || q.landRegistry > 0) && (
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-wide mb-2" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Government Fees</div>
+                    <div className="space-y-1">
+                      {q.sdlt > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Stamp Duty Land Tax (SDLT)</span>
+                          <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.sdlt)}</span>
+                        </div>
+                      )}
+                      {q.landRegistry > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Land Registry Fee</span>
+                          <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.landRegistry)}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
-                <div className="flex justify-between items-center px-3 py-2 text-sm font-bold" style={{ background: "oklch(0.18 0.06 250)" }}>
-                  <span style={{ color: "white", fontFamily: "'DM Sans', sans-serif" }}>Grand Total</span>
-                  <span style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.total)}</span>
+
+                {/* Grand Total */}
+                <div className="rounded-xl overflow-hidden" style={{ background: "oklch(0.18 0.06 250)" }}>
+                  {disbTotal > 0 && (
+                    <div className="flex justify-between items-center px-3 pt-3 pb-2" style={{ borderBottom: "1px solid oklch(0.975 0.008 80 / 0.15)" }}>
+                      <span className="text-sm" style={{ color: "oklch(0.975 0.008 80 / 0.75)", fontFamily: "'DM Sans', sans-serif" }}>Legal Fees Total (inc. VAT + Disbursements)</span>
+                      <span className="text-sm font-semibold" style={{ color: "oklch(0.975 0.008 80 / 0.9)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.totalIncVat + disbTotal)}</span>
+                    </div>
+                  )}
+                  {q.sdlt > 0 && (
+                    <div className="flex justify-between items-center px-3 py-2" style={{ borderBottom: "1px solid oklch(0.975 0.008 80 / 0.15)" }}>
+                      <span className="text-sm" style={{ color: "oklch(0.975 0.008 80 / 0.75)", fontFamily: "'DM Sans', sans-serif" }}>Stamp Duty Land Tax (SDLT)</span>
+                      <span className="text-sm font-semibold" style={{ color: "oklch(0.975 0.008 80 / 0.9)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.sdlt)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center px-3 pt-2 pb-3">
+                    <span className="text-sm font-bold" style={{ color: "white", fontFamily: "'DM Sans', sans-serif" }}>Grand Total</span>
+                    <span className="text-lg font-bold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.total)}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <p className="text-xs mt-4" style={{ color: "oklch(0.65 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>

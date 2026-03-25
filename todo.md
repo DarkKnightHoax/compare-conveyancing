@@ -293,3 +293,7 @@
 
 ## Critical Bug Fix (Mar 2026)
 - [x] Fix email delivery broken for all recipients — root cause was saveSnapshot useEffect firing before contactDetails was loaded from sessionStorage (email was empty string, backend skipped sending). Fixed by adding contactDetails and answers to dependency array and adding early return guard. Also added proper error logging to all email .catch() calls.
+
+## Email & Fee Breakdown Fixes (Mar 2026)
+- [x] Fix customer email not being received — root cause was production running old code; fix deployed via publish. Also fixed saveSnapshot timing bug (contactDetails not loaded from sessionStorage when effect fired).
+- [x] Expand fee breakdown in emails and saved quote page to show ALL line items: base legal fee, supplements, VAT, total inc VAT, all disbursements (AML, bankruptcy, search pack, bank transfer, file opening), SDLT, Land Registry, grand total — matching results page exactly

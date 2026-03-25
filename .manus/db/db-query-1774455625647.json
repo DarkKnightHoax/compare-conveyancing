@@ -1,0 +1,50 @@
+{
+  "query": "SELECT id, email, firstName, lastName, referenceNumber, createdAt FROM leads ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT id, email, firstName, lastName, referenceNumber, createdAt FROM leads ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "930003",
+      "email": "seyed.khadem@yahoo.com",
+      "firstName": "Seyedalireza ",
+      "lastName": "Khadem ",
+      "referenceNumber": "CCM-2026-00042",
+      "createdAt": "2026-03-25 16:13:20"
+    },
+    {
+      "id": "930002",
+      "email": "info@comparetheconveyancingmarket.co.uk",
+      "firstName": "Test",
+      "lastName": "User",
+      "referenceNumber": "CCM-2026-00041",
+      "createdAt": "2026-03-25 16:10:38"
+    },
+    {
+      "id": "930001",
+      "email": "alireza.majnoon5142@gmail.com",
+      "firstName": "Aghlana",
+      "lastName": "Abdessalame",
+      "referenceNumber": "CCM-2026-00040",
+      "createdAt": "2026-03-25 15:53:46"
+    },
+    {
+      "id": "900002",
+      "email": "aabdessalame11383@ubisglobal.com",
+      "firstName": "Aghlana",
+      "lastName": "Abdessalame",
+      "referenceNumber": "CCM-2026-00039",
+      "createdAt": "2026-03-25 15:27:17"
+    },
+    {
+      "id": "900001",
+      "email": "al.radley@gmail.com",
+      "firstName": "Alan",
+      "lastName": "Radley",
+      "referenceNumber": "NULL",
+      "createdAt": "2026-03-25 14:47:15"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tfirstName\tlastName\treferenceNumber\tcreatedAt\n930003\tseyed.khadem@yahoo.com\tSeyedalireza \tKhadem \tCCM-2026-00042\t2026-03-25 16:13:20\n930002\tinfo@comparetheconveyancingmarket.co.uk\tTest\tUser\tCCM-2026-00041\t2026-03-25 16:10:38\n930001\talireza.majnoon5142@gmail.com\tAghlana\tAbdessalame\tCCM-2026-00040\t2026-03-25 15:53:46\n900002\taabdessalame11383@ubisglobal.com\tAghlana\tAbdessalame\tCCM-2026-00039\t2026-03-25 15:27:17\n900001\tal.radley@gmail.com\tAlan\tRadley\tNULL\t2026-03-25 14:47:15\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}
