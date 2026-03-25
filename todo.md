@@ -287,3 +287,6 @@
 - [x] Add full fee breakdown to saved quote page at /quote/:ref (FeeBreakdownTable component reads quoteSnapshot)
 - [x] Pass quoteSnapshot from QuoteResults to backend via leads.saveSnapshot mutation (fires after quotes.getLive loads)
 - [x] Move email sending from leads.create to leads.saveSnapshot so emails include fee breakdown
+
+## Bug Fix (Mar 2026)
+- [x] Fix regression: info@comparetheconveyancingmarket.co.uk no longer receives lead notification email when form is submitted — restored sendNewLeadEmail to leads.create so info@ gets notified immediately; saveSnapshot still sends customer email + fee-breakdown update to info@ once quotes load

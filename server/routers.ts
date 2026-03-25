@@ -217,7 +217,21 @@ export const appRouter = router({
           title: `New Quote Request — ${input.firstName} ${input.lastName} [${referenceNumber}]`,
           content: `Ref: ${referenceNumber} | Transaction: ${input.transactionType} | Property Value: £${input.propertyValue.toLocaleString()} | Postcode: ${input.postcode} | Email: ${input.email} | Quote: ${quoteUrl}`,
         }).catch(() => {});
-        // NOTE: Emails (customer + info@) are sent from leads.saveSnapshot once the fee breakdown is available
+        // Send lead notification to info@ immediately (without fee breakdown — snapshot not yet available)
+        sendNewLeadEmail({
+          name: `${input.firstName} ${input.lastName}`,
+          email: input.email,
+          phone: input.phone,
+          transactionType: input.transactionType,
+          propertyValue: input.propertyValue,
+          propertyAddress: input.postcode,
+          mortgageLender: input.mortgageLender,
+          hasMortgage: input.hasMortgage,
+          isFirstTimeBuyer: input.isFirstTimeBuyer,
+          referenceNumber,
+          quoteUrl,
+        }).catch(() => {});
+        // NOTE: Customer quote email + fee breakdown update to info@ are sent from leads.saveSnapshot once quotes load
         return { success: true, leadId, referenceNumber, quoteUrl };
       }),
     saveSnapshot: publicProcedure
