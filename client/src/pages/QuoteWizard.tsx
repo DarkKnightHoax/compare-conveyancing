@@ -555,7 +555,7 @@ export default function QuoteWizard() {
     if (step === 3) {
       sessionStorage.setItem("quoteAnswers", JSON.stringify(answers));
       sessionStorage.setItem("contactDetails", JSON.stringify(contactDetails));
-      // Save lead to database (fire-and-forget — don't block navigation)
+      // Save lead to database — capture referenceNumber on success to display on results page
       createLead.mutate({
         firstName: contactDetails.firstName,
         lastName: contactDetails.lastName,
@@ -586,6 +586,15 @@ export default function QuoteWizard() {
         utmTerm:     sourceData.utmTerm,
         referrerUrl: sourceData.referrerUrl,
         landingPage: sourceData.landingPage,
+        // Pass origin so server can build the full quote URL for emails
+        origin: window.location.origin,
+      }, {
+        onSuccess: (data) => {
+          if (data.referenceNumber) {
+            sessionStorage.setItem('quoteRef', data.referenceNumber);
+            sessionStorage.setItem('quoteUrl', data.quoteUrl || '');
+          }
+        },
       });
       navigate("/results");
       return;

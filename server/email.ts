@@ -80,10 +80,13 @@ export async function sendNewLeadEmail(lead: {
   mortgageLender?: string | null;
   hasMortgage?: boolean | null;
   isFirstTimeBuyer?: boolean | null;
+  referenceNumber?: string | null;
+  quoteUrl?: string | null;
 }) {
   const body = `
     <p style="color:#555;font-size:14px;margin:0 0 20px;">A new quote request has been submitted on the website. Details below:</p>
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      ${lead.referenceNumber ? infoRow("Reference", lead.referenceNumber) : ""}
       ${infoRow("Name", lead.name)}
       ${infoRow("Email", lead.email)}
       ${infoRow("Phone", lead.phone)}
@@ -93,15 +96,52 @@ export async function sendNewLeadEmail(lead: {
       ${infoRow("Mortgage Lender", lead.mortgageLender)}
       ${infoRow("First Time Buyer", lead.isFirstTimeBuyer ? "Yes" : lead.isFirstTimeBuyer === false ? "No" : null)}
     </table>
-    <div style="margin-top:24px;padding:16px;background:#f0f9f4;border-left:4px solid #22c55e;border-radius:4px;">
-      <p style="margin:0;font-size:13px;color:#166534;">You can view and manage this lead in the <a href="https://www.comparetheconveyancingmarket.co.uk/admin" style="color:#166534;font-weight:700;">Admin Panel</a>.</p>
+    ${lead.quoteUrl ? `<div style="margin-top:20px;padding:16px;background:#eff6ff;border-left:4px solid #3b82f6;border-radius:4px;"><p style="margin:0;font-size:13px;color:#1e40af;">View the customer's saved quote: <a href="${lead.quoteUrl}" style="color:#1e40af;font-weight:700;">${lead.quoteUrl}</a></p></div>` : ""}
+    <div style="margin-top:16px;padding:16px;background:#f0f9f4;border-left:4px solid #22c55e;border-radius:4px;">
+      <p style="margin:0;font-size:13px;color:#166534;">View and manage this lead in the <a href="https://www.comparetheconveyancingmarket.co.uk/admin" style="color:#166534;font-weight:700;">Admin Panel</a>.</p>
     </div>`;
 
   return resend.emails.send({
     from: FROM,
     to: TO,
-    subject: `🏠 New Quote Request — ${lead.name}`,
+    subject: `🏠 New Quote Request — ${lead.name}${lead.referenceNumber ? ` [${lead.referenceNumber}]` : ""}`,
     html: emailWrapper("New Quote Request", body),
+  });
+}
+
+// ─── 5. Quote Confirmation to Customer ────────────────────────────────────────
+export async function sendQuoteEmail(quote: {
+  name: string;
+  email: string;
+  referenceNumber: string;
+  quoteUrl: string;
+  transactionType: string;
+  propertyValue: number;
+  postcode: string;
+}) {
+  const txLabel = quote.transactionType.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  const body = `
+    <p style="color:#555;font-size:15px;margin:0 0 20px;">Thank you for using Compare the Conveyancing Market. Your personalised conveyancing quotes have been saved and are ready to view at any time.</p>
+    <div style="margin:0 0 24px;padding:20px 24px;background:#0f1f3d;border-radius:10px;text-align:center;">
+      <p style="margin:0 0 6px;font-size:12px;color:#c9a84c;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Your Reference Number</p>
+      <p style="margin:0;font-size:28px;font-weight:700;color:#ffffff;letter-spacing:2px;font-family:monospace;">${quote.referenceNumber}</p>
+    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:24px;">
+      ${infoRow("Transaction", txLabel)}
+      ${infoRow("Property Value", `£${quote.propertyValue.toLocaleString()}`)}
+      ${infoRow("Postcode", quote.postcode)}
+    </table>
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${quote.quoteUrl}" style="display:inline-block;background:#c9a84c;color:#0f1f3d;font-size:15px;font-weight:700;padding:14px 32px;border-radius:8px;text-decoration:none;letter-spacing:0.3px;">View My Saved Quotes →</a>
+    </div>
+    <p style="color:#888;font-size:13px;margin:0 0 8px;">You can return to this link at any time to review your quotes, instruct a firm, or request a callback.</p>
+    <p style="color:#888;font-size:13px;margin:0;">If you have any questions, please call us on <strong>0330 128 9488</strong> or email <a href="mailto:info@comparetheconveyancingmarket.co.uk" style="color:#c9a84c;">info@comparetheconveyancingmarket.co.uk</a>.</p>`;
+
+  return resend.emails.send({
+    from: FROM,
+    to: quote.email,
+    subject: `Your Conveyancing Quotes — Reference ${quote.referenceNumber}`,
+    html: emailWrapper("Your Conveyancing Quotes", body),
   });
 }
 

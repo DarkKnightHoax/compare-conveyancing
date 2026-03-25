@@ -77,6 +77,10 @@ export const leads = mysqlTable("leads", {
   // Calculated totals shown to user
   quotedLegalFee: decimal("quotedLegalFee", { precision: 10, scale: 2 }),
   quotedTotal: decimal("quotedTotal", { precision: 10, scale: 2 }),
+  // Unique reference number (e.g. CCM-2026-00042)
+  referenceNumber: varchar("referenceNumber", { length: 30 }).unique(),
+  // Snapshot of the full quote results (JSON) for the saved quote page
+  quoteSnapshot: text("quoteSnapshot"),
   // Admin notes
   adminNotes: text("adminNotes"),
   // Source / attribution tracking

@@ -16,5 +16,5 @@ describe("Resend API key validation", () => {
     });
     expect(error, `Resend send error: ${JSON.stringify(error)}`).toBeNull();
     expect(data?.id, "Should return an email ID").toBeTruthy();
-  });
+  }, 15000);
 });

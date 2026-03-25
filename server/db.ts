@@ -104,8 +104,14 @@ export async function deleteLawFirm(id: number) {
 export async function createLead(data: InsertLead) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(leads).values(data);
-  return (result[0] as any).insertId as number;
+  // Generate unique reference number: CCM-YYYY-NNNNN
+  const year = new Date().getFullYear();
+  const countResult = await db.select().from(leads);
+  const seq = String(countResult.length + 1).padStart(5, '0');
+  const referenceNumber = `CCM-${year}-${seq}`;
+  const result = await db.insert(leads).values({ ...data, referenceNumber });
+  const leadId = (result[0] as any).insertId as number;
+  return { id: leadId, referenceNumber };
 }
 
 export async function getAllLeads(limit = 100, offset = 0) {
@@ -118,6 +124,12 @@ export async function getLeadById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
   const result = await db.select().from(leads).where(eq(leads.id, id)).limit(1);
+  return result[0];
+}
+export async function getLeadByRef(referenceNumber: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(leads).where(eq(leads.referenceNumber, referenceNumber)).limit(1);
   return result[0];
 }
 

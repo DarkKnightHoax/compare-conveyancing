@@ -817,6 +817,8 @@ export default function QuoteResults() {
   const [answers, setAnswers] = useState<Partial<WizardAnswers>>({});
   const [contactDetails, setContactDetails] = useState({ firstName: "", lastName: "", email: "", phone: "" });
   const [showExclusivePopup, setShowExclusivePopup] = useState(false);
+  const [quoteRef, setQuoteRef] = useState<string | null>(null);
+  const [quoteUrl, setQuoteUrl] = useState<string | null>(null);
   const [queryInput, setQueryInput] = useState<{
     transactionType: "purchase" | "sale" | "sale_purchase" | "remortgage";
     propertyValue: number;
@@ -897,6 +899,11 @@ export default function QuoteResults() {
       buyerCount: parsedAnswers.buyerCount ?? 1,
       mortgageLender: parsedContact.mortgageLender || undefined,
     });
+    // Read reference number if lead was saved
+    const savedRef = sessionStorage.getItem('quoteRef');
+    const savedUrl = sessionStorage.getItem('quoteUrl');
+    if (savedRef) setQuoteRef(savedRef);
+    if (savedUrl) setQuoteUrl(savedUrl);
     // Show the exclusive pricing popup after a short delay for dramatic effect
     setTimeout(() => setShowExclusivePopup(true), 800);
   }, []);
@@ -964,11 +971,26 @@ export default function QuoteResults() {
                 ))}
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Shield size={14} style={{ color: "oklch(0.72 0.12 75)" }} />
-              <span className="text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.6)", fontFamily: "'DM Sans', sans-serif" }}>
-                All firms regulated
-              </span>
+            <div className="flex flex-col items-end gap-2">
+              <div className="flex items-center gap-2">
+                <Shield size={14} style={{ color: "oklch(0.72 0.12 75)" }} />
+                <span className="text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.6)", fontFamily: "'DM Sans', sans-serif" }}>
+                  All firms regulated
+                </span>
+              </div>
+              {quoteRef && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.5)", fontFamily: "'DM Sans', sans-serif" }}>Ref:</span>
+                  <a
+                    href={quoteUrl || '#'}
+                    className="text-xs font-bold tracking-wider font-mono"
+                    style={{ color: "oklch(0.82 0.10 75)", fontFamily: "monospace", textDecoration: "none" }}
+                    title="Your unique quote link — click to share or bookmark"
+                  >
+                    {quoteRef}
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>

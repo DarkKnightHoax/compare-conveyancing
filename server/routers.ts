@@ -13,7 +13,7 @@ import { ENV } from "./_core/env";
 import {
 
   getAllLawFirms, getAllLawFirmsAdmin, createLawFirm, updateLawFirm, deleteLawFirm,
-  createLead, getAllLeads, getLeadById, updateLeadStatus, getLeadsStats,
+  createLead, getAllLeads, getLeadById, getLeadByRef, updateLeadStatus, getLeadsStats,
   createCallbackRequest, getAllCallbacks, updateCallbackStatus, getPendingCallbacksCount,
   createInstructRequest, getAllInstructRequests, updateInstructStatus,
   getFeeStructuresForFirm, getAllFeeStructures, upsertFeeStructure, deleteFeeStructure,
@@ -21,7 +21,7 @@ import {
   calculateLiveQuotes,
 } from "./db";
 import { notifyOwner } from "./_core/notification";
-import { sendNewLeadEmail, sendNewCallbackEmail, sendNewInstructEmail, sendContactFormEmail } from "./email";
+import { sendNewLeadEmail, sendNewCallbackEmail, sendNewInstructEmail, sendContactFormEmail, sendQuoteEmail } from "./email";
 
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== "admin") {
@@ -203,13 +203,31 @@ export const appRouter = router({
         utmTerm: z.string().optional(),
         referrerUrl: z.string().optional(),
         landingPage: z.string().optional(),
+        // Quote snapshot (JSON string of all firm quotes for the saved quote page)
+        quoteSnapshot: z.string().optional(),
+        // Origin for building the quote URL
+        origin: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
-        const leadId = await createLead(input as any);
+        const { origin, ...leadData } = input;
+        const { id: leadId, referenceNumber } = await createLead(leadData as any);
+        const baseUrl = origin || 'https://www.comparetheconveyancingmarket.co.uk';
+        const quoteUrl = `${baseUrl}/quote/${referenceNumber}`;
         await notifyOwner({
-          title: `New Quote Request — ${input.firstName} ${input.lastName}`,
-          content: `Transaction: ${input.transactionType} | Property Value: £${input.propertyValue.toLocaleString()} | Postcode: ${input.postcode} | Email: ${input.email}`,
+          title: `New Quote Request — ${input.firstName} ${input.lastName} [${referenceNumber}]`,
+          content: `Ref: ${referenceNumber} | Transaction: ${input.transactionType} | Property Value: £${input.propertyValue.toLocaleString()} | Postcode: ${input.postcode} | Email: ${input.email} | Quote: ${quoteUrl}`,
         }).catch(() => {});
+        // Send quote email to customer
+        sendQuoteEmail({
+          name: `${input.firstName} ${input.lastName}`,
+          email: input.email,
+          referenceNumber,
+          quoteUrl,
+          transactionType: input.transactionType,
+          propertyValue: input.propertyValue,
+          postcode: input.postcode,
+        }).catch(() => {});
+        // Send lead notification to info@
         sendNewLeadEmail({
           name: `${input.firstName} ${input.lastName}`,
           email: input.email,
@@ -220,8 +238,10 @@ export const appRouter = router({
           mortgageLender: input.mortgageLender,
           hasMortgage: input.hasMortgage,
           isFirstTimeBuyer: input.isFirstTimeBuyer,
+          referenceNumber,
+          quoteUrl,
         }).catch(() => {});
-        return { success: true, leadId };
+        return { success: true, leadId, referenceNumber, quoteUrl };
       }),
     list: standaloneAdminProcedure
       .input(z.object({ limit: z.number().optional(), offset: z.number().optional() }))
@@ -229,6 +249,9 @@ export const appRouter = router({
     getById: standaloneAdminProcedure
       .input(z.object({ id: z.number() }))
       .query(({ input }) => getLeadById(input.id)),
+    getByRef: publicProcedure
+      .input(z.object({ referenceNumber: z.string() }))
+      .query(({ input }) => getLeadByRef(input.referenceNumber)),
     updateStatus: standaloneAdminProcedure
       .input(z.object({
         id: z.number(),

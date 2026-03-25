@@ -273,3 +273,10 @@
 - [x] Search Pack (Local, Drainage & Environmental) always £399 across all firms (hardcoded in server/db.ts)
 - [x] Initial payment on account fixed at £530 for all firms (hardcoded in QuoteResults.tsx InstructModal)
 - [x] TQ Law excluded from results when isNewBuild=true or tenure=leasehold (filter in calculateLiveQuotes)
+
+## Quote Reference & Shareable URL (Mar 2026)
+- [x] Add referenceNumber field to leads schema (e.g. CCM-2026-00042)
+- [x] Build saved quote page at /quote/:ref showing personalised results
+- [x] Email customer their reference number + quote link on lead creation
+- [x] Email info@comparetheconveyancingmarket.co.uk with reference + lead details + quote link
+- [x] Display reference number on results page after quote is generated (summary bar, clickable link)
