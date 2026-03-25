@@ -550,6 +550,7 @@ export default function QuoteWizard() {
 
   // ── NAVIGATION ────────────────────────────────────────────────────────────
   const goNext = () => {
+    if (createLead.isPending) return; // prevent duplicate submissions
     if (!validateCurrentQ()) return;
 
     if (step === 3) {
@@ -1360,9 +1361,24 @@ export default function QuoteWizard() {
             Back
           </button>
 
-          <button onClick={goNext} className="btn-gold flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold">
-            {step === 3 ? "Show My Quotes" : subQ === totalSubQs - 1 ? "Continue to Next Step" : "Next Question"}
-            <ChevronRight size={16} />
+          <button
+            onClick={goNext}
+            disabled={createLead.isPending}
+            className="btn-gold flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {step === 3 && createLead.isPending ? (
+              <>
+                <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                </svg>
+                Finding Your Quotes...
+              </>
+            ) : (
+              <>
+                {step === 3 ? "Show My Quotes" : subQ === totalSubQs - 1 ? "Continue to Next Step" : "Next Question"}
+                <ChevronRight size={16} />
+              </>
+            )}
           </button>
         </div>
       </div>

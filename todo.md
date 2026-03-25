@@ -301,3 +301,6 @@
 ## Outstanding Issues (Mar 2026)
 - [x] Customer email fix: root cause was navigate("/results") firing BEFORE onSuccess wrote quoteRef to sessionStorage. Results page mounted with null quoteRef so saveSnapshot never fired. Fixed by moving navigate() inside onSuccess callback.
 - [x] All firms confirmed in emails and saved quote page: buildFeeBreakdownHtml iterates all firms with quotes.map(); FeeBreakdownTable in SavedQuote.tsx also iterates all firms. Best Value badge only on first (cheapest) firm.
+
+## UX Fix (Mar 2026)
+- [x] Disable submit button immediately on first click, show loading spinner ("Finding Your Quotes..."), prevent duplicate lead creation from multiple clicks via isPending guard in goNext and disabled prop on button
