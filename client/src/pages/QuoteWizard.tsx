@@ -594,9 +594,13 @@ export default function QuoteWizard() {
             sessionStorage.setItem('quoteRef', data.referenceNumber);
             sessionStorage.setItem('quoteUrl', data.quoteUrl || '');
           }
+          navigate("/results");
+        },
+        onError: () => {
+          // Still navigate even if lead creation fails, so user sees results
+          navigate("/results");
         },
       });
-      navigate("/results");
       return;
     }
 

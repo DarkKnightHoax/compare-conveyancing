@@ -1,0 +1,40 @@
+{
+  "query": "SELECT referenceNumber, email, LEFT(quoteSnapshot, 300) as snapshotPreview, createdAt FROM leads ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT referenceNumber, email, LEFT(quoteSnapshot, 300) as snapshotPreview, createdAt FROM leads ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "referenceNumber": "CCM-2026-00043",
+      "email": "seyed.khadem@yahoo.com",
+      "snapshotPreview": "NULL",
+      "createdAt": "2026-03-25 16:29:08"
+    },
+    {
+      "referenceNumber": "CCM-2026-00042",
+      "email": "seyed.khadem@yahoo.com",
+      "snapshotPreview": "NULL",
+      "createdAt": "2026-03-25 16:13:20"
+    },
+    {
+      "referenceNumber": "CCM-2026-00041",
+      "email": "info@comparetheconveyancingmarket.co.uk",
+      "snapshotPreview": "[{\"firmName\":\"Excello Law\",\"firmLocation\":\"London\",\"rating\":4.8,\"legalFee\":950,\"supplements\":[{\"name\":\"Leasehold Supplement\",\"price\":200}],\"vat\":230,\"totalIncVat\":1380,\"disbursements\":[{\"name\":\"Search Pack (Local, Drainage & Environmental)\",\"price\":399,\"includesVat\":false},{\"name\":\"AML Check (per pe",
+      "createdAt": "2026-03-25 16:10:38"
+    },
+    {
+      "referenceNumber": "CCM-2026-00040",
+      "email": "alireza.majnoon5142@gmail.com",
+      "snapshotPreview": "NULL",
+      "createdAt": "2026-03-25 15:53:46"
+    },
+    {
+      "referenceNumber": "CCM-2026-00039",
+      "email": "aabdessalame11383@ubisglobal.com",
+      "snapshotPreview": "NULL",
+      "createdAt": "2026-03-25 15:27:17"
+    }
+  ],
+  "messages": [],
+  "stdout": "referenceNumber\temail\tsnapshotPreview\tcreatedAt\nCCM-2026-00043\tseyed.khadem@yahoo.com\tNULL\t2026-03-25 16:29:08\nCCM-2026-00042\tseyed.khadem@yahoo.com\tNULL\t2026-03-25 16:13:20\nCCM-2026-00041\tinfo@comparetheconveyancingmarket.co.uk\t[{\"firmName\":\"Excello Law\",\"firmLocation\":\"London\",\"rating\":4.8,\"legalFee\":950,\"supplements\":[{\"name\":\"Leasehold Supplement\",\"price\":200}],\"vat\":230,\"totalIncVat\":1380,\"disbursements\":[{\"name\":\"Search Pack (Local, Drainage & Environmental)\",\"price\":399,\"includesVat\":false},{\"name\":\"AML Check (per pe\t2026-03-25 16:10:38\nCCM-2026-00040\talireza.majnoon5142@gmail.com\tNULL\t2026-03-25 15:53:46\nCCM-2026-00039\taabdessalame11383@ubisglobal.com\tNULL\t2026-03-25 15:27:17\n",
+  "stderr": "",
+  "execution_time_ms": 150
+}

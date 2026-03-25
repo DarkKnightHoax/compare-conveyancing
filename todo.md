@@ -297,3 +297,7 @@
 ## Email & Fee Breakdown Fixes (Mar 2026)
 - [x] Fix customer email not being received — root cause was production running old code; fix deployed via publish. Also fixed saveSnapshot timing bug (contactDetails not loaded from sessionStorage when effect fired).
 - [x] Expand fee breakdown in emails and saved quote page to show ALL line items: base legal fee, supplements, VAT, total inc VAT, all disbursements (AML, bankruptcy, search pack, bank transfer, file opening), SDLT, Land Registry, grand total — matching results page exactly
+
+## Outstanding Issues (Mar 2026)
+- [x] Customer email fix: root cause was navigate("/results") firing BEFORE onSuccess wrote quoteRef to sessionStorage. Results page mounted with null quoteRef so saveSnapshot never fired. Fixed by moving navigate() inside onSuccess callback.
+- [x] All firms confirmed in emails and saved quote page: buildFeeBreakdownHtml iterates all firms with quotes.map(); FeeBreakdownTable in SavedQuote.tsx also iterates all firms. Best Value badge only on first (cheapest) firm.
