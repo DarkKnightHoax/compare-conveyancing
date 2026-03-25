@@ -230,7 +230,10 @@ export const appRouter = router({
           isFirstTimeBuyer: input.isFirstTimeBuyer,
           referenceNumber,
           quoteUrl,
-        }).catch(() => {});
+        }).then(r => {
+          if (r.error) console.error('[Email] sendNewLeadEmail failed:', JSON.stringify(r.error));
+          else console.log('[Email] sendNewLeadEmail sent, id:', r.data?.id);
+        }).catch(e => console.error('[Email] sendNewLeadEmail error:', e?.message));
         // NOTE: Customer quote email + fee breakdown update to info@ are sent from leads.saveSnapshot once quotes load
         return { success: true, leadId, referenceNumber, quoteUrl };
       }),
@@ -266,7 +269,10 @@ export const appRouter = router({
             propertyValue: input.propertyValue || 0,
             postcode: input.postcode || '',
             quoteSnapshot: input.quoteSnapshot,
-          }).catch(() => {});
+          }).then(r => {
+            if (r.error) console.error('[Email] sendQuoteEmail failed:', JSON.stringify(r.error));
+            else console.log('[Email] sendQuoteEmail sent to', input.email, 'id:', r.data?.id);
+          }).catch(e => console.error('[Email] sendQuoteEmail error:', e?.message));
           sendNewLeadEmail({
             name: input.name,
             email: input.email,
@@ -280,7 +286,12 @@ export const appRouter = router({
             referenceNumber: input.referenceNumber,
             quoteUrl,
             quoteSnapshot: input.quoteSnapshot,
-          }).catch(() => {});
+          }).then(r => {
+            if (r.error) console.error('[Email] saveSnapshot sendNewLeadEmail failed:', JSON.stringify(r.error));
+            else console.log('[Email] saveSnapshot sendNewLeadEmail sent, id:', r.data?.id);
+          }).catch(e => console.error('[Email] saveSnapshot sendNewLeadEmail error:', e?.message));
+        } else {
+          console.warn('[Email] saveSnapshot: skipping emails — email or name missing', { email: input.email, name: input.name });
         }
         return { success: true };
       }),

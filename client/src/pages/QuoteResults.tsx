@@ -844,9 +844,11 @@ export default function QuoteResults() {
     { enabled: queryInput !== null }
   );
 
-  // Once quotes load, save the snapshot and send emails with fee breakdown
+  // Once quotes load AND contact details are available, save the snapshot and send emails with fee breakdown
   useEffect(() => {
     if (!liveQuotes || liveQuotes.length === 0 || snapshotSaved || !quoteRef) return;
+    // Wait until contactDetails has been loaded from sessionStorage (email must be present)
+    if (!contactDetails.email || !contactDetails.firstName) return;
     const snapshot = liveQuotes.map(q => ({
       firmName: q.firmName,
       legalFee: q.totalIncVat,
@@ -860,8 +862,8 @@ export default function QuoteResults() {
     saveSnapshot.mutate({
       referenceNumber: quoteRef,
       quoteSnapshot: JSON.stringify(snapshot),
-      name: contactDetails.firstName && contactDetails.lastName ? `${contactDetails.firstName} ${contactDetails.lastName}` : undefined,
-      email: contactDetails.email || undefined,
+      name: `${contactDetails.firstName} ${contactDetails.lastName}`.trim(),
+      email: contactDetails.email,
       phone: contactDetails.phone || undefined,
       transactionType: answers.transactionType || 'purchase',
       propertyValue: answers.propertyValue || 0,
@@ -872,7 +874,7 @@ export default function QuoteResults() {
       quoteUrl: quoteUrl || undefined,
       origin: window.location.origin,
     });
-  }, [liveQuotes, quoteRef, snapshotSaved]);
+  }, [liveQuotes, quoteRef, snapshotSaved, contactDetails, answers, quoteUrl]);
 
   useEffect(() => {
     const savedAnswers = sessionStorage.getItem("quoteAnswers");

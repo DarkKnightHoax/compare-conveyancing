@@ -290,3 +290,6 @@
 
 ## Bug Fix (Mar 2026)
 - [x] Fix regression: info@comparetheconveyancingmarket.co.uk no longer receives lead notification email when form is submitted — restored sendNewLeadEmail to leads.create so info@ gets notified immediately; saveSnapshot still sends customer email + fee-breakdown update to info@ once quotes load
+
+## Critical Bug Fix (Mar 2026)
+- [x] Fix email delivery broken for all recipients — root cause was saveSnapshot useEffect firing before contactDetails was loaded from sessionStorage (email was empty string, backend skipped sending). Fixed by adding contactDetails and answers to dependency array and adding early return guard. Also added proper error logging to all email .catch() calls.
