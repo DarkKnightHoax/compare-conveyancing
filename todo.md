@@ -280,3 +280,10 @@
 - [x] Email customer their reference number + quote link on lead creation
 - [x] Email info@comparetheconveyancingmarket.co.uk with reference + lead details + quote link
 - [x] Display reference number on results page after quote is generated (summary bar, clickable link)
+
+## Quote Email Fixes (Mar 2026)
+- [x] Fix customer quote email not delivering: changed FROM to noreply@comparetheconveyancingmarket.co.uk (requires Resend domain verification — DNS records provided to user)
+- [x] Add full fee breakdown table to both emails (customer + info@) via buildFeeBreakdownHtml helper
+- [x] Add full fee breakdown to saved quote page at /quote/:ref (FeeBreakdownTable component reads quoteSnapshot)
+- [x] Pass quoteSnapshot from QuoteResults to backend via leads.saveSnapshot mutation (fires after quotes.getLive loads)
+- [x] Move email sending from leads.create to leads.saveSnapshot so emails include fee breakdown

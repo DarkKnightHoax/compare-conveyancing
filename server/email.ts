@@ -4,7 +4,7 @@ import { ENV } from "./_core/env";
 const resend = new Resend(ENV.resendApiKey);
 
 const TO = "info@comparetheconveyancingmarket.co.uk";
-const FROM = "onboarding@resend.dev"; // Use this until domain is verified on Resend
+const FROM = "noreply@comparetheconveyancingmarket.co.uk"; // Verified sending domain
 
 // ─── Shared HTML wrapper ───────────────────────────────────────────────────────
 function emailWrapper(title: string, body: string): string {
@@ -69,6 +69,52 @@ function infoRow(label: string, value: string | number | undefined | null): stri
   </tr>`;
 }
 
+// ─── Fee Breakdown HTML helper ─────────────────────────────────────────────────
+function buildFeeBreakdownHtml(snapshotJson: string): string {
+  try {
+    const quotes: Array<{
+      firmName: string;
+      legalFee: number;
+      searchPack: number;
+      sdlt: number;
+      landRegistry: number;
+      bankTransfer: number;
+      total: number;
+    }> = JSON.parse(snapshotJson);
+    if (!Array.isArray(quotes) || quotes.length === 0) return "";
+    const rows = quotes.map(q => `
+      <tr style="border-bottom:1px solid #f0ece4;">
+        <td style="padding:10px 8px;font-size:13px;font-weight:600;color:#0f1f3d;">${q.firmName}</td>
+        <td style="padding:10px 8px;font-size:13px;color:#555;text-align:right;">£${(q.legalFee || 0).toLocaleString('en-GB', { minimumFractionDigits: 2 })}</td>
+        <td style="padding:10px 8px;font-size:13px;color:#555;text-align:right;">£${(q.searchPack || 0).toLocaleString('en-GB', { minimumFractionDigits: 2 })}</td>
+        <td style="padding:10px 8px;font-size:13px;color:#555;text-align:right;">£${(q.sdlt || 0).toLocaleString('en-GB', { minimumFractionDigits: 2 })}</td>
+        <td style="padding:10px 8px;font-size:13px;color:#555;text-align:right;">£${(q.landRegistry || 0).toLocaleString('en-GB', { minimumFractionDigits: 2 })}</td>
+        <td style="padding:10px 8px;font-size:13px;font-weight:700;color:#0f1f3d;text-align:right;">£${(q.total || 0).toLocaleString('en-GB', { minimumFractionDigits: 2 })}</td>
+      </tr>`).join('');
+    return `
+      <div style="margin-top:28px;">
+        <h3 style="margin:0 0 12px;font-size:16px;color:#0f1f3d;font-weight:700;">Fee Breakdown by Firm</h3>
+        <div style="overflow-x:auto;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:Arial,sans-serif;">
+            <thead>
+              <tr style="background:#0f1f3d;">
+                <th style="padding:10px 8px;font-size:12px;color:#c9a84c;text-align:left;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Firm</th>
+                <th style="padding:10px 8px;font-size:12px;color:#c9a84c;text-align:right;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Legal Fee</th>
+                <th style="padding:10px 8px;font-size:12px;color:#c9a84c;text-align:right;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Searches</th>
+                <th style="padding:10px 8px;font-size:12px;color:#c9a84c;text-align:right;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">SDLT</th>
+                <th style="padding:10px 8px;font-size:12px;color:#c9a84c;text-align:right;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Land Reg</th>
+                <th style="padding:10px 8px;font-size:12px;color:#c9a84c;text-align:right;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Total</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>`;
+  } catch {
+    return "";
+  }
+}
+
 // ─── 1. New Lead (Quote Submitted) ────────────────────────────────────────────
 export async function sendNewLeadEmail(lead: {
   name: string;
@@ -82,6 +128,7 @@ export async function sendNewLeadEmail(lead: {
   isFirstTimeBuyer?: boolean | null;
   referenceNumber?: string | null;
   quoteUrl?: string | null;
+  quoteSnapshot?: string | null;
 }) {
   const body = `
     <p style="color:#555;font-size:14px;margin:0 0 20px;">A new quote request has been submitted on the website. Details below:</p>
@@ -97,6 +144,7 @@ export async function sendNewLeadEmail(lead: {
       ${infoRow("First Time Buyer", lead.isFirstTimeBuyer ? "Yes" : lead.isFirstTimeBuyer === false ? "No" : null)}
     </table>
     ${lead.quoteUrl ? `<div style="margin-top:20px;padding:16px;background:#eff6ff;border-left:4px solid #3b82f6;border-radius:4px;"><p style="margin:0;font-size:13px;color:#1e40af;">View the customer's saved quote: <a href="${lead.quoteUrl}" style="color:#1e40af;font-weight:700;">${lead.quoteUrl}</a></p></div>` : ""}
+    ${lead.quoteSnapshot ? buildFeeBreakdownHtml(lead.quoteSnapshot) : ""}
     <div style="margin-top:16px;padding:16px;background:#f0f9f4;border-left:4px solid #22c55e;border-radius:4px;">
       <p style="margin:0;font-size:13px;color:#166534;">View and manage this lead in the <a href="https://www.comparetheconveyancingmarket.co.uk/admin" style="color:#166534;font-weight:700;">Admin Panel</a>.</p>
     </div>`;
@@ -118,6 +166,7 @@ export async function sendQuoteEmail(quote: {
   transactionType: string;
   propertyValue: number;
   postcode: string;
+  quoteSnapshot?: string | null;
 }) {
   const txLabel = quote.transactionType.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
   const body = `
@@ -134,7 +183,8 @@ export async function sendQuoteEmail(quote: {
     <div style="text-align:center;margin:28px 0;">
       <a href="${quote.quoteUrl}" style="display:inline-block;background:#c9a84c;color:#0f1f3d;font-size:15px;font-weight:700;padding:14px 32px;border-radius:8px;text-decoration:none;letter-spacing:0.3px;">View My Saved Quotes →</a>
     </div>
-    <p style="color:#888;font-size:13px;margin:0 0 8px;">You can return to this link at any time to review your quotes, instruct a firm, or request a callback.</p>
+    ${quote.quoteSnapshot ? buildFeeBreakdownHtml(quote.quoteSnapshot) : ""}
+    <p style="color:#888;font-size:13px;margin:24px 0 8px;">You can return to this link at any time to review your quotes, instruct a firm, or request a callback.</p>
     <p style="color:#888;font-size:13px;margin:0;">If you have any questions, please call us on <strong>0330 128 9488</strong> or email <a href="mailto:info@comparetheconveyancingmarket.co.uk" style="color:#c9a84c;">info@comparetheconveyancingmarket.co.uk</a>.</p>`;
 
   return resend.emails.send({

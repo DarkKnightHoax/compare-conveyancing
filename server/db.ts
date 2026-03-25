@@ -141,6 +141,12 @@ export async function updateLeadStatus(id: number, status: "new" | "contacted" |
   await db.update(leads).set(updateData).where(eq(leads.id, id));
 }
 
+export async function updateLeadSnapshot(referenceNumber: string, quoteSnapshot: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(leads).set({ quoteSnapshot }).where(eq(leads.referenceNumber, referenceNumber));
+}
+
 export async function getLeadsStats() {
   const db = await getDb();
   if (!db) return { total: 0, new: 0, contacted: 0, instructed: 0, lost: 0, todayCount: 0, weekCount: 0 };

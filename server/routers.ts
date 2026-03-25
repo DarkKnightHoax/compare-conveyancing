@@ -13,7 +13,7 @@ import { ENV } from "./_core/env";
 import {
 
   getAllLawFirms, getAllLawFirmsAdmin, createLawFirm, updateLawFirm, deleteLawFirm,
-  createLead, getAllLeads, getLeadById, getLeadByRef, updateLeadStatus, getLeadsStats,
+  createLead, getAllLeads, getLeadById, getLeadByRef, updateLeadStatus, updateLeadSnapshot, getLeadsStats,
   createCallbackRequest, getAllCallbacks, updateCallbackStatus, getPendingCallbacksCount,
   createInstructRequest, getAllInstructRequests, updateInstructStatus,
   getFeeStructuresForFirm, getAllFeeStructures, upsertFeeStructure, deleteFeeStructure,
@@ -217,31 +217,58 @@ export const appRouter = router({
           title: `New Quote Request — ${input.firstName} ${input.lastName} [${referenceNumber}]`,
           content: `Ref: ${referenceNumber} | Transaction: ${input.transactionType} | Property Value: £${input.propertyValue.toLocaleString()} | Postcode: ${input.postcode} | Email: ${input.email} | Quote: ${quoteUrl}`,
         }).catch(() => {});
-        // Send quote email to customer
-        sendQuoteEmail({
-          name: `${input.firstName} ${input.lastName}`,
-          email: input.email,
-          referenceNumber,
-          quoteUrl,
-          transactionType: input.transactionType,
-          propertyValue: input.propertyValue,
-          postcode: input.postcode,
-        }).catch(() => {});
-        // Send lead notification to info@
-        sendNewLeadEmail({
-          name: `${input.firstName} ${input.lastName}`,
-          email: input.email,
-          phone: input.phone,
-          transactionType: input.transactionType,
-          propertyValue: input.propertyValue,
-          propertyAddress: input.postcode,
-          mortgageLender: input.mortgageLender,
-          hasMortgage: input.hasMortgage,
-          isFirstTimeBuyer: input.isFirstTimeBuyer,
-          referenceNumber,
-          quoteUrl,
-        }).catch(() => {});
+        // NOTE: Emails (customer + info@) are sent from leads.saveSnapshot once the fee breakdown is available
         return { success: true, leadId, referenceNumber, quoteUrl };
+      }),
+    saveSnapshot: publicProcedure
+      .input(z.object({
+        referenceNumber: z.string(),
+        quoteSnapshot: z.string(),
+        // Lead details needed to send emails with fee breakdown
+        name: z.string().optional(),
+        email: z.string().email().optional(),
+        phone: z.string().optional(),
+        transactionType: z.string().optional(),
+        propertyValue: z.number().optional(),
+        postcode: z.string().optional(),
+        mortgageLender: z.string().optional(),
+        hasMortgage: z.boolean().optional(),
+        isFirstTimeBuyer: z.boolean().optional(),
+        quoteUrl: z.string().optional(),
+        origin: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await updateLeadSnapshot(input.referenceNumber, input.quoteSnapshot);
+        const baseUrl = input.origin || 'https://www.comparetheconveyancingmarket.co.uk';
+        const quoteUrl = input.quoteUrl || `${baseUrl}/quote/${input.referenceNumber}`;
+        // Send emails with fee breakdown now that we have the snapshot
+        if (input.email && input.name) {
+          sendQuoteEmail({
+            name: input.name,
+            email: input.email,
+            referenceNumber: input.referenceNumber,
+            quoteUrl,
+            transactionType: input.transactionType || 'purchase',
+            propertyValue: input.propertyValue || 0,
+            postcode: input.postcode || '',
+            quoteSnapshot: input.quoteSnapshot,
+          }).catch(() => {});
+          sendNewLeadEmail({
+            name: input.name,
+            email: input.email,
+            phone: input.phone,
+            transactionType: input.transactionType || 'purchase',
+            propertyValue: input.propertyValue,
+            propertyAddress: input.postcode,
+            mortgageLender: input.mortgageLender,
+            hasMortgage: input.hasMortgage,
+            isFirstTimeBuyer: input.isFirstTimeBuyer,
+            referenceNumber: input.referenceNumber,
+            quoteUrl,
+            quoteSnapshot: input.quoteSnapshot,
+          }).catch(() => {});
+        }
+        return { success: true };
       }),
     list: standaloneAdminProcedure
       .input(z.object({ limit: z.number().optional(), offset: z.number().optional() }))

@@ -819,6 +819,8 @@ export default function QuoteResults() {
   const [showExclusivePopup, setShowExclusivePopup] = useState(false);
   const [quoteRef, setQuoteRef] = useState<string | null>(null);
   const [quoteUrl, setQuoteUrl] = useState<string | null>(null);
+  const [snapshotSaved, setSnapshotSaved] = useState(false);
+  const saveSnapshot = trpc.leads.saveSnapshot.useMutation();
   const [queryInput, setQueryInput] = useState<{
     transactionType: "purchase" | "sale" | "sale_purchase" | "remortgage";
     propertyValue: number;
@@ -841,6 +843,36 @@ export default function QuoteResults() {
     queryInput!,
     { enabled: queryInput !== null }
   );
+
+  // Once quotes load, save the snapshot and send emails with fee breakdown
+  useEffect(() => {
+    if (!liveQuotes || liveQuotes.length === 0 || snapshotSaved || !quoteRef) return;
+    const snapshot = liveQuotes.map(q => ({
+      firmName: q.firmName,
+      legalFee: q.totalIncVat,
+      searchPack: q.disbursements.find(d => d.name.toLowerCase().includes('search'))?.price ?? 399,
+      sdlt: q.sdlt,
+      landRegistry: q.landRegistryFee,
+      bankTransfer: q.disbursements.find(d => d.name.toLowerCase().includes('transfer') || d.name.toLowerCase().includes('chaps'))?.price ?? 0,
+      total: q.grandTotal,
+    }));
+    setSnapshotSaved(true);
+    saveSnapshot.mutate({
+      referenceNumber: quoteRef,
+      quoteSnapshot: JSON.stringify(snapshot),
+      name: contactDetails.firstName && contactDetails.lastName ? `${contactDetails.firstName} ${contactDetails.lastName}` : undefined,
+      email: contactDetails.email || undefined,
+      phone: contactDetails.phone || undefined,
+      transactionType: answers.transactionType || 'purchase',
+      propertyValue: answers.propertyValue || 0,
+      postcode: answers.postcode || '',
+      mortgageLender: (contactDetails as any).mortgageLender || undefined,
+      hasMortgage: answers.hasMortgage,
+      isFirstTimeBuyer: answers.isFirstTimeBuyer,
+      quoteUrl: quoteUrl || undefined,
+      origin: window.location.origin,
+    });
+  }, [liveQuotes, quoteRef, snapshotSaved]);
 
   useEffect(() => {
     const savedAnswers = sessionStorage.getItem("quoteAnswers");

@@ -6,7 +6,7 @@
 
 import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
-import { Scale, ArrowLeft, Phone, Mail, Copy, CheckCircle, Loader2, AlertCircle } from "lucide-react";
+import { Scale, ArrowLeft, Phone, Mail, Copy, CheckCircle, Loader2, AlertCircle, Star } from "lucide-react";
 import { useState } from "react";
 
 const TX_LABELS: Record<string, string> = {
@@ -16,6 +16,10 @@ const TX_LABELS: Record<string, string> = {
   remortgage: "Remortgage",
 };
 
+function formatCurrency(n: number) {
+  return `£${n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
 function InfoRow({ label, value }: { label: string; value: string | null | undefined }) {
   if (!value) return null;
   return (
@@ -23,6 +27,94 @@ function InfoRow({ label, value }: { label: string; value: string | null | undef
       <td style={{ padding: "8px 12px", color: "#6b7280", fontSize: 13, fontFamily: "'DM Sans', sans-serif", width: "45%", borderBottom: "1px solid oklch(0.93 0.01 80)" }}>{label}</td>
       <td style={{ padding: "8px 12px", color: "oklch(0.18 0.06 250)", fontSize: 13, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, borderBottom: "1px solid oklch(0.93 0.01 80)" }}>{value}</td>
     </tr>
+  );
+}
+
+interface QuoteSnapshotItem {
+  firmName: string;
+  legalFee: number;
+  searchPack: number;
+  sdlt: number;
+  landRegistry: number;
+  bankTransfer: number;
+  total: number;
+}
+
+function FeeBreakdownTable({ snapshot }: { snapshot: QuoteSnapshotItem[] }) {
+  const sorted = [...snapshot].sort((a, b) => a.total - b.total);
+  return (
+    <div className="rounded-2xl bg-white shadow-sm p-6 mb-6" style={{ border: "1px solid oklch(0.93 0.01 80)" }}>
+      <h3 className="text-base font-bold mb-1" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+        Your Conveyancing Quotes
+      </h3>
+      <p className="text-xs mb-5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+        {sorted.length} regulated firms · Sorted by total cost
+      </p>
+
+      <div className="space-y-4">
+        {sorted.map((q, i) => (
+          <div
+            key={q.firmName}
+            className="rounded-xl overflow-hidden"
+            style={{
+              border: i === 0 ? "2px solid oklch(0.72 0.12 75)" : "1px solid oklch(0.88 0.015 80)",
+              boxShadow: i === 0 ? "0 4px 16px oklch(0.72 0.12 75 / 0.12)" : "none",
+            }}
+          >
+            {i === 0 && (
+              <div className="px-4 py-1.5 text-xs font-bold text-center" style={{ background: "oklch(0.72 0.12 75)", color: "oklch(0.12 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                ★ Best Value
+              </div>
+            )}
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-bold text-base" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+                  {q.firmName}
+                </h4>
+                <div className="text-right">
+                  <div className="text-xs" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Grand Total</div>
+                  <div className="text-xl font-bold" style={{ color: i === 0 ? "oklch(0.72 0.12 75)" : "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>
+                    {formatCurrency(q.total)}
+                  </div>
+                </div>
+              </div>
+
+              {/* Fee breakdown rows */}
+              <div className="rounded-lg overflow-hidden" style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.93 0.01 80)" }}>
+                <div className="flex justify-between items-center px-3 py-2 text-sm" style={{ borderBottom: "1px solid oklch(0.93 0.01 80)" }}>
+                  <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Legal fees (inc. VAT)</span>
+                  <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.legalFee)}</span>
+                </div>
+                <div className="flex justify-between items-center px-3 py-2 text-sm" style={{ borderBottom: "1px solid oklch(0.93 0.01 80)" }}>
+                  <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Search Pack</span>
+                  <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.searchPack)}</span>
+                </div>
+                {q.sdlt > 0 && (
+                  <div className="flex justify-between items-center px-3 py-2 text-sm" style={{ borderBottom: "1px solid oklch(0.93 0.01 80)" }}>
+                    <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Stamp Duty (SDLT)</span>
+                    <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.sdlt)}</span>
+                  </div>
+                )}
+                {q.landRegistry > 0 && (
+                  <div className="flex justify-between items-center px-3 py-2 text-sm" style={{ borderBottom: "1px solid oklch(0.93 0.01 80)" }}>
+                    <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Land Registry Fee</span>
+                    <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.landRegistry)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center px-3 py-2 text-sm font-bold" style={{ background: "oklch(0.18 0.06 250)" }}>
+                  <span style={{ color: "white", fontFamily: "'DM Sans', sans-serif" }}>Grand Total</span>
+                  <span style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(q.total)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <p className="text-xs mt-4" style={{ color: "oklch(0.65 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+        Quotes are indicative and based on the information provided at the time of your enquiry. Final fees may vary depending on the complexity of your transaction. All firms are regulated by the SRA or CLC.
+      </p>
+    </div>
   );
 }
 
@@ -42,6 +134,16 @@ export default function SavedQuote() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  // Parse quote snapshot if available
+  let quoteSnapshot: QuoteSnapshotItem[] | null = null;
+  if (lead?.quoteSnapshot) {
+    try {
+      quoteSnapshot = JSON.parse(lead.quoteSnapshot as string);
+    } catch {
+      quoteSnapshot = null;
+    }
+  }
 
   return (
     <div className="min-h-screen" style={{ background: "oklch(0.975 0.008 80)" }}>
@@ -118,6 +220,11 @@ export default function SavedQuote() {
               </button>
             </div>
 
+            {/* Fee breakdown from snapshot */}
+            {quoteSnapshot && quoteSnapshot.length > 0 && (
+              <FeeBreakdownTable snapshot={quoteSnapshot} />
+            )}
+
             {/* Property details */}
             <div className="rounded-2xl bg-white shadow-sm p-6 mb-6" style={{ border: "1px solid oklch(0.93 0.01 80)" }}>
               <h3 className="text-base font-bold mb-4" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
@@ -138,21 +245,42 @@ export default function SavedQuote() {
               </table>
             </div>
 
-            {/* CTA */}
-            <div className="rounded-2xl p-6 mb-6 text-center" style={{ background: "white", border: "1px solid oklch(0.93 0.01 80)" }}>
-              <h3 className="text-lg font-bold mb-2" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
-                Ready to see your quotes?
-              </h3>
-              <p className="text-sm mb-5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                Your personalised quotes from regulated UK conveyancers are waiting. Complete a new quote to see live pricing.
-              </p>
-              <button
-                onClick={() => navigate("/get-quote")}
-                className="btn-gold px-8 py-3.5 rounded-xl text-sm font-bold"
-              >
-                Get New Quotes →
-              </button>
-            </div>
+            {/* CTA — only show if no snapshot (quote expired or not yet loaded) */}
+            {!quoteSnapshot && (
+              <div className="rounded-2xl p-6 mb-6 text-center" style={{ background: "white", border: "1px solid oklch(0.93 0.01 80)" }}>
+                <h3 className="text-lg font-bold mb-2" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+                  Want fresh quotes?
+                </h3>
+                <p className="text-sm mb-5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                  Start a new quote to see the latest pricing from regulated UK conveyancers.
+                </p>
+                <button
+                  onClick={() => navigate("/get-quote")}
+                  className="btn-gold px-8 py-3.5 rounded-xl text-sm font-bold"
+                >
+                  Get New Quotes →
+                </button>
+              </div>
+            )}
+
+            {/* New quote CTA when snapshot is shown */}
+            {quoteSnapshot && (
+              <div className="rounded-2xl p-5 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4" style={{ background: "oklch(0.18 0.06 250 / 0.05)", border: "1px solid oklch(0.88 0.015 80)" }}>
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Ready to instruct?</p>
+                  <p className="text-xs" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Call us or start a new quote to proceed.</p>
+                </div>
+                <div className="flex gap-3">
+                  <a href="tel:03301289488" className="btn-gold px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2" style={{ textDecoration: "none" }}>
+                    <Phone size={14} />
+                    Call Us
+                  </a>
+                  <button onClick={() => navigate("/get-quote")} className="px-5 py-2.5 rounded-xl text-sm font-semibold" style={{ border: "2px solid oklch(0.18 0.06 250)", color: "oklch(0.18 0.06 250)", background: "white", fontFamily: "'DM Sans', sans-serif" }}>
+                    New Quote
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Contact */}
             <div className="rounded-2xl p-6" style={{ background: "oklch(0.18 0.06 250 / 0.04)", border: "1px solid oklch(0.88 0.015 80)" }}>
