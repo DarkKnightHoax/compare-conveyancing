@@ -355,3 +355,6 @@
 
 ## Sale Initial Payment Fix (Mar 2026)
 - [x] Fix: initial payment on account for sale transactions must include file opening fee (not just AML checks) — root cause was fileOpeningFee missing from quote snapshot; now included
+
+## Instruct Modal Total Fix (Mar 2026)
+- [x] Instruct modal fee summary: "Total legal fees (inc. VAT)" row renamed to "Grand total" and now shows the full grand total (legal fees + disbursements + SDLT + LR) on both results page and saved quote page

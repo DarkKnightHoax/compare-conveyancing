@@ -191,8 +191,8 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
             {/* Fee summary */}
             <div className="rounded-xl p-4" style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.88 0.015 80)" }}>
               <div className="flex justify-between text-sm mb-1">
-                <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Total legal fees (inc. VAT)</span>
-                <span className="font-semibold font-mono-numbers" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(firm.totalIncVat)}</span>
+                <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Grand total</span>
+                <span className="font-semibold font-mono-numbers" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(firm.grandTotal)}</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Initial payment on account</span>
