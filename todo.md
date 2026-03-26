@@ -352,3 +352,6 @@
 ## LR Fee & Saved Quote Instruct Form (Mar 2026)
 - [x] Remove buyer-count multiplier from Land Registry fee (fee is per transaction, not per person)
 - [x] Add Instruct Directly modal with full form + Stripe payment to saved quote page (/quote/:ref)
+
+## Sale Initial Payment Fix (Mar 2026)
+- [x] Fix: initial payment on account for sale transactions must include file opening fee (not just AML checks) — root cause was fileOpeningFee missing from quote snapshot; now included

@@ -922,8 +922,10 @@ export default function QuoteResults() {
     // Wait until contactDetails has been loaded from sessionStorage (email must be present)
     if (!contactDetails.email || !contactDetails.firstName) return;
     const snapshot = liveQuotes.map(q => ({
+      firmId: q.firmId,
       firmName: q.firmName,
       firmLocation: q.firmLocation,
+      logoUrl: q.logoUrl,
       rating: q.rating,
       // Legal fees breakdown
       legalFee: q.legalFee,
@@ -932,6 +934,8 @@ export default function QuoteResults() {
       totalIncVat: q.totalIncVat,
       // Disbursements (AML, bankruptcy, search pack, bank transfer, etc.)
       disbursements: q.disbursements,
+      // File opening fee (used for initial payment on account in Instruct modal)
+      fileOpeningFee: q.fileOpeningFee,
       // Government fees
       sdlt: q.sdlt,
       landRegistry: q.landRegistryFee,
