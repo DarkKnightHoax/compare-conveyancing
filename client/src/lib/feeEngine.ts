@@ -1,7 +1,15 @@
 /**
  * FEE CALCULATION ENGINE
- * Based on Hoowla fee structure for Easy Choice Conveyancing
  * All fees in GBP (£)
+ *
+ * Firms: Easy Choice Conveyancing, PCS Legal, Burton's Solicitors, TQ Law
+ *
+ * Rules:
+ * - Purchase fees (base + opening) are shared flat rates across all firms
+ * - Sale fees (base + opening) are firm-specific flat rates
+ * - Search Pack is purchase-only (not included for sale)
+ * - Mortgage Redemption fee (sale, has mortgage on property) is fixed at £100
+ * - TQ Law: shown for leasehold SALE but NOT leasehold PURCHASE
  */
 
 export interface WizardAnswers {
@@ -76,20 +84,11 @@ export interface DisbursementItem {
   includesVat: boolean;
 }
 
-// ─── PURCHASE BASE FEES (from Hoowla) ───────────────────────────────────────
-const PURCHASE_BASE_FEES = [
-  { from: 0, to: 300000, fee: 525 },
-  { from: 300001, to: 600000, fee: 599 },
-  { from: 600001, to: 1000000, fee: 750 },
-  { from: 1000001, to: Infinity, fee: 1250 },
-];
+// ─── SHARED PURCHASE BASE FEE (flat rate, same for all firms) ─────────────────
+const SHARED_PURCHASE_BASE_FEE = 999;
 
-// ─── SALE BASE FEES ──────────────────────────────────────────────────────────
-const SALE_BASE_FEES = [
-  { from: 0, to: 300000, fee: 499 },
-  { from: 300001, to: 600000, fee: 599 },
-  { from: 600001, to: Infinity, fee: 750 },
-];
+// ─── SHARED PURCHASE OPENING FEE (flat rate, same for all firms) ─────────────
+const SHARED_PURCHASE_OPENING_FEE = 0; // No separate opening fee for purchase
 
 // ─── REMORTGAGE BASE FEES ────────────────────────────────────────────────────
 const REMORTGAGE_BASE_FEES = [
@@ -114,7 +113,7 @@ const PURCHASE_SUPPLEMENTS = {
 // ─── SALE SUPPLEMENTS (ex. VAT) ─────────────────────────────────────────────
 const SALE_SUPPLEMENTS = {
   leasehold: { name: 'Leasehold Supplement', price: 149 },
-  mortgagedProperty: { name: 'Mortgage Redemption', price: 149 },
+  mortgagedProperty: { name: 'Mortgage Redemption', price: 100 }, // Fixed at £100
 };
 
 // ─── DISBURSEMENTS (inc. VAT) ────────────────────────────────────────────────
@@ -126,6 +125,7 @@ const PURCHASE_DISBURSEMENTS: DisbursementItem[] = [
   { name: 'Electronic Transfer Fee (CHAPS)', price: 35, includesVat: true },
 ];
 
+// Sale has NO Search Pack
 const SALE_DISBURSEMENTS: DisbursementItem[] = [
   { name: 'Anti-Money Laundering (AML) Check', price: 49, includesVat: true },
   { name: 'Official Copies (Title Register & Plan)', price: 12, includesVat: true },
@@ -140,19 +140,6 @@ const REMORTGAGE_DISBURSEMENTS: DisbursementItem[] = [
 
 /**
  * SDLT engine — rates effective 1 April 2025
- * Mirrors https://www.stampdutycalculator.org.uk/
- *
- * Standard bands:
- *   £0–£125k   → 0%   |  £125k–£250k → 2%
- *   £250k–£925k → 5%  |  £925k–£1.5m → 10%  |  Over £1.5m → 12%
- *
- * Additional property (buy-to-let / second home): +5% on every band
- *   (surcharge raised from 3% to 5% on 31 Oct 2024)
- *   Exception: under £40k → 0% surcharge
- *
- * First-time buyer relief (from 1 Apr 2025):
- *   £0–£300k → 0%  |  £300k–£500k → 5% on portion above £300k
- *   Over £500k → full standard rates (no relief)
  */
 export function calculateSDLT(
   propertyValue: number,
@@ -184,7 +171,6 @@ export function calculateSDLT(
   if (isFirstTimeBuyer) {
     if (propertyValue <= 300000) return 0;
     if (propertyValue <= 500000) return Math.round((propertyValue - 300000) * 0.05);
-    // Over £500k: FTB relief lost — fall through to standard rates
   }
 
   const bands = [
@@ -202,7 +188,7 @@ export function calculateSDLT(
   return Math.round(tax);
 }
 
-// Land Registry Scale 1 — "Apply using the portal / Business Gateway" column
+// Land Registry Scale 1
 export function calculateLandRegistryFee(propertyValue: number): number {
   if (propertyValue <= 80000) return 20;
   if (propertyValue <= 100000) return 40;
@@ -221,6 +207,10 @@ function getBaseFee(value: number, bands: { from: number; to: number; fee: numbe
 }
 
 // ─── FIRM DATA ───────────────────────────────────────────────────────────────
+// saleBaseFee: firm-specific flat base legal fee for sale
+// saleOpeningFee: firm-specific opening fee for sale (added as a disbursement)
+// purchaseBaseFee: shared flat rate (SHARED_PURCHASE_BASE_FEE) — same for all firms
+// purchaseOpeningFee: shared flat rate — same for all firms (currently 0)
 const LAW_FIRMS = [
   {
     id: 1,
@@ -233,7 +223,12 @@ const LAW_FIRMS = [
     speciality: 'Residential Property Specialists',
     yearsEstablished: 12,
     accreditations: ['Law Society Conveyancing Quality Scheme', 'Lexcel Accredited'],
-    feeMultiplier: 1.0,
+    saleBaseFee: 1200,
+    saleOpeningFee: 0,      // No separate opening fee specified for Easy Choice sale
+    purchaseBaseFee: 999,   // Shared purchase base fee
+    purchaseOpeningFee: 0,
+    // TQ Law leasehold restriction: false = no restriction
+    excludeLeaseholdPurchase: false,
   },
   {
     id: 2,
@@ -246,11 +241,15 @@ const LAW_FIRMS = [
     speciality: 'First-Time Buyer Experts',
     yearsEstablished: 8,
     accreditations: ['Law Society Conveyancing Quality Scheme'],
-    feeMultiplier: 0.95,
+    saleBaseFee: 560,
+    saleOpeningFee: 119,    // Opening fee for sale
+    purchaseBaseFee: 999,   // Shared purchase base fee (unchanged)
+    purchaseOpeningFee: 0,
+    excludeLeaseholdPurchase: false,
   },
   {
     id: 3,
-    firmName: 'Premier Property Law',
+    firmName: "Burton's Solicitors",
     firmLocation: 'London, EC2',
     rating: 4.9,
     reviewCount: 541,
@@ -259,33 +258,29 @@ const LAW_FIRMS = [
     speciality: 'New Build & Leasehold Specialists',
     yearsEstablished: 22,
     accreditations: ['Law Society Conveyancing Quality Scheme', 'Lexcel Accredited', 'ISO 9001:2015'],
-    feeMultiplier: 1.12,
+    saleBaseFee: 1400,
+    saleOpeningFee: 550,    // Opening fee for sale
+    purchaseBaseFee: 895,   // Burton's purchase base fee (specified by user)
+    purchaseOpeningFee: 0,
+    excludeLeaseholdPurchase: false,
   },
   {
     id: 4,
-    firmName: 'Clarity Conveyancing',
-    firmLocation: 'Birmingham, B1',
+    firmName: 'TQ Law',
+    firmLocation: 'Torquay, Devon',
     rating: 4.5,
     reviewCount: 97,
     sraNumber: '55667788',
-    regulated: 'CLC' as const,
-    speciality: 'Shared Ownership & Help to Buy',
-    yearsEstablished: 5,
-    accreditations: ['Council for Licensed Conveyancers'],
-    feeMultiplier: 0.88,
-  },
-  {
-    id: 5,
-    firmName: 'Meridian Law',
-    firmLocation: 'Manchester, M1',
-    rating: 4.7,
-    reviewCount: 228,
-    sraNumber: '99887766',
     regulated: 'SRA' as const,
-    speciality: 'Buy-to-Let & Investment Property',
-    yearsEstablished: 15,
-    accreditations: ['Law Society Conveyancing Quality Scheme', 'ARLA Propertymark'],
-    feeMultiplier: 1.05,
+    speciality: 'Residential Conveyancing',
+    yearsEstablished: 5,
+    accreditations: ['Law Society Conveyancing Quality Scheme'],
+    saleBaseFee: 499,
+    saleOpeningFee: 394,    // Opening fee for sale
+    purchaseBaseFee: 999,   // Shared purchase base fee (unchanged)
+    purchaseOpeningFee: 0,
+    // TQ Law does NOT handle leasehold purchase — only leasehold sale
+    excludeLeaseholdPurchase: true,
   },
 ];
 
@@ -296,51 +291,74 @@ export function calculateQuotes(answers: WizardAnswers): FirmQuote[] {
   const buyerCount = answers.buyerCount || 1;
   const giftCount = answers.giftCount || 0;
 
-  return LAW_FIRMS.map((firm) => {
+  // Determine effective tenure for sale and purchase legs
+  const saleTenure = answers.saleTenure ?? answers.tenure;
+  const purchaseTenure = answers.purchaseTenure ?? answers.tenure;
+
+  return LAW_FIRMS.filter((firm) => {
+    // TQ Law: exclude if leasehold purchase (or sale_purchase with leasehold purchase leg)
+    if (firm.excludeLeaseholdPurchase) {
+      if (transactionType === 'purchase' && purchaseTenure === 'leasehold') return false;
+      if (transactionType === 'sale_purchase' && purchaseTenure === 'leasehold') return false;
+    }
+    return true;
+  }).map((firm) => {
     let baseFee = 0;
     const supplements: SupplementItem[] = [];
     let disbursements: DisbursementItem[] = [];
 
     // ── BASE FEE ──
     if (transactionType === 'purchase') {
-      baseFee = Math.round(getBaseFee(value, PURCHASE_BASE_FEES) * firm.feeMultiplier);
+      baseFee = firm.purchaseBaseFee;
     } else if (transactionType === 'sale') {
-      baseFee = Math.round(getBaseFee(value, SALE_BASE_FEES) * firm.feeMultiplier);
+      baseFee = firm.saleBaseFee;
     } else if (transactionType === 'sale_purchase') {
-      const saleFee = Math.round(getBaseFee(value, SALE_BASE_FEES) * firm.feeMultiplier);
-      const purchaseFee = Math.round(getBaseFee(value, PURCHASE_BASE_FEES) * firm.feeMultiplier);
-      baseFee = saleFee + purchaseFee;
+      baseFee = firm.saleBaseFee + firm.purchaseBaseFee;
     } else if (transactionType === 'remortgage') {
       const remortgageValue = answers.newMortgageValue || value;
-      baseFee = Math.round(getBaseFee(remortgageValue, REMORTGAGE_BASE_FEES) * firm.feeMultiplier);
+      baseFee = getBaseFee(remortgageValue, REMORTGAGE_BASE_FEES);
+    }
+
+    // ── OPENING FEE (added as a disbursement line) ──
+    if (transactionType === 'sale' && firm.saleOpeningFee > 0) {
+      disbursements.push({ name: 'File Opening Fee', price: firm.saleOpeningFee, includesVat: false });
+    }
+    if (transactionType === 'purchase' && firm.purchaseOpeningFee > 0) {
+      disbursements.push({ name: 'File Opening Fee', price: firm.purchaseOpeningFee, includesVat: false });
+    }
+    if (transactionType === 'sale_purchase') {
+      const totalOpeningFee = firm.saleOpeningFee + firm.purchaseOpeningFee;
+      if (totalOpeningFee > 0) {
+        disbursements.push({ name: 'File Opening Fee', price: totalOpeningFee, includesVat: false });
+      }
     }
 
     // ── SUPPLEMENTS ──
     if (transactionType === 'purchase' || transactionType === 'sale_purchase') {
-      if (answers.tenure === 'leasehold') supplements.push({ ...PURCHASE_SUPPLEMENTS.leasehold, price: Math.round(PURCHASE_SUPPLEMENTS.leasehold.price * firm.feeMultiplier) });
-      if (answers.hasMortgage) supplements.push({ ...PURCHASE_SUPPLEMENTS.mortgage, price: Math.round(PURCHASE_SUPPLEMENTS.mortgage.price * firm.feeMultiplier) });
-      if (answers.isNewBuild) supplements.push({ ...PURCHASE_SUPPLEMENTS.newBuild, price: Math.round(PURCHASE_SUPPLEMENTS.newBuild.price * firm.feeMultiplier) });
-      if (answers.isSharedOwnership) supplements.push({ ...PURCHASE_SUPPLEMENTS.sharedOwnership, price: Math.round(PURCHASE_SUPPLEMENTS.sharedOwnership.price * firm.feeMultiplier) });
+      const pTenure = transactionType === 'sale_purchase' ? purchaseTenure : answers.tenure;
+      if (pTenure === 'leasehold') supplements.push({ ...PURCHASE_SUPPLEMENTS.leasehold });
+      if (answers.hasMortgage) supplements.push({ ...PURCHASE_SUPPLEMENTS.mortgage });
+      if (answers.isNewBuild) supplements.push({ ...PURCHASE_SUPPLEMENTS.newBuild });
+      if (answers.isSharedOwnership) supplements.push({ ...PURCHASE_SUPPLEMENTS.sharedOwnership });
       if (answers.hasGiftedDeposit) {
-        // Multiply gifted deposit fee by number of gifts (minimum 1)
         const count = Math.max(1, giftCount);
-        supplements.push({ ...PURCHASE_SUPPLEMENTS.giftedDeposit, name: `Gifted Deposit${count > 1 ? ` (x${count})` : ''}`, price: Math.round(PURCHASE_SUPPLEMENTS.giftedDeposit.price * firm.feeMultiplier) * count });
+        supplements.push({ ...PURCHASE_SUPPLEMENTS.giftedDeposit, name: `Gifted Deposit${count > 1 ? ` (x${count})` : ''}`, price: PURCHASE_SUPPLEMENTS.giftedDeposit.price * count });
       }
-      if (answers.hasHelpToBuyISA) supplements.push({ ...PURCHASE_SUPPLEMENTS.helpToBuyISA, price: Math.round(PURCHASE_SUPPLEMENTS.helpToBuyISA.price * firm.feeMultiplier) });
-      if (answers.isRightToBuy) supplements.push({ ...PURCHASE_SUPPLEMENTS.rightToBuy, price: Math.round(PURCHASE_SUPPLEMENTS.rightToBuy.price * firm.feeMultiplier) });
-      if (answers.isBuyToLet) supplements.push({ ...PURCHASE_SUPPLEMENTS.buyToLet, price: Math.round(PURCHASE_SUPPLEMENTS.buyToLet.price * firm.feeMultiplier) });
-      if (answers.isSecondHome) supplements.push({ ...PURCHASE_SUPPLEMENTS.secondHome, price: Math.round(PURCHASE_SUPPLEMENTS.secondHome.price * firm.feeMultiplier) });
+      if (answers.hasHelpToBuyISA) supplements.push({ ...PURCHASE_SUPPLEMENTS.helpToBuyISA });
+      if (answers.isRightToBuy) supplements.push({ ...PURCHASE_SUPPLEMENTS.rightToBuy });
+      if (answers.isBuyToLet) supplements.push({ ...PURCHASE_SUPPLEMENTS.buyToLet });
+      if (answers.isSecondHome) supplements.push({ ...PURCHASE_SUPPLEMENTS.secondHome });
     }
 
     if (transactionType === 'sale' || transactionType === 'sale_purchase') {
-      if (answers.tenure === 'leasehold') supplements.push({ ...SALE_SUPPLEMENTS.leasehold, price: Math.round(SALE_SUPPLEMENTS.leasehold.price * firm.feeMultiplier) });
-      if (answers.hasMortgageOnProperty) supplements.push({ ...SALE_SUPPLEMENTS.mortgagedProperty, price: Math.round(SALE_SUPPLEMENTS.mortgagedProperty.price * firm.feeMultiplier) });
+      const sTenure = transactionType === 'sale_purchase' ? saleTenure : answers.tenure;
+      if (sTenure === 'leasehold') supplements.push({ ...SALE_SUPPLEMENTS.leasehold });
+      if (answers.hasMortgageOnProperty) supplements.push({ ...SALE_SUPPLEMENTS.mortgagedProperty });
     }
 
     // ── DISBURSEMENTS ──
     if (transactionType === 'purchase' || transactionType === 'sale_purchase') {
-      // AML and Bankruptcy Search multiply by buyer count
-      disbursements = PURCHASE_DISBURSEMENTS.map(d => {
+      const purchaseDisbursements = PURCHASE_DISBURSEMENTS.map(d => {
         if (d.name === 'Anti-Money Laundering (AML) Check') {
           return { ...d, name: `AML Check${buyerCount > 1 ? ` (x${buyerCount})` : ''}`, price: d.price * buyerCount };
         }
@@ -349,20 +367,27 @@ export function calculateQuotes(answers: WizardAnswers): FirmQuote[] {
         }
         return { ...d };
       });
-    } else if (transactionType === 'sale') {
-      disbursements = SALE_DISBURSEMENTS.map(d => {
+      disbursements = [...disbursements, ...purchaseDisbursements];
+    }
+
+    if (transactionType === 'sale') {
+      const saleDisbursements = SALE_DISBURSEMENTS.map(d => {
         if (d.name === 'Anti-Money Laundering (AML) Check') {
           return { ...d, name: `AML Check${buyerCount > 1 ? ` (x${buyerCount})` : ''}`, price: d.price * buyerCount };
         }
         return { ...d };
       });
-    } else if (transactionType === 'remortgage') {
-      disbursements = REMORTGAGE_DISBURSEMENTS.map(d => {
+      disbursements = [...disbursements, ...saleDisbursements];
+    }
+
+    if (transactionType === 'remortgage') {
+      const remortgageDisbursements = REMORTGAGE_DISBURSEMENTS.map(d => {
         if (d.name === 'Anti-Money Laundering (AML) Check') {
           return { ...d, name: `AML Check${buyerCount > 1 ? ` (x${buyerCount})` : ''}`, price: d.price * buyerCount };
         }
         return { ...d };
       });
+      disbursements = [...disbursements, ...remortgageDisbursements];
     }
 
     // ── TOTALS ──

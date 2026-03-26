@@ -542,7 +542,14 @@ export default function QuoteWizard() {
       if (!contactDetails.firstName.trim()) errs.firstName = "First name is required";
       if (!contactDetails.lastName.trim()) errs.lastName = "Last name is required";
       if (!contactDetails.email.includes("@")) errs.email = "Please enter a valid email address";
-      if (!contactDetails.phone.trim() || contactDetails.phone.length < 10) errs.phone = "Please enter a valid phone number";
+      // UK phone number validation: accepts 07xxx, 01xxx, 02xxx, +447xxx, 00447xxx formats
+      const rawPhone = contactDetails.phone.trim().replace(/\s+/g, '');
+      const ukPhoneRegex = /^(\+44|0044|0)7[0-9]{9}$|^(\+44|0044|0)[1-9][0-9]{8,9}$/;
+      if (!rawPhone) {
+        errs.phone = "Phone number is required";
+      } else if (!ukPhoneRegex.test(rawPhone)) {
+        errs.phone = "Please enter a valid UK phone number (e.g. 07700 900000)";
+      }
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;

@@ -304,3 +304,14 @@
 
 ## UX Fix (Mar 2026)
 - [x] Disable submit button immediately on first click, show loading spinner ("Finding Your Quotes..."), prevent duplicate lead creation from multiple clicks via isPending guard in goNext and disabled prop on button
+
+## Fee & Rule Corrections (Mar 2026)
+- [x] Remove Search Pack for sale transactions
+- [x] Easy Choice: base legal fee sale £1200, purchase £999 (flat rates)
+- [x] Burton's: file opening fee sale £550, base legal fee purchase £895, base legal fee sale £1400
+- [x] PCS Legal: file opening fee sale £119, base legal fee sale £560
+- [x] TQ Law: file opening fee sale £394, base legal fee sale £499
+- [x] Mortgage redemption fee (sale, has mortgage on property) fixed at £100
+- [x] TQ Law: show for leasehold sales but NOT leasehold purchases (excludeLeaseholdPurchase flag)
+- [x] Phone number validation: UK phone number regex (07xxx, 01xxx, +44xxx) — rejects random numbers like 12345678
+- [x] Replaced Premier Property Law, Clarity, Meridian with Burton's and TQ Law as active firms
