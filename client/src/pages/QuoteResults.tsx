@@ -89,11 +89,16 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
   if (fileOpeningFee > 0) breakdownParts.push(`File Opening (${formatCurrency(fileOpeningFee)})`);
   const breakdownLabel = breakdownParts.join(' + ');
 
+  const propertyAddressLabel = transactionType === 'sale' ? 'Property address being sold' : 'Property address being purchased';
+
   const [form, setForm] = useState({
     firstName: contactDetails.firstName || "",
     lastName: contactDetails.lastName || "",
     email: contactDetails.email || "",
     phone: contactDetails.phone || "",
+    dateOfBirth: "",
+    currentAddress: "",
+    propertyAddress: "",
   });
   const createInstruct = trpc.instruct.create.useMutation();
   const createCheckout = trpc.payment.createCheckoutSession.useMutation();
@@ -108,6 +113,9 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
       lastName: form.lastName,
       email: form.email,
       phone: form.phone,
+      dateOfBirth: form.dateOfBirth || undefined,
+      currentAddress: form.currentAddress || undefined,
+      propertyAddress: form.propertyAddress || undefined,
       paymentAmount: String(initialPayment),
     });
     // Step 2: Create Stripe Checkout session and redirect
@@ -193,6 +201,9 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
               <div className="text-xs mt-1" style={{ color: "oklch(0.65 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
                 {breakdownLabel ? `Includes: ${breakdownLabel}` : 'AML checks included'}
               </div>
+              <div className="text-xs mt-1 italic" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                This payment is deducted from the final sum on completion
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -236,6 +247,53 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
                 />
               </div>
             ))}
+
+            {/* Date of birth */}
+            <div>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Date of birth</label>
+              <input
+                type="date"
+                required
+                value={form.dateOfBirth}
+                onChange={(e) => setForm((p) => ({ ...p, dateOfBirth: e.target.value }))}
+                className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none"
+                style={{ fontFamily: "'DM Sans', sans-serif", borderColor: "oklch(0.88 0.015 80)", color: "oklch(0.18 0.06 250)" }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+              />
+            </div>
+
+            {/* Current residential address */}
+            <div>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Current residential address</label>
+              <textarea
+                required
+                rows={3}
+                value={form.currentAddress}
+                onChange={(e) => setForm((p) => ({ ...p, currentAddress: e.target.value }))}
+                placeholder="Enter your full current address"
+                className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none resize-none"
+                style={{ fontFamily: "'DM Sans', sans-serif", borderColor: "oklch(0.88 0.015 80)", color: "oklch(0.18 0.06 250)" }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+              />
+            </div>
+
+            {/* Property address */}
+            <div>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>{propertyAddressLabel}</label>
+              <textarea
+                required
+                rows={3}
+                value={form.propertyAddress}
+                onChange={(e) => setForm((p) => ({ ...p, propertyAddress: e.target.value }))}
+                placeholder="Enter the full property address"
+                className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none resize-none"
+                style={{ fontFamily: "'DM Sans', sans-serif", borderColor: "oklch(0.88 0.015 80)", color: "oklch(0.18 0.06 250)" }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+              />
+            </div>
 
             {/* Payment summary */}
             <div style={{ borderTop: "1px solid oklch(0.88 0.015 80)", paddingTop: "1rem" }}>

@@ -1,0 +1,122 @@
+{
+  "query": "\nSELECT lf.name, ffs.transactionType, ffs.legalFee, ffs.leaseholdSupplement, ffs.antiMoneyLaunderingFee, ffs.fileOpeningFee\nFROM firm_fee_structures ffs\nJOIN law_firms lf ON lf.id = ffs.firmId\nWHERE ffs.transactionType = 'sale'\nORDER BY lf.name, ffs.minValue;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute \nSELECT lf.name, ffs.transactionType, ffs.legalFee, ffs.leaseholdSupplement, ffs.antiMoneyLaunderingFee, ffs.fileOpeningFee\nFROM firm_fee_structures ffs\nJOIN law_firms lf ON lf.id = ffs.firmId\nWHERE ffs.transactionType = 'sale'\nORDER BY lf.name, ffs.minValue;\n",
+  "rows": [
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale",
+      "legalFee": "1400.00",
+      "leaseholdSupplement": "153.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "fileOpeningFee": "550.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale",
+      "legalFee": "1400.00",
+      "leaseholdSupplement": "153.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "fileOpeningFee": "550.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale",
+      "legalFee": "1400.00",
+      "leaseholdSupplement": "153.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "fileOpeningFee": "550.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "legalFee": "1200.00",
+      "leaseholdSupplement": "149.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "legalFee": "1200.00",
+      "leaseholdSupplement": "149.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "legalFee": "1200.00",
+      "leaseholdSupplement": "149.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "legalFee": "560.00",
+      "leaseholdSupplement": "142.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "fileOpeningFee": "119.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "legalFee": "560.00",
+      "leaseholdSupplement": "142.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "fileOpeningFee": "119.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "legalFee": "560.00",
+      "leaseholdSupplement": "142.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "fileOpeningFee": "119.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "499.00",
+      "leaseholdSupplement": "0.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "fileOpeningFee": "394.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "499.00",
+      "leaseholdSupplement": "0.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "fileOpeningFee": "394.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "499.00",
+      "leaseholdSupplement": "0.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "fileOpeningFee": "394.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "499.00",
+      "leaseholdSupplement": "0.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "fileOpeningFee": "394.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "499.00",
+      "leaseholdSupplement": "0.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "fileOpeningFee": "394.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "name\ttransactionType\tlegalFee\tleaseholdSupplement\tantiMoneyLaunderingFee\tfileOpeningFee\nBurtons Solicitors\tsale\t1400.00\t153.00\t49.00\t550.00\nBurtons Solicitors\tsale\t1400.00\t153.00\t49.00\t550.00\nBurtons Solicitors\tsale\t1400.00\t153.00\t49.00\t550.00\nEasy Choice Conveyancing\tsale\t1200.00\t149.00\t49.00\t0.00\nEasy Choice Conveyancing\tsale\t1200.00\t149.00\t49.00\t0.00\nEasy Choice Conveyancing\tsale\t1200.00\t149.00\t49.00\t0.00\nPCS Legal\tsale\t560.00\t142.00\t49.00\t119.00\nPCS Legal\tsale\t560.00\t142.00\t49.00\t119.00\nPCS Legal\tsale\t560.00\t142.00\t49.00\t119.00\nTQ Law\tsale\t499.00\t0.00\t30.00\t394.00\nTQ Law\tsale\t499.00\t0.00\t30.00\t394.00\nTQ Law\tsale\t499.00\t0.00\t30.00\t394.00\nTQ Law\tsale\t499.00\t0.00\t30.00\t394.00\nTQ Law\tsale\t499.00\t0.00\t30.00\t394.00\n",
+  "stderr": "",
+  "execution_time_ms": 174
+}

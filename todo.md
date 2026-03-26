@@ -335,3 +335,13 @@
 
 ## Fee Display Fix (Mar 2026)
 - [x] File Opening Fee: removed from results page fee breakdown and grand total; passed as separate field (firm.fileOpeningFee) used only in Instruct Directly modal initial payment calculation
+
+## TQ Law & Instruct Form Fixes (Mar 2026)
+- [x] TQ Law sale: add leasehold supplement fee to fee breakdown (same as other 3 firms) — already correct in DB (£149)
+- [x] TQ Law sale: fix AML fee to £49 (already correct in DB)
+- [x] TQ Law sale: fix file opening fee to £175 (already correct in DB)
+- [x] TQ Law sale: initial payment on account in Instruct modal should be £224 (£175 file opening + £49 AML) — calculated dynamically
+- [x] Instruct Directly form: add Date of Birth field
+- [x] Instruct Directly form: add Current Residential Address field
+- [x] Instruct Directly form: add Property Address field (tailored label — "property being purchased" vs "property being sold" based on transaction type)
+- [x] Instruct Directly form: add note under initial payment "This payment is deducted from the final sum on completion"

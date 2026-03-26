@@ -368,6 +368,9 @@ export const appRouter = router({
         lastName: z.string().min(1),
         email: z.string().email(),
         phone: z.string().min(1),
+        dateOfBirth: z.string().optional(),
+        currentAddress: z.string().optional(),
+        propertyAddress: z.string().optional(),
         paymentAmount: z.string().optional(),
       }))
       .mutation(async ({ input }) => {

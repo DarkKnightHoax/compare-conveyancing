@@ -1,0 +1,154 @@
+{
+  "query": "SELECT ffs.id, lf.name, ffs.transactionType, ffs.legalFee, ffs.antiMoneyLaunderingFee, ffs.leaseholdSupplement, ffs.fileOpeningFee FROM firm_fee_structures ffs JOIN law_firms lf ON ffs.firmId = lf.id WHERE lf.name LIKE '%TQ%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT ffs.id, lf.name, ffs.transactionType, ffs.legalFee, ffs.antiMoneyLaunderingFee, ffs.leaseholdSupplement, ffs.fileOpeningFee FROM firm_fee_structures ffs JOIN law_firms lf ON ffs.firmId = lf.id WHERE lf.name LIKE '%TQ%';",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "legalFee": "999.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "leaseholdSupplement": "0.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "legalFee": "999.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "leaseholdSupplement": "0.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30003",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "legalFee": "999.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "leaseholdSupplement": "0.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30004",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "legalFee": "999.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "leaseholdSupplement": "0.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30005",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "legalFee": "999.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "leaseholdSupplement": "0.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "499.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "leaseholdSupplement": "149.00",
+      "fileOpeningFee": "175.00"
+    },
+    {
+      "id": "30007",
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "499.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "leaseholdSupplement": "149.00",
+      "fileOpeningFee": "175.00"
+    },
+    {
+      "id": "30008",
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "499.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "leaseholdSupplement": "149.00",
+      "fileOpeningFee": "175.00"
+    },
+    {
+      "id": "30009",
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "499.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "leaseholdSupplement": "149.00",
+      "fileOpeningFee": "175.00"
+    },
+    {
+      "id": "30010",
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "499.00",
+      "antiMoneyLaunderingFee": "49.00",
+      "leaseholdSupplement": "149.00",
+      "fileOpeningFee": "175.00"
+    },
+    {
+      "id": "30011",
+      "name": "TQ Law",
+      "transactionType": "remortgage",
+      "legalFee": "350.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "leaseholdSupplement": "0.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30012",
+      "name": "TQ Law",
+      "transactionType": "remortgage",
+      "legalFee": "450.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "leaseholdSupplement": "0.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30013",
+      "name": "TQ Law",
+      "transactionType": "remortgage",
+      "legalFee": "595.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "leaseholdSupplement": "0.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30014",
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "legalFee": "995.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "leaseholdSupplement": "0.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30015",
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "legalFee": "1295.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "leaseholdSupplement": "0.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30016",
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "legalFee": "1695.00",
+      "antiMoneyLaunderingFee": "30.00",
+      "leaseholdSupplement": "0.00",
+      "fileOpeningFee": "0.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ttransactionType\tlegalFee\tantiMoneyLaunderingFee\tleaseholdSupplement\tfileOpeningFee\n30001\tTQ Law\tpurchase\t999.00\t30.00\t0.00\t0.00\n30002\tTQ Law\tpurchase\t999.00\t30.00\t0.00\t0.00\n30003\tTQ Law\tpurchase\t999.00\t30.00\t0.00\t0.00\n30004\tTQ Law\tpurchase\t999.00\t30.00\t0.00\t0.00\n30005\tTQ Law\tpurchase\t999.00\t30.00\t0.00\t0.00\n30006\tTQ Law\tsale\t499.00\t49.00\t149.00\t175.00\n30007\tTQ Law\tsale\t499.00\t49.00\t149.00\t175.00\n30008\tTQ Law\tsale\t499.00\t49.00\t149.00\t175.00\n30009\tTQ Law\tsale\t499.00\t49.00\t149.00\t175.00\n30010\tTQ Law\tsale\t499.00\t49.00\t149.00\t175.00\n30011\tTQ Law\tremortgage\t350.00\t30.00\t0.00\t0.00\n30012\tTQ Law\tremortgage\t450.00\t30.00\t0.00\t0.00\n30013\tTQ Law\tremortgage\t595.00\t30.00\t0.00\t0.00\n30014\tTQ Law\tsale_purchase\t995.00\t30.00\t0.00\t0.00\n30015\tTQ Law\tsale_purchase\t1295.00\t30.00\t0.00\t0.00\n30016\tTQ Law\tsale_purchase\t1695.00\t30.00\t0.00\t0.00\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

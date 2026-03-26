@@ -1,0 +1,9 @@
+{
+  "query": "\nUPDATE firm_fee_structures ffs\nJOIN law_firms lf ON lf.id = ffs.firmId\nSET \n  ffs.antiMoneyLaunderingFee = 49.00,\n  ffs.leaseholdSupplement = 149.00,\n  ffs.fileOpeningFee = 175.00\nWHERE lf.name LIKE '%TQ%'\n  AND ffs.transactionType = 'sale';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute \nUPDATE firm_fee_structures ffs\nJOIN law_firms lf ON lf.id = ffs.firmId\nSET \n  ffs.antiMoneyLaunderingFee = 49.00,\n  ffs.leaseholdSupplement = 149.00,\n  ffs.fileOpeningFee = 175.00\nWHERE lf.name LIKE '%TQ%'\n  AND ffs.transactionType = 'sale';\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 178
+}
