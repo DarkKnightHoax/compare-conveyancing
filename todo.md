@@ -332,3 +332,6 @@
 ## Bug Fixes Batch (Mar 2026)
 - [x] File opening fees now show correctly in Instruct modal (read from firm.disbursements array, not hardcoded)
 - [x] Search Pack removed from Instruct modal initial payment for sale transactions (isSale check, dynamic breakdown label)
+
+## Fee Display Fix (Mar 2026)
+- [x] File Opening Fee: removed from results page fee breakdown and grand total; passed as separate field (firm.fileOpeningFee) used only in Instruct Directly modal initial payment calculation

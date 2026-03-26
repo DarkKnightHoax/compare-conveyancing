@@ -41,6 +41,7 @@ export interface LiveQuoteResult {
   sdlt: number;
   landRegistryFee: number;
   grandTotal: number;
+  fileOpeningFee: number;
 }
 import { trpc } from "@/lib/trpc";
 
@@ -72,14 +73,13 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
 }) {
   const [submitted, setSubmitted] = useState(false);
 
-  // Calculate initial payment dynamically from actual disbursements
+  // Calculate initial payment dynamically
   // Includes: Search Pack (purchase only) + AML checks + File Opening Fee
   const isSale = transactionType === 'sale';
   const searchPack = firm.disbursements.find(d => d.name.includes('Search Pack'));
   const amlChecks = firm.disbursements.filter(d => d.name.includes('AML') || d.name.includes('Anti-Money'));
-  const fileOpening = firm.disbursements.find(d => d.name.includes('File Opening'));
   const amlTotal = amlChecks.reduce((sum, d) => sum + d.price, 0);
-  const fileOpeningFee = fileOpening ? fileOpening.price : 0;
+  const fileOpeningFee = firm.fileOpeningFee || 0;
   const searchPackFee = (!isSale && searchPack) ? searchPack.price : 0;
   const initialPayment = searchPackFee + amlTotal + fileOpeningFee;
   // Build breakdown label

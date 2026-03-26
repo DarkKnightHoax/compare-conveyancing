@@ -344,6 +344,7 @@ export interface LiveQuoteResult {
   sdlt: number;
   landRegistryFee: number;
   grandTotal: number;
+  fileOpeningFee: number;
 }
 
 /**
@@ -531,9 +532,9 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
     // Search Pack: purchase and sale_purchase only (NOT for sale or remortgage)
     if (transactionType === 'purchase' || transactionType === 'sale_purchase')
       disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: 349, includesVat: true });
-    // File opening fee (firm-specific, ex. VAT)
-    if (Number(band.fileOpeningFee) > 0)
-      disbursements.push({ name: 'File Opening Fee', price: Number(band.fileOpeningFee), includesVat: false });
+    // File Opening Fee is NOT added to disbursements (not shown on results page)
+    // It is passed separately as fileOpeningFee for use in the Instruct modal only
+    const fileOpeningFeeAmount = Number(band.fileOpeningFee) || 0;
     if (Number(band.officialCopiesFee) > 0)
       disbursements.push({ name: 'Official Copies (Title Register & Plan)', price: Number(band.officialCopiesFee), includesVat: true });
     if (Number(band.electronicTransferFee) > 0)
@@ -563,6 +564,7 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
       : 0;
     const landRegistryFee = lrBase * numBuyers;
 
+    // Grand total excludes file opening fee (shown only in Instruct modal)
     const grandTotal = totalIncVat + disbursementTotal + sdlt + landRegistryFee;
 
     let parsedAccreditations: string[] = [];
@@ -583,6 +585,7 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
       legalFee,
       supplements,
       disbursements,
+      fileOpeningFee: fileOpeningFeeAmount,
       totalExVat,
       vat,
       totalIncVat,
