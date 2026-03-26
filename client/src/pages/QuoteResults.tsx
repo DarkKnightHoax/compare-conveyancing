@@ -64,16 +64,30 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 // ─── INSTRUCT DIRECTLY MODAL ──────────────────────────────────────────────────
-function InstructModal({ firm, onClose, contactDetails }: {
+function InstructModal({ firm, onClose, contactDetails, transactionType }: {
   firm: LiveQuoteResult;
   onClose: () => void;
   contactDetails: { firstName: string; lastName: string; email: string; phone: string };
+  transactionType: string;
 }) {
   const [submitted, setSubmitted] = useState(false);
 
-  // Initial payment on account is fixed at £530 for all firms
-  // (Search Pack £399 + AML £31 × 1 purchaser + File Opening £100)
-  const initialPayment = 530;
+  // Calculate initial payment dynamically from actual disbursements
+  // Includes: Search Pack (purchase only) + AML checks + File Opening Fee
+  const isSale = transactionType === 'sale';
+  const searchPack = firm.disbursements.find(d => d.name.includes('Search Pack'));
+  const amlChecks = firm.disbursements.filter(d => d.name.includes('AML') || d.name.includes('Anti-Money'));
+  const fileOpening = firm.disbursements.find(d => d.name.includes('File Opening'));
+  const amlTotal = amlChecks.reduce((sum, d) => sum + d.price, 0);
+  const fileOpeningFee = fileOpening ? fileOpening.price : 0;
+  const searchPackFee = (!isSale && searchPack) ? searchPack.price : 0;
+  const initialPayment = searchPackFee + amlTotal + fileOpeningFee;
+  // Build breakdown label
+  const breakdownParts: string[] = [];
+  if (!isSale && searchPack) breakdownParts.push(`Search Pack (${formatCurrency(searchPack.price)})`);
+  if (amlTotal > 0) breakdownParts.push('AML checks');
+  if (fileOpeningFee > 0) breakdownParts.push(`File Opening (${formatCurrency(fileOpeningFee)})`);
+  const breakdownLabel = breakdownParts.join(' + ');
 
   const [form, setForm] = useState({
     firstName: contactDetails.firstName || "",
@@ -177,7 +191,7 @@ function InstructModal({ firm, onClose, contactDetails }: {
                 <span className="font-semibold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(initialPayment)}</span>
               </div>
               <div className="text-xs mt-1" style={{ color: "oklch(0.65 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                Includes: Search Pack (£399.00) + AML checks + File Opening (£100.00)
+                {breakdownLabel ? `Includes: ${breakdownLabel}` : 'AML checks included'}
               </div>
             </div>
 
@@ -1129,6 +1143,7 @@ export default function QuoteResults() {
           firm={instructFirm}
           onClose={() => setInstructFirm(null)}
           contactDetails={contactDetails}
+          transactionType={answers.transactionType || 'purchase'}
         />
       )}
       {callbackFirm && (

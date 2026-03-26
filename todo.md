@@ -328,3 +328,7 @@
 - [x] All firm sale fees and file opening fees updated in DB: Easy Choice sale £1200, PCS Legal sale £560 + £119 file opening, Burton's sale £1400 + £550 file opening, TQ Law sale £499 + £394 file opening
 - [x] Purchase base fees updated to flat £999 (Easy Choice, PCS Legal, TQ Law) and £895 (Burton's)
 - [x] UK phone number validation in wizard (07xxx, 01xxx, +44xxx — rejects random numbers)
+
+## Bug Fixes Batch (Mar 2026)
+- [x] File opening fees now show correctly in Instruct modal (read from firm.disbursements array, not hardcoded)
+- [x] Search Pack removed from Instruct modal initial payment for sale transactions (isSale check, dynamic breakdown label)
