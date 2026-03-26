@@ -1,0 +1,42 @@
+{
+  "query": "SELECT id, firmId, transactionType, minValue, `maxValue`, landRegistryFee FROM firm_fee_structures WHERE transactionType = 'sale_purchase' AND firmId = 60001 AND minValue >= 300001 ORDER BY minValue;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT id, firmId, transactionType, minValue, `maxValue`, landRegistryFee FROM firm_fee_structures WHERE transactionType = 'sale_purchase' AND firmId = 60001 AND minValue >= 300001 ORDER BY minValue;",
+  "rows": [
+    {
+      "id": "30035",
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "landRegistryFee": "150.00"
+    },
+    {
+      "id": "30036",
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "landRegistryFee": "295.00"
+    },
+    {
+      "id": "30037",
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "landRegistryFee": "295.00"
+    },
+    {
+      "id": "30038",
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "landRegistryFee": "500.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tfirmId\ttransactionType\tminValue\tmaxValue\tlandRegistryFee\n30035\t60001\tsale_purchase\t300001\t500000\t150.00\n30036\t60001\tsale_purchase\t500001\t600000\t295.00\n30037\t60001\tsale_purchase\t600001\t1000000\t295.00\n30038\t60001\tsale_purchase\t1000001\t9999999\t500.00\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

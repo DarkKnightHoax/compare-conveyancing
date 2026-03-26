@@ -345,3 +345,10 @@
 - [x] Instruct Directly form: add Current Residential Address field
 - [x] Instruct Directly form: add Property Address field (tailored label — "property being purchased" vs "property being sold" based on transaction type)
 - [x] Instruct Directly form: add note under initial payment "This payment is deducted from the final sum on completion"
+
+## Land Registry Fee Correction (Mar 2026)
+- [x] Update Land Registry fees for all purchase/sale_purchase bands across all firms to portal column values: £20 (0-£80k), £40 (£80k-£100k), £100 (£100k-£200k), £150 (£200k-£500k), £295 (£500k-£1m), £500 (£1m+) — already correct via calcLandRegistry function
+
+## LR Fee & Saved Quote Instruct Form (Mar 2026)
+- [x] Remove buyer-count multiplier from Land Registry fee (fee is per transaction, not per person)
+- [x] Add Instruct Directly modal with full form + Stripe payment to saved quote page (/quote/:ref)

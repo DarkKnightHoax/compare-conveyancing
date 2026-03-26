@@ -1,0 +1,330 @@
+{
+  "query": "SELECT id, firmId, transactionType, minValue, `maxValue`, landRegistryFee FROM firm_fee_structures WHERE transactionType IN ('purchase', 'sale_purchase') ORDER BY firmId, transactionType, minValue;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT id, firmId, transactionType, minValue, `maxValue`, landRegistryFee FROM firm_fee_structures WHERE transactionType IN ('purchase', 'sale_purchase') ORDER BY firmId, transactionType, minValue;",
+  "rows": [
+    {
+      "id": "71",
+      "firmId": "30001",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "landRegistryFee": "0.00"
+    },
+    {
+      "id": "72",
+      "firmId": "30001",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "landRegistryFee": "330.00"
+    },
+    {
+      "id": "73",
+      "firmId": "30001",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "landRegistryFee": "655.00"
+    },
+    {
+      "id": "74",
+      "firmId": "30001",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "landRegistryFee": "500.00"
+    },
+    {
+      "id": "81",
+      "firmId": "30001",
+      "transactionType": "sale_purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "landRegistryFee": "0.00"
+    },
+    {
+      "id": "82",
+      "firmId": "30001",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "landRegistryFee": "330.00"
+    },
+    {
+      "id": "83",
+      "firmId": "30001",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "landRegistryFee": "655.00"
+    },
+    {
+      "id": "84",
+      "firmId": "30001",
+      "transactionType": "sale_purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "landRegistryFee": "500.00"
+    },
+    {
+      "id": "85",
+      "firmId": "30002",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "landRegistryFee": "0.00"
+    },
+    {
+      "id": "86",
+      "firmId": "30002",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "landRegistryFee": "150.00"
+    },
+    {
+      "id": "87",
+      "firmId": "30002",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "landRegistryFee": "655.00"
+    },
+    {
+      "id": "88",
+      "firmId": "30002",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "landRegistryFee": "500.00"
+    },
+    {
+      "id": "95",
+      "firmId": "30002",
+      "transactionType": "sale_purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "landRegistryFee": "0.00"
+    },
+    {
+      "id": "96",
+      "firmId": "30002",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "landRegistryFee": "330.00"
+    },
+    {
+      "id": "97",
+      "firmId": "30002",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "landRegistryFee": "655.00"
+    },
+    {
+      "id": "98",
+      "firmId": "30002",
+      "transactionType": "sale_purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "landRegistryFee": "500.00"
+    },
+    {
+      "id": "30001",
+      "firmId": "30006",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "100000",
+      "landRegistryFee": "45.00"
+    },
+    {
+      "id": "30002",
+      "firmId": "30006",
+      "transactionType": "purchase",
+      "minValue": "100001",
+      "maxValue": "300000",
+      "landRegistryFee": "230.00"
+    },
+    {
+      "id": "30003",
+      "firmId": "30006",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "landRegistryFee": "330.00"
+    },
+    {
+      "id": "30004",
+      "firmId": "30006",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "landRegistryFee": "655.00"
+    },
+    {
+      "id": "30005",
+      "firmId": "30006",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "999999999",
+      "landRegistryFee": "500.00"
+    },
+    {
+      "id": "30014",
+      "firmId": "30006",
+      "transactionType": "sale_purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "landRegistryFee": "230.00"
+    },
+    {
+      "id": "30015",
+      "firmId": "30006",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "landRegistryFee": "330.00"
+    },
+    {
+      "id": "30016",
+      "firmId": "30006",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "999999999",
+      "landRegistryFee": "655.00"
+    },
+    {
+      "id": "30017",
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "80000",
+      "landRegistryFee": "20.00"
+    },
+    {
+      "id": "30018",
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "landRegistryFee": "40.00"
+    },
+    {
+      "id": "30019",
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "landRegistryFee": "100.00"
+    },
+    {
+      "id": "30020",
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "landRegistryFee": "150.00"
+    },
+    {
+      "id": "30021",
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "landRegistryFee": "150.00"
+    },
+    {
+      "id": "30022",
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "landRegistryFee": "295.00"
+    },
+    {
+      "id": "30023",
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "landRegistryFee": "295.00"
+    },
+    {
+      "id": "30024",
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "landRegistryFee": "500.00"
+    },
+    {
+      "id": "30031",
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "0",
+      "maxValue": "80000",
+      "landRegistryFee": "20.00"
+    },
+    {
+      "id": "30032",
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "landRegistryFee": "40.00"
+    },
+    {
+      "id": "30033",
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "landRegistryFee": "100.00"
+    },
+    {
+      "id": "30034",
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "landRegistryFee": "150.00"
+    },
+    {
+      "id": "30035",
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "landRegistryFee": "150.00"
+    },
+    {
+      "id": "30036",
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "landRegistryFee": "295.00"
+    },
+    {
+      "id": "30037",
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "landRegistryFee": "295.00"
+    },
+    {
+      "id": "30038",
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "landRegistryFee": "500.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tfirmId\ttransactionType\tminValue\tmaxValue\tlandRegistryFee\n71\t30001\tpurchase\t0\t300000\t0.00\n72\t30001\tpurchase\t300001\t600000\t330.00\n73\t30001\tpurchase\t600001\t1000000\t655.00\n74\t30001\tpurchase\t1000001\t9999999\t500.00\n81\t30001\tsale_purchase\t0\t300000\t0.00\n82\t30001\tsale_purchase\t300001\t600000\t330.00\n83\t30001\tsale_purchase\t600001\t1000000\t655.00\n84\t30001\tsale_purchase\t1000001\t9999999\t500.00\n85\t30002\tpurchase\t0\t300000\t0.00\n86\t30002\tpurchase\t300001\t600000\t150.00\n87\t30002\tpurchase\t600001\t1000000\t655.00\n88\t30002\tpurchase\t1000001\t9999999\t500.00\n95\t30002\tsale_purchase\t0\t300000\t0.00\n96\t30002\tsale_purchase\t300001\t600000\t330.00\n97\t30002\tsale_purchase\t600001\t1000000\t655.00\n98\t30002\tsale_purchase\t1000001\t9999999\t500.00\n30001\t30006\tpurchase\t0\t100000\t45.00\n30002\t30006\tpurchase\t100001\t300000\t230.00\n30003\t30006\tpurchase\t300001\t600000\t330.00\n30004\t30006\tpurchase\t600001\t1000000\t655.00\n30005\t30006\tpurchase\t1000001\t999999999\t500.00\n30014\t30006\tsale_purchase\t0\t300000\t230.00\n30015\t30006\tsale_purchase\t300001\t600000\t330.00\n30016\t30006\tsale_purchase\t600001\t999999999\t655.00\n30017\t60001\tpurchase\t0\t80000\t20.00\n30018\t60001\tpurchase\t80001\t100000\t40.00\n30019\t60001\tpurchase\t100001\t200000\t100.00\n30020\t60001\tpurchase\t200001\t300000\t150.00\n30021\t60001\tpurchase\t300001\t500000\t150.00\n30022\t60001\tpurchase\t500001\t600000\t295.00\n30023\t60001\tpurchase\t600001\t1000000\t295.00\n30024\t60001\tpurchase\t1000001\t9999999\t500.00\n30031\t60001\tsale_purchase\t0\t80000\t20.00\n30032\t60001\tsale_purchase\t80001\t100000\t40.00\n30033\t60001\tsale_purchase\t100001\t200000\t100.00\n30034\t60001\tsale_purchase\t200001\t300000\t150.00\n30035\t60001\tsale_purchase\t300001\t500000\t150.00\n30036\t60001\tsale_purchase\t500001\t600000\t295.00\n30037\t60001\tsale_purchase\t600001\t1000000\t295.00\n30038\t60001\tsale_purchase\t1000001\t9999999\t500.00\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

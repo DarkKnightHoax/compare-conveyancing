@@ -559,10 +559,9 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
     const sdlt = (transactionType === 'purchase' || transactionType === 'sale_purchase')
       ? calcSDLT(value, input.isFirstTimeBuyer, input.isSecondHome, input.isBuyToLet)
       : 0;
-    const lrBase = (transactionType === 'purchase' || transactionType === 'sale_purchase')
+    const landRegistryFee = (transactionType === 'purchase' || transactionType === 'sale_purchase')
       ? calcLandRegistry(value)
       : 0;
-    const landRegistryFee = lrBase * numBuyers;
 
     // Grand total excludes file opening fee (shown only in Instruct modal)
     const grandTotal = totalIncVat + disbursementTotal + sdlt + landRegistryFee;
