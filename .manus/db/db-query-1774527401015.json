@@ -1,0 +1,9 @@
+{
+  "query": "\n-- Easy Choice: sale base fee £1200, no file opening fee\nUPDATE firm_fee_structures SET legalFee = 1200.00, fileOpeningFee = 0.00 WHERE firmId = 30001 AND transactionType = 'sale';\n\n-- PCS Legal: sale base fee £560, file opening fee £119\nUPDATE firm_fee_structures SET legalFee = 560.00, fileOpeningFee = 119.00 WHERE firmId = 30002 AND transactionType = 'sale';\n\n-- Also update purchase base fee for all firms to flat £999 (Easy Choice, PCS Legal, TQ Law)\nUPDATE firm_fee_structures SET legalFee = 999.00 WHERE firmId = 30001 AND transactionType = 'purchase';\nUPDATE firm_fee_structures SET legalFee = 999.00 WHERE firmId = 30002 AND transactionType = 'purchase';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute \n-- Easy Choice: sale base fee £1200, no file opening fee\nUPDATE firm_fee_structures SET legalFee = 1200.00, fileOpeningFee = 0.00 WHERE firmId = 30001 AND transactionType = 'sale';\n\n-- PCS Legal: sale base fee £560, file opening fee £119\nUPDATE firm_fee_structures SET legalFee = 560.00, fileOpeningFee = 119.00 WHERE firmId = 30002 AND transactionType = 'sale';\n\n-- Also update purchase base fee for all firms to flat £999 (Easy Choice, PCS Legal, TQ Law)\nUPDATE firm_fee_structures SET legalFee = 999.00 WHERE firmId = 30001 AND transactionType = 'purchase';\nUPDATE firm_fee_structures SET legalFee = 999.00 WHERE firmId = 30002 AND transactionType = 'purchase';\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 98
+}

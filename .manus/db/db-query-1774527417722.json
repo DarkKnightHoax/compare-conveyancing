@@ -1,0 +1,130 @@
+{
+  "query": "SELECT lf.name, ffs.transactionType, ffs.legalFee, ffs.fileOpeningFee FROM law_firms lf JOIN firm_fee_structures ffs ON lf.id = ffs.firmId WHERE lf.isActive = 1 AND ffs.transactionType IN ('sale','purchase') ORDER BY lf.name, ffs.transactionType, ffs.legalFee LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT lf.name, ffs.transactionType, ffs.legalFee, ffs.fileOpeningFee FROM law_firms lf JOIN firm_fee_structures ffs ON lf.id = ffs.firmId WHERE lf.isActive = 1 AND ffs.transactionType IN ('sale','purchase') ORDER BY lf.name, ffs.transactionType, ffs.legalFee LIMIT 20;",
+  "rows": [
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "895.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "895.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "895.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "895.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "895.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "895.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "895.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "895.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale",
+      "legalFee": "1400.00",
+      "fileOpeningFee": "550.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale",
+      "legalFee": "1400.00",
+      "fileOpeningFee": "550.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale",
+      "legalFee": "1400.00",
+      "fileOpeningFee": "550.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "legalFee": "999.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "legalFee": "999.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "legalFee": "999.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "legalFee": "999.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "legalFee": "1200.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "legalFee": "1200.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "legalFee": "1200.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "legalFee": "999.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "legalFee": "999.00",
+      "fileOpeningFee": "0.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "name\ttransactionType\tlegalFee\tfileOpeningFee\nBurtons Solicitors\tpurchase\t895.00\t0.00\nBurtons Solicitors\tpurchase\t895.00\t0.00\nBurtons Solicitors\tpurchase\t895.00\t0.00\nBurtons Solicitors\tpurchase\t895.00\t0.00\nBurtons Solicitors\tpurchase\t895.00\t0.00\nBurtons Solicitors\tpurchase\t895.00\t0.00\nBurtons Solicitors\tpurchase\t895.00\t0.00\nBurtons Solicitors\tpurchase\t895.00\t0.00\nBurtons Solicitors\tsale\t1400.00\t550.00\nBurtons Solicitors\tsale\t1400.00\t550.00\nBurtons Solicitors\tsale\t1400.00\t550.00\nEasy Choice Conveyancing\tpurchase\t999.00\t0.00\nEasy Choice Conveyancing\tpurchase\t999.00\t0.00\nEasy Choice Conveyancing\tpurchase\t999.00\t0.00\nEasy Choice Conveyancing\tpurchase\t999.00\t0.00\nEasy Choice Conveyancing\tsale\t1200.00\t0.00\nEasy Choice Conveyancing\tsale\t1200.00\t0.00\nEasy Choice Conveyancing\tsale\t1200.00\t0.00\nPCS Legal\tpurchase\t999.00\t0.00\nPCS Legal\tpurchase\t999.00\t0.00\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

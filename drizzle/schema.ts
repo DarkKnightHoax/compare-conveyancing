@@ -164,6 +164,8 @@ export const firmFeeStructures = mysqlTable("firm_fee_structures", {
   sharedOwnershipSupplement: decimal("sharedOwnershipSupplement", { precision: 10, scale: 2 }).default("0"),
   // Gifted deposit supplement
   giftedDepositSupplement: decimal("giftedDepositSupplement", { precision: 10, scale: 2 }).default("0"),
+  // File opening fee (disbursement, ex. VAT) — firm-specific
+  fileOpeningFee: decimal("fileOpeningFee", { precision: 10, scale: 2 }).default("0"),
   // Margin / commission earned by the platform (£)
   platformCommission: decimal("platformCommission", { precision: 10, scale: 2 }).default("0"),
   // Whether this band is currently active

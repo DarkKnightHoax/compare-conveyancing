@@ -1,0 +1,9 @@
+{
+  "query": "\n-- Burton's (id=60001): sale base fee £1400, file opening fee £550, purchase base fee £895\nUPDATE firm_fee_structures SET legalFee = 1400.00, fileOpeningFee = 550.00 WHERE firmId = 60001 AND transactionType = 'sale';\nUPDATE firm_fee_structures SET legalFee = 895.00, fileOpeningFee = 0.00 WHERE firmId = 60001 AND transactionType = 'purchase';\n\n-- TQ Law (id=30006): sale base fee £499, file opening fee £394, purchase base fee £999\nUPDATE firm_fee_structures SET legalFee = 499.00, fileOpeningFee = 394.00 WHERE firmId = 30006 AND transactionType = 'sale';\nUPDATE firm_fee_structures SET legalFee = 999.00, fileOpeningFee = 0.00 WHERE firmId = 30006 AND transactionType = 'purchase';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute \n-- Burton's (id=60001): sale base fee £1400, file opening fee £550, purchase base fee £895\nUPDATE firm_fee_structures SET legalFee = 1400.00, fileOpeningFee = 550.00 WHERE firmId = 60001 AND transactionType = 'sale';\nUPDATE firm_fee_structures SET legalFee = 895.00, fileOpeningFee = 0.00 WHERE firmId = 60001 AND transactionType = 'purchase';\n\n-- TQ Law (id=30006): sale base fee £499, file opening fee £394, purchase base fee £999\nUPDATE firm_fee_structures SET legalFee = 499.00, fileOpeningFee = 394.00 WHERE firmId = 30006 AND transactionType = 'sale';\nUPDATE firm_fee_structures SET legalFee = 999.00, fileOpeningFee = 0.00 WHERE firmId = 30006 AND transactionType = 'purchase';\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 90
+}

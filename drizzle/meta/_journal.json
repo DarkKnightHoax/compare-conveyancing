@@ -57,6 +57,13 @@
       "when": 1774451314599,
       "tag": "0007_real_matthew_murdock",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1774527351701,
+      "tag": "0008_loving_slayback",
+      "breakpoints": true
     }
   ]
 }

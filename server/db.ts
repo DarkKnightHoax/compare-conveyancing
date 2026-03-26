@@ -470,9 +470,10 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
   const results: LiveQuoteResult[] = [];
 
   for (const firm of firms) {
-    // Exclude TQ Law from new build and leasehold transactions
+    // Exclude TQ Law from new build transactions and leasehold PURCHASE (but allow leasehold SALE)
     const isTQLaw = firm.name.toLowerCase().includes('tq law');
-    if (isTQLaw && (input.isNewBuild || input.tenure === 'leasehold')) continue;
+    const isLeaseholdPurchase = input.tenure === 'leasehold' && (transactionType === 'purchase' || transactionType === 'sale_purchase');
+    if (isTQLaw && (input.isNewBuild || isLeaseholdPurchase)) continue;
 
     // Find the matching fee band for this firm + property value
     type FeeRow = typeof feeRows[number];
@@ -512,7 +513,7 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
       if (input.tenure === 'leasehold' && Number(band.leaseholdSupplement) > 0)
         supplements.push({ name: 'Leasehold Supplement', price: Number(band.leaseholdSupplement) });
       if (input.hasMortgageOnProperty)
-        supplements.push({ name: 'Mortgage Redemption', price: 149 });
+        supplements.push({ name: 'Mortgage Redemption', price: 100 }); // Fixed at £100
     }
 
     // ── DISBURSEMENTS ──
@@ -527,8 +528,12 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
         includesVat: true,
       });
     }
-    // Search Pack is always £399 for all firms (fixed price)
-    disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: 399, includesVat: true });
+    // Search Pack: purchase and sale_purchase only (NOT for sale or remortgage)
+    if (transactionType === 'purchase' || transactionType === 'sale_purchase')
+      disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: 349, includesVat: true });
+    // File opening fee (firm-specific, ex. VAT)
+    if (Number(band.fileOpeningFee) > 0)
+      disbursements.push({ name: 'File Opening Fee', price: Number(band.fileOpeningFee), includesVat: false });
     if (Number(band.officialCopiesFee) > 0)
       disbursements.push({ name: 'Official Copies (Title Register & Plan)', price: Number(band.officialCopiesFee), includesVat: true });
     if (Number(band.electronicTransferFee) > 0)

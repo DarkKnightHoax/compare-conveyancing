@@ -1,0 +1,472 @@
+{
+  "query": "SELECT lf.id, lf.name, ffs.transactionType, ffs.legalFee, ffs.fileOpeningFee FROM law_firms lf LEFT JOIN firm_fee_structures ffs ON lf.id = ffs.firmId WHERE lf.isActive = 1 ORDER BY lf.id, ffs.transactionType;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT lf.id, lf.name, ffs.transactionType, ffs.legalFee, ffs.fileOpeningFee FROM law_firms lf LEFT JOIN firm_fee_structures ffs ON lf.id = ffs.firmId WHERE lf.isActive = 1 ORDER BY lf.id, ffs.transactionType;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "legalFee": "525.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "legalFee": "599.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "legalFee": "750.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "legalFee": "1250.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "legalFee": "499.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "legalFee": "599.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "legalFee": "750.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale_purchase",
+      "legalFee": "1024.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale_purchase",
+      "legalFee": "1198.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale_purchase",
+      "legalFee": "1500.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale_purchase",
+      "legalFee": "2000.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "remortgage",
+      "legalFee": "349.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "remortgage",
+      "legalFee": "449.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "remortgage",
+      "legalFee": "599.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "legalFee": "499.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "legalFee": "569.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "legalFee": "713.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "legalFee": "1188.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "legalFee": "474.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "legalFee": "569.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "legalFee": "713.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "sale_purchase",
+      "legalFee": "973.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "sale_purchase",
+      "legalFee": "1138.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "sale_purchase",
+      "legalFee": "1426.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "sale_purchase",
+      "legalFee": "1901.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "remortgage",
+      "legalFee": "332.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "remortgage",
+      "legalFee": "427.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30002",
+      "name": "PCS Legal",
+      "transactionType": "remortgage",
+      "legalFee": "569.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "legalFee": "1695.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "legalFee": "695.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "legalFee": "895.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "legalFee": "1195.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "legalFee": "450.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "795.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "595.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "395.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "995.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "legalFee": "1395.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "legalFee": "995.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "legalFee": "1295.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "legalFee": "1695.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "remortgage",
+      "legalFee": "350.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "remortgage",
+      "legalFee": "450.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "30006",
+      "name": "TQ Law",
+      "transactionType": "remortgage",
+      "legalFee": "595.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "541.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "541.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "541.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "541.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "617.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "617.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "773.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "legalFee": "1288.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "sale",
+      "legalFee": "514.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "sale",
+      "legalFee": "617.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "sale",
+      "legalFee": "773.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "legalFee": "1055.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "legalFee": "1055.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "legalFee": "1055.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "legalFee": "1055.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "legalFee": "1234.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "legalFee": "1234.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "legalFee": "1546.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "legalFee": "2061.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "remortgage",
+      "legalFee": "462.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "remortgage",
+      "legalFee": "617.00",
+      "fileOpeningFee": "0.00"
+    },
+    {
+      "id": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "remortgage",
+      "legalFee": "359.00",
+      "fileOpeningFee": "0.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ttransactionType\tlegalFee\tfileOpeningFee\n30001\tEasy Choice Conveyancing\tpurchase\t525.00\t0.00\n30001\tEasy Choice Conveyancing\tpurchase\t599.00\t0.00\n30001\tEasy Choice Conveyancing\tpurchase\t750.00\t0.00\n30001\tEasy Choice Conveyancing\tpurchase\t1250.00\t0.00\n30001\tEasy Choice Conveyancing\tsale\t499.00\t0.00\n30001\tEasy Choice Conveyancing\tsale\t599.00\t0.00\n30001\tEasy Choice Conveyancing\tsale\t750.00\t0.00\n30001\tEasy Choice Conveyancing\tsale_purchase\t1024.00\t0.00\n30001\tEasy Choice Conveyancing\tsale_purchase\t1198.00\t0.00\n30001\tEasy Choice Conveyancing\tsale_purchase\t1500.00\t0.00\n30001\tEasy Choice Conveyancing\tsale_purchase\t2000.00\t0.00\n30001\tEasy Choice Conveyancing\tremortgage\t349.00\t0.00\n30001\tEasy Choice Conveyancing\tremortgage\t449.00\t0.00\n30001\tEasy Choice Conveyancing\tremortgage\t599.00\t0.00\n30002\tPCS Legal\tpurchase\t499.00\t0.00\n30002\tPCS Legal\tpurchase\t569.00\t0.00\n30002\tPCS Legal\tpurchase\t713.00\t0.00\n30002\tPCS Legal\tpurchase\t1188.00\t0.00\n30002\tPCS Legal\tsale\t474.00\t0.00\n30002\tPCS Legal\tsale\t569.00\t0.00\n30002\tPCS Legal\tsale\t713.00\t0.00\n30002\tPCS Legal\tsale_purchase\t973.00\t0.00\n30002\tPCS Legal\tsale_purchase\t1138.00\t0.00\n30002\tPCS Legal\tsale_purchase\t1426.00\t0.00\n30002\tPCS Legal\tsale_purchase\t1901.00\t0.00\n30002\tPCS Legal\tremortgage\t332.00\t0.00\n30002\tPCS Legal\tremortgage\t427.00\t0.00\n30002\tPCS Legal\tremortgage\t569.00\t0.00\n30006\tTQ Law\tpurchase\t1695.00\t0.00\n30006\tTQ Law\tpurchase\t695.00\t0.00\n30006\tTQ Law\tpurchase\t895.00\t0.00\n30006\tTQ Law\tpurchase\t1195.00\t0.00\n30006\tTQ Law\tpurchase\t450.00\t0.00\n30006\tTQ Law\tsale\t795.00\t0.00\n30006\tTQ Law\tsale\t595.00\t0.00\n30006\tTQ Law\tsale\t395.00\t0.00\n30006\tTQ Law\tsale\t995.00\t0.00\n30006\tTQ Law\tsale\t1395.00\t0.00\n30006\tTQ Law\tsale_purchase\t995.00\t0.00\n30006\tTQ Law\tsale_purchase\t1295.00\t0.00\n30006\tTQ Law\tsale_purchase\t1695.00\t0.00\n30006\tTQ Law\tremortgage\t350.00\t0.00\n30006\tTQ Law\tremortgage\t450.00\t0.00\n30006\tTQ Law\tremortgage\t595.00\t0.00\n60001\tBurtons Solicitors\tpurchase\t541.00\t0.00\n60001\tBurtons Solicitors\tpurchase\t541.00\t0.00\n60001\tBurtons Solicitors\tpurchase\t541.00\t0.00\n60001\tBurtons Solicitors\tpurchase\t541.00\t0.00\n60001\tBurtons Solicitors\tpurchase\t617.00\t0.00\n60001\tBurtons Solicitors\tpurchase\t617.00\t0.00\n60001\tBurtons Solicitors\tpurchase\t773.00\t0.00\n60001\tBurtons Solicitors\tpurchase\t1288.00\t0.00\n60001\tBurtons Solicitors\tsale\t514.00\t0.00\n60001\tBurtons Solicitors\tsale\t617.00\t0.00\n60001\tBurtons Solicitors\tsale\t773.00\t0.00\n60001\tBurtons Solicitors\tsale_purchase\t1055.00\t0.00\n60001\tBurtons Solicitors\tsale_purchase\t1055.00\t0.00\n60001\tBurtons Solicitors\tsale_purchase\t1055.00\t0.00\n60001\tBurtons Solicitors\tsale_purchase\t1055.00\t0.00\n60001\tBurtons Solicitors\tsale_purchase\t1234.00\t0.00\n60001\tBurtons Solicitors\tsale_purchase\t1234.00\t0.00\n60001\tBurtons Solicitors\tsale_purchase\t1546.00\t0.00\n60001\tBurtons Solicitors\tsale_purchase\t2061.00\t0.00\n60001\tBurtons Solicitors\tremortgage\t462.00\t0.00\n60001\tBurtons Solicitors\tremortgage\t617.00\t0.00\n60001\tBurtons Solicitors\tremortgage\t359.00\t0.00\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

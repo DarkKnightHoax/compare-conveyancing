@@ -315,3 +315,16 @@
 - [x] TQ Law: show for leasehold sales but NOT leasehold purchases (excludeLeaseholdPurchase flag)
 - [x] Phone number validation: UK phone number regex (07xxx, 01xxx, +44xxx) — rejects random numbers like 12345678
 - [x] Replaced Premier Property Law, Clarity, Meridian with Burton's and TQ Law as active firms
+
+## Bug Fixes (Mar 2026)
+- [ ] Search Pack still showing for sale transactions on results page (server-side calculation not updated)
+- [ ] File opening fees not updated on results page (server-side calculation not updated)
+
+## Fee Engine & DB Fixes (Mar 2026)
+- [x] Search Pack removed from sale transactions (was hardcoded unconditionally in calculateLiveQuotes, now purchase/sale_purchase only)
+- [x] File opening fee column added to schema (fileOpeningFee), migrated, and now read in calculateLiveQuotes per firm
+- [x] Mortgage Redemption fixed at £100 flat (was £149)
+- [x] TQ Law leasehold rule fixed: excludes leasehold PURCHASE only, not leasehold sale
+- [x] All firm sale fees and file opening fees updated in DB: Easy Choice sale £1200, PCS Legal sale £560 + £119 file opening, Burton's sale £1400 + £550 file opening, TQ Law sale £499 + £394 file opening
+- [x] Purchase base fees updated to flat £999 (Easy Choice, PCS Legal, TQ Law) and £895 (Burton's)
+- [x] UK phone number validation in wizard (07xxx, 01xxx, +44xxx — rejects random numbers)

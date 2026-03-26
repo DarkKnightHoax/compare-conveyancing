@@ -1,0 +1,1 @@
+ALTER TABLE `firm_fee_structures` ADD `fileOpeningFee` decimal(10,2) DEFAULT '0';
