@@ -358,3 +358,9 @@
 
 ## Instruct Modal Total Fix (Mar 2026)
 - [x] Instruct modal fee summary: "Total legal fees (inc. VAT)" row renamed to "Grand total" and now shows the full grand total (legal fees + disbursements + SDLT + LR) on both results page and saved quote page
+
+## Multi-Fix Batch (Mar 2026)
+- [x] Admin panel: store and display sale price for sale_purchase leads (salePropertyValue column added to schema + displayed in admin)
+- [x] Results page + saved quote page: separate purchase fee breakdown and sale fee breakdown for sale_purchase transactions (purchaseBreakdown/saleBreakdown added to fee engine)
+- [x] Results page firm card heading: grand total in heading must match the grand total figure (card header now shows grandTotal as the big number)
+- [x] Fee editor: non-Burton firms restructured to 8 fine price bands matching LR fee boundaries (0-80k, 80k-100k, 100k-200k, 200k-300k, 300k-500k, 500k-600k, 600k-1m, 1m+)

@@ -65,6 +65,11 @@ export const leads = mysqlTable("leads", {
   isSecondHome: boolean("isSecondHome").default(false),
   numberOfBuyers: int("numberOfBuyers").default(1),
   // Sale-specific
+  salePropertyValue: int("salePropertyValue"),  // Only set for sale_purchase: the price of the property being sold
+  salePostcode: varchar("salePostcode", { length: 10 }),  // Postcode of property being sold (sale_purchase)
+  purchasePostcode: varchar("purchasePostcode", { length: 10 }),  // Postcode of property being bought (sale_purchase)
+  saleTenure: mysqlEnum("saleTenure", ["freehold", "leasehold"]),  // Tenure of property being sold (sale_purchase)
+  purchaseTenure: mysqlEnum("purchaseTenure", ["freehold", "leasehold"]),  // Tenure of property being bought (sale_purchase)
   hasMortgageOnSale: boolean("hasMortgageOnSale").default(false),
   // Remortgage-specific
   isTransferOfEquity: boolean("isTransferOfEquity").default(false),

@@ -586,6 +586,12 @@ export default function QuoteWizard() {
         numberOfBuyers: answers.buyerCount,
         hasMortgageOnSale: answers.hasMortgageOnProperty,
         movingTimeline: answers.completionTimeline,
+        // Sale & Purchase specific
+        salePropertyValue: answers.transactionType === 'sale_purchase' ? (answers as any).salePrice : undefined,
+        salePostcode: answers.transactionType === 'sale_purchase' ? (answers as any).salePostcode : undefined,
+        purchasePostcode: answers.transactionType === 'sale_purchase' ? (answers as any).purchasePostcode : undefined,
+        saleTenure: answers.transactionType === 'sale_purchase' ? ((answers as any).saleTenure as any) : undefined,
+        purchaseTenure: answers.transactionType === 'sale_purchase' ? ((answers as any).purchaseTenure as any) : undefined,
         // Source attribution
         utmSource:   sourceData.utmSource,
         utmMedium:   sourceData.utmMedium,

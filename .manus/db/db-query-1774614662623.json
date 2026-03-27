@@ -1,0 +1,388 @@
+{
+  "query": "SELECT `firmId`, `transactionType`, `minValue`, `maxValue`, `legalFee` FROM `firm_fee_structures` WHERE `transactionType` IN ('purchase','sale','sale_purchase') ORDER BY `firmId`, `transactionType`, `minValue`;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT `firmId`, `transactionType`, `minValue`, `maxValue`, `legalFee` FROM `firm_fee_structures` WHERE `transactionType` IN ('purchase','sale','sale_purchase') ORDER BY `firmId`, `transactionType`, `minValue`;",
+  "rows": [
+    {
+      "firmId": "30001",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "999.00"
+    },
+    {
+      "firmId": "30001",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "999.00"
+    },
+    {
+      "firmId": "30001",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "1200.00"
+    },
+    {
+      "firmId": "30001",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "1500.00"
+    },
+    {
+      "firmId": "30001",
+      "transactionType": "sale",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "1200.00"
+    },
+    {
+      "firmId": "30001",
+      "transactionType": "sale",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "1200.00"
+    },
+    {
+      "firmId": "30001",
+      "transactionType": "sale",
+      "minValue": "600001",
+      "maxValue": "9999999",
+      "legalFee": "1200.00"
+    },
+    {
+      "firmId": "30001",
+      "transactionType": "sale_purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "1024.00"
+    },
+    {
+      "firmId": "30001",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "1198.00"
+    },
+    {
+      "firmId": "30001",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "1500.00"
+    },
+    {
+      "firmId": "30001",
+      "transactionType": "sale_purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "2000.00"
+    },
+    {
+      "firmId": "30002",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "599.00"
+    },
+    {
+      "firmId": "30002",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "599.00"
+    },
+    {
+      "firmId": "30002",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "899.00"
+    },
+    {
+      "firmId": "30002",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "999.00"
+    },
+    {
+      "firmId": "30002",
+      "transactionType": "sale",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "560.00"
+    },
+    {
+      "firmId": "30002",
+      "transactionType": "sale",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "560.00"
+    },
+    {
+      "firmId": "30002",
+      "transactionType": "sale",
+      "minValue": "600001",
+      "maxValue": "9999999",
+      "legalFee": "560.00"
+    },
+    {
+      "firmId": "30002",
+      "transactionType": "sale_purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "973.00"
+    },
+    {
+      "firmId": "30002",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "1138.00"
+    },
+    {
+      "firmId": "30002",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "1426.00"
+    },
+    {
+      "firmId": "30002",
+      "transactionType": "sale_purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "1901.00"
+    },
+    {
+      "firmId": "30006",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "100000",
+      "legalFee": "549.00"
+    },
+    {
+      "firmId": "30006",
+      "transactionType": "purchase",
+      "minValue": "100001",
+      "maxValue": "300000",
+      "legalFee": "599.00"
+    },
+    {
+      "firmId": "30006",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "625.00"
+    },
+    {
+      "firmId": "30006",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "899.00"
+    },
+    {
+      "firmId": "30006",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "999999999",
+      "legalFee": "999.00"
+    },
+    {
+      "firmId": "30006",
+      "transactionType": "sale",
+      "minValue": "0",
+      "maxValue": "100000",
+      "legalFee": "499.00"
+    },
+    {
+      "firmId": "30006",
+      "transactionType": "sale",
+      "minValue": "100001",
+      "maxValue": "300000",
+      "legalFee": "499.00"
+    },
+    {
+      "firmId": "30006",
+      "transactionType": "sale",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "499.00"
+    },
+    {
+      "firmId": "30006",
+      "transactionType": "sale",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "499.00"
+    },
+    {
+      "firmId": "30006",
+      "transactionType": "sale",
+      "minValue": "1000001",
+      "maxValue": "999999999",
+      "legalFee": "499.00"
+    },
+    {
+      "firmId": "30006",
+      "transactionType": "sale_purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "995.00"
+    },
+    {
+      "firmId": "30006",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "1295.00"
+    },
+    {
+      "firmId": "30006",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "999999999",
+      "legalFee": "1695.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "80000",
+      "legalFee": "800.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "legalFee": "800.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "legalFee": "800.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "legalFee": "800.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "legalFee": "800.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "legalFee": "800.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "1000.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "1000.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "sale",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "1400.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "sale",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "1400.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "sale",
+      "minValue": "600001",
+      "maxValue": "9999999",
+      "legalFee": "1400.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "0",
+      "maxValue": "80000",
+      "legalFee": "1055.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "legalFee": "1055.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "legalFee": "1055.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "legalFee": "1055.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "legalFee": "1234.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "legalFee": "1234.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "1546.00"
+    },
+    {
+      "firmId": "60001",
+      "transactionType": "sale_purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "2061.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "firmId\ttransactionType\tminValue\tmaxValue\tlegalFee\n30001\tpurchase\t0\t300000\t999.00\n30001\tpurchase\t300001\t600000\t999.00\n30001\tpurchase\t600001\t1000000\t1200.00\n30001\tpurchase\t1000001\t9999999\t1500.00\n30001\tsale\t0\t300000\t1200.00\n30001\tsale\t300001\t600000\t1200.00\n30001\tsale\t600001\t9999999\t1200.00\n30001\tsale_purchase\t0\t300000\t1024.00\n30001\tsale_purchase\t300001\t600000\t1198.00\n30001\tsale_purchase\t600001\t1000000\t1500.00\n30001\tsale_purchase\t1000001\t9999999\t2000.00\n30002\tpurchase\t0\t300000\t599.00\n30002\tpurchase\t300001\t600000\t599.00\n30002\tpurchase\t600001\t1000000\t899.00\n30002\tpurchase\t1000001\t9999999\t999.00\n30002\tsale\t0\t300000\t560.00\n30002\tsale\t300001\t600000\t560.00\n30002\tsale\t600001\t9999999\t560.00\n30002\tsale_purchase\t0\t300000\t973.00\n30002\tsale_purchase\t300001\t600000\t1138.00\n30002\tsale_purchase\t600001\t1000000\t1426.00\n30002\tsale_purchase\t1000001\t9999999\t1901.00\n30006\tpurchase\t0\t100000\t549.00\n30006\tpurchase\t100001\t300000\t599.00\n30006\tpurchase\t300001\t600000\t625.00\n30006\tpurchase\t600001\t1000000\t899.00\n30006\tpurchase\t1000001\t999999999\t999.00\n30006\tsale\t0\t100000\t499.00\n30006\tsale\t100001\t300000\t499.00\n30006\tsale\t300001\t600000\t499.00\n30006\tsale\t600001\t1000000\t499.00\n30006\tsale\t1000001\t999999999\t499.00\n30006\tsale_purchase\t0\t300000\t995.00\n30006\tsale_purchase\t300001\t600000\t1295.00\n30006\tsale_purchase\t600001\t999999999\t1695.00\n60001\tpurchase\t0\t80000\t800.00\n60001\tpurchase\t80001\t100000\t800.00\n60001\tpurchase\t100001\t200000\t800.00\n60001\tpurchase\t200001\t300000\t800.00\n60001\tpurchase\t300001\t500000\t800.00\n60001\tpurchase\t500001\t600000\t800.00\n60001\tpurchase\t600001\t1000000\t1000.00\n60001\tpurchase\t1000001\t9999999\t1000.00\n60001\tsale\t0\t300000\t1400.00\n60001\tsale\t300001\t600000\t1400.00\n60001\tsale\t600001\t9999999\t1400.00\n60001\tsale_purchase\t0\t80000\t1055.00\n60001\tsale_purchase\t80001\t100000\t1055.00\n60001\tsale_purchase\t100001\t200000\t1055.00\n60001\tsale_purchase\t200001\t300000\t1055.00\n60001\tsale_purchase\t300001\t500000\t1234.00\n60001\tsale_purchase\t500001\t600000\t1234.00\n60001\tsale_purchase\t600001\t1000000\t1546.00\n60001\tsale_purchase\t1000001\t9999999\t2061.00\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

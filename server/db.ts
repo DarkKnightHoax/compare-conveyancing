@@ -307,8 +307,11 @@ export async function getInvestorStats() {
 
 export interface LiveQuoteInput {
   transactionType: 'purchase' | 'sale' | 'sale_purchase' | 'remortgage';
-  propertyValue: number;
-  tenure: 'freehold' | 'leasehold';
+  propertyValue: number; // For sale_purchase: this is the PURCHASE price
+  tenure: 'freehold' | 'leasehold'; // For sale_purchase: this is the PURCHASE tenure
+  // For sale_purchase: separate sale-side values
+  salePropertyValue?: number;
+  saleTenure?: 'freehold' | 'leasehold';
   hasMortgage: boolean;
   isFirstTimeBuyer: boolean;
   isNewBuild: boolean;
@@ -321,6 +324,22 @@ export interface LiveQuoteInput {
   newMortgageValue?: number;
   buyerCount?: number;
   mortgageLender?: string;
+}
+
+export interface LegBreakdown {
+  label: string;
+  propertyValue: number;
+  legalFee: number;
+  supplements: { name: string; price: number }[];
+  disbursements: { name: string; price: number; includesVat: boolean }[];
+  totalExVat: number;
+  vat: number;
+  totalIncVat: number;
+  sdlt: number;
+  landRegistryFee: number;
+  fileOpeningFee: number;
+  grandTotal: number;
+  subtotal: number;
 }
 
 export interface LiveQuoteResult {
@@ -345,6 +364,9 @@ export interface LiveQuoteResult {
   landRegistryFee: number;
   grandTotal: number;
   fileOpeningFee: number;
+  // For sale_purchase: separate per-leg breakdowns
+  purchaseBreakdown?: LegBreakdown;
+  saleBreakdown?: LegBreakdown;
 }
 
 /**
@@ -439,6 +461,83 @@ function calcLandRegistry(value: number): number {
   return 500;
 }
 
+// ── Helper: compute one leg's fees for a given property value + tenure ──
+function computeLeg(
+  band: any,
+  legType: 'purchase' | 'sale',
+  legValue: number,
+  legTenure: 'freehold' | 'leasehold',
+  input: LiveQuoteInput,
+): LegBreakdown {
+  const legalFee = Number(band.legalFee);
+  const supplements: { name: string; price: number }[] = [];
+  const disbursements: { name: string; price: number; includesVat: boolean }[] = [];
+  const numBuyers = Math.max(1, input.buyerCount ?? 1);
+
+  if (legType === 'purchase') {
+    if (legTenure === 'leasehold' && Number(band.leaseholdSupplement) > 0)
+      supplements.push({ name: 'Leasehold Supplement', price: Number(band.leaseholdSupplement) });
+    if (input.isNewBuild && Number(band.newBuildSupplement) > 0)
+      supplements.push({ name: 'New Build Supplement', price: Number(band.newBuildSupplement) });
+    if (input.isSharedOwnership && Number(band.sharedOwnershipSupplement) > 0)
+      supplements.push({ name: 'Shared Ownership', price: Number(band.sharedOwnershipSupplement) });
+    if (input.hasGiftedDeposit && Number(band.giftedDepositSupplement) > 0) {
+      const giftCount = Math.max(1, input.giftCount ?? 1);
+      const giftPrice = Number(band.giftedDepositSupplement) * giftCount;
+      supplements.push({ name: giftCount > 1 ? `Gifted Deposit (x${giftCount})` : 'Gifted Deposit', price: giftPrice });
+    }
+    if (input.hasMortgage)
+      supplements.push({ name: 'Mortgage / Re-mortgage', price: 234 });
+    if (input.isBuyToLet)
+      supplements.push({ name: 'Buy to Let Supplement', price: 99 });
+    if (input.isSecondHome)
+      supplements.push({ name: 'Second Home Supplement', price: 99 });
+    // AML
+    if (Number(band.antiMoneyLaunderingFee) > 0) {
+      const amlPerPerson = Number(band.antiMoneyLaunderingFee);
+      disbursements.push({
+        name: numBuyers > 1 ? `Anti-Money Laundering (AML) Check × ${numBuyers} purchasers` : 'Anti-Money Laundering (AML) Check',
+        price: amlPerPerson * numBuyers,
+        includesVat: true,
+      });
+    }
+    disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: 349, includesVat: true });
+    if (Number(band.officialCopiesFee) > 0)
+      disbursements.push({ name: 'Official Copies (Title Register & Plan)', price: Number(band.officialCopiesFee), includesVat: true });
+    if (Number(band.electronicTransferFee) > 0)
+      disbursements.push({ name: 'Electronic Transfer Fee (CHAPS)', price: Number(band.electronicTransferFee), includesVat: true });
+    disbursements.push({ name: 'Land Registry Searches', price: 3, includesVat: true });
+    disbursements.push({ name: numBuyers > 1 ? `Bankruptcy Search (x${numBuyers})` : 'Bankruptcy Search', price: 4 * numBuyers, includesVat: true });
+  } else {
+    // sale leg
+    if (legTenure === 'leasehold' && Number(band.leaseholdSupplement) > 0)
+      supplements.push({ name: 'Leasehold Supplement', price: Number(band.leaseholdSupplement) });
+    if (input.hasMortgageOnProperty)
+      supplements.push({ name: 'Mortgage Redemption', price: 100 });
+    // AML for sale
+    if (Number(band.antiMoneyLaunderingFee) > 0) {
+      disbursements.push({ name: 'Anti-Money Laundering (AML) Check', price: Number(band.antiMoneyLaunderingFee), includesVat: true });
+    }
+    if (Number(band.officialCopiesFee) > 0)
+      disbursements.push({ name: 'Official Copies (Title Register & Plan)', price: Number(band.officialCopiesFee), includesVat: true });
+    if (Number(band.electronicTransferFee) > 0)
+      disbursements.push({ name: 'Electronic Transfer Fee (CHAPS)', price: Number(band.electronicTransferFee), includesVat: true });
+  }
+
+  const supplementTotal = supplements.reduce((s, x) => s + x.price, 0);
+  const disbursementTotal = disbursements.reduce((s, x) => s + x.price, 0);
+  const totalExVat = legalFee + supplementTotal;
+  const vat = Math.round(totalExVat * 0.20);
+  const totalIncVat = totalExVat + vat;
+  const sdlt = legType === 'purchase' ? calcSDLT(legValue, input.isFirstTimeBuyer, input.isSecondHome, input.isBuyToLet) : 0;
+  const landRegistryFee = legType === 'purchase' ? calcLandRegistry(legValue) : 0;
+  const fileOpeningFee = Number(band.fileOpeningFee ?? 0);
+  const subtotal = totalIncVat + disbursementTotal + sdlt + landRegistryFee;
+  const grandTotal = subtotal;
+
+  return { label: legType === 'purchase' ? 'Purchase' : 'Sale', propertyValue: legValue, legalFee, supplements, disbursements, totalExVat, vat, totalIncVat, sdlt, landRegistryFee, fileOpeningFee, grandTotal, subtotal };
+}
+
 export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQuoteResult[]> {
   const db = await getDb();
   if (!db) return [];
@@ -486,85 +585,103 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
 
     if (!band) continue; // No fee band configured for this firm
 
-    const legalFee = Number(band.legalFee);
-    const supplements: { name: string; price: number }[] = [];
-    const disbursements: { name: string; price: number; includesVat: boolean }[] = [];
-
-    // ── SUPPLEMENTS ──
-    if (transactionType === 'purchase' || transactionType === 'sale_purchase') {
-      if (input.tenure === 'leasehold' && Number(band.leaseholdSupplement) > 0)
-        supplements.push({ name: 'Leasehold Supplement', price: Number(band.leaseholdSupplement) });
-      if (input.isNewBuild && Number(band.newBuildSupplement) > 0)
-        supplements.push({ name: 'New Build Supplement', price: Number(band.newBuildSupplement) });
-      if (input.isSharedOwnership && Number(band.sharedOwnershipSupplement) > 0)
-        supplements.push({ name: 'Shared Ownership', price: Number(band.sharedOwnershipSupplement) });
-      if (input.hasGiftedDeposit && Number(band.giftedDepositSupplement) > 0) {
-        const giftCount = Math.max(1, input.giftCount ?? 1);
-        const giftPrice = Number(band.giftedDepositSupplement) * giftCount;
-        supplements.push({ name: giftCount > 1 ? `Gifted Deposit (x${giftCount})` : 'Gifted Deposit', price: giftPrice });
-      }
-      if (input.hasMortgage)
-        supplements.push({ name: 'Mortgage / Re-mortgage', price: 234 });
-      if (input.isBuyToLet)
-        supplements.push({ name: 'Buy to Let Supplement', price: 99 });
-      if (input.isSecondHome)
-        supplements.push({ name: 'Second Home Supplement', price: 99 });
-    }
-    if (transactionType === 'sale' || transactionType === 'sale_purchase') {
-      if (input.tenure === 'leasehold' && Number(band.leaseholdSupplement) > 0)
-        supplements.push({ name: 'Leasehold Supplement', price: Number(band.leaseholdSupplement) });
-      if (input.hasMortgageOnProperty)
-        supplements.push({ name: 'Mortgage Redemption', price: 100 }); // Fixed at £100
-    }
-
-    // ── DISBURSEMENTS ──
-    const numBuyers = Math.max(1, input.buyerCount ?? 1);
-    if (Number(band.antiMoneyLaunderingFee) > 0) {
-      const amlPerPerson = Number(band.antiMoneyLaunderingFee);
-      disbursements.push({
-        name: numBuyers > 1
-          ? `Anti-Money Laundering (AML) Check × ${numBuyers} purchasers`
-          : 'Anti-Money Laundering (AML) Check',
-        price: amlPerPerson * numBuyers,
-        includesVat: true,
-      });
-    }
-    // Search Pack: purchase and sale_purchase only (NOT for sale or remortgage)
-    if (transactionType === 'purchase' || transactionType === 'sale_purchase')
-      disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: 349, includesVat: true });
-    // File Opening Fee is NOT added to disbursements (not shown on results page)
-    // It is passed separately as fileOpeningFee for use in the Instruct modal only
+    let legalFee: number;
+    let supplements: { name: string; price: number }[];
+    let disbursements: { name: string; price: number; includesVat: boolean }[];
+    let totalExVat: number, vat: number, totalIncVat: number, sdlt: number, landRegistryFee: number, grandTotal: number;
+    let purchaseBreakdown: LegBreakdown | undefined;
+    let saleBreakdown: LegBreakdown | undefined;
     const fileOpeningFeeAmount = Number(band.fileOpeningFee) || 0;
-    if (Number(band.officialCopiesFee) > 0)
-      disbursements.push({ name: 'Official Copies (Title Register & Plan)', price: Number(band.officialCopiesFee), includesVat: true });
-    if (Number(band.electronicTransferFee) > 0)
-      disbursements.push({ name: 'Electronic Transfer Fee (CHAPS)', price: Number(band.electronicTransferFee), includesVat: true });
-    // Land Registry Searches (purchase)
-    if (transactionType === 'purchase' || transactionType === 'sale_purchase')
-      disbursements.push({ name: 'Land Registry Searches', price: 3, includesVat: true });
-    if (transactionType === 'purchase' || transactionType === 'sale_purchase')
-      disbursements.push({
-        name: numBuyers > 1 ? `Bankruptcy Search (x${numBuyers})` : 'Bankruptcy Search',
-        price: 4 * numBuyers,
-        includesVat: true,
-      });
+    const numBuyers = Math.max(1, input.buyerCount ?? 1);
 
-    // ── TOTALS ──
-    const supplementTotal = supplements.reduce((s, x) => s + x.price, 0);
-    const disbursementTotal = disbursements.reduce((s, x) => s + x.price, 0);
-    const totalExVat = legalFee + supplementTotal;
-    const vat = Math.round(totalExVat * 0.20);
-    const totalIncVat = totalExVat + vat;
+    if (transactionType === 'sale_purchase') {
+      // ── SALE_PURCHASE: compute each leg separately ──
+      const purchaseValue = value; // propertyValue = purchase price
+      const purchaseTenure = input.tenure;
+      const saleValue = input.salePropertyValue || value; // fallback to purchase price if not provided
+      const saleTenure = input.saleTenure || 'freehold';
 
-    const sdlt = (transactionType === 'purchase' || transactionType === 'sale_purchase')
-      ? calcSDLT(value, input.isFirstTimeBuyer, input.isSecondHome, input.isBuyToLet)
-      : 0;
-    const landRegistryFee = (transactionType === 'purchase' || transactionType === 'sale_purchase')
-      ? calcLandRegistry(value)
-      : 0;
+      // Find sale band for this firm (sale fee structures)
+      // For sale_purchase, we use the same band (sale_purchase type) for both legs
+      purchaseBreakdown = computeLeg(band, 'purchase', purchaseValue, purchaseTenure, input);
+      saleBreakdown = computeLeg(band, 'sale', saleValue, saleTenure, input);
 
-    // Grand total excludes file opening fee (shown only in Instruct modal)
-    const grandTotal = totalIncVat + disbursementTotal + sdlt + landRegistryFee;
+      // Combined totals
+      legalFee = purchaseBreakdown.legalFee + saleBreakdown.legalFee;
+      supplements = [
+        ...purchaseBreakdown.supplements.map(s => ({ ...s, name: `[Purchase] ${s.name}` })),
+        ...saleBreakdown.supplements.map(s => ({ ...s, name: `[Sale] ${s.name}` })),
+      ];
+      disbursements = [
+        ...purchaseBreakdown.disbursements.map(d => ({ ...d, name: `[Purchase] ${d.name}` })),
+        ...saleBreakdown.disbursements.map(d => ({ ...d, name: `[Sale] ${d.name}` })),
+      ];
+      totalExVat = purchaseBreakdown.totalExVat + saleBreakdown.totalExVat;
+      vat = purchaseBreakdown.vat + saleBreakdown.vat;
+      totalIncVat = purchaseBreakdown.totalIncVat + saleBreakdown.totalIncVat;
+      sdlt = purchaseBreakdown.sdlt;
+      landRegistryFee = purchaseBreakdown.landRegistryFee;
+      grandTotal = purchaseBreakdown.subtotal + saleBreakdown.subtotal;
+    } else {
+      // ── SINGLE LEG (purchase, sale, remortgage) ──
+      supplements = [];
+      disbursements = [];
+
+      if (transactionType === 'purchase' || transactionType === 'remortgage') {
+        if (input.tenure === 'leasehold' && Number(band.leaseholdSupplement) > 0)
+          supplements.push({ name: 'Leasehold Supplement', price: Number(band.leaseholdSupplement) });
+        if (input.isNewBuild && Number(band.newBuildSupplement) > 0)
+          supplements.push({ name: 'New Build Supplement', price: Number(band.newBuildSupplement) });
+        if (input.isSharedOwnership && Number(band.sharedOwnershipSupplement) > 0)
+          supplements.push({ name: 'Shared Ownership', price: Number(band.sharedOwnershipSupplement) });
+        if (input.hasGiftedDeposit && Number(band.giftedDepositSupplement) > 0) {
+          const giftCount = Math.max(1, input.giftCount ?? 1);
+          const giftPrice = Number(band.giftedDepositSupplement) * giftCount;
+          supplements.push({ name: giftCount > 1 ? `Gifted Deposit (x${giftCount})` : 'Gifted Deposit', price: giftPrice });
+        }
+        if (input.hasMortgage)
+          supplements.push({ name: 'Mortgage / Re-mortgage', price: 234 });
+        if (input.isBuyToLet)
+          supplements.push({ name: 'Buy to Let Supplement', price: 99 });
+        if (input.isSecondHome)
+          supplements.push({ name: 'Second Home Supplement', price: 99 });
+      }
+      if (transactionType === 'sale') {
+        if (input.tenure === 'leasehold' && Number(band.leaseholdSupplement) > 0)
+          supplements.push({ name: 'Leasehold Supplement', price: Number(band.leaseholdSupplement) });
+        if (input.hasMortgageOnProperty)
+          supplements.push({ name: 'Mortgage Redemption', price: 100 });
+      }
+
+      if (Number(band.antiMoneyLaunderingFee) > 0) {
+        const amlPerPerson = Number(band.antiMoneyLaunderingFee);
+        disbursements.push({
+          name: numBuyers > 1 ? `Anti-Money Laundering (AML) Check × ${numBuyers} purchasers` : 'Anti-Money Laundering (AML) Check',
+          price: amlPerPerson * numBuyers,
+          includesVat: true,
+        });
+      }
+      if (transactionType === 'purchase')
+        disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: 349, includesVat: true });
+      if (Number(band.officialCopiesFee) > 0)
+        disbursements.push({ name: 'Official Copies (Title Register & Plan)', price: Number(band.officialCopiesFee), includesVat: true });
+      if (Number(band.electronicTransferFee) > 0)
+        disbursements.push({ name: 'Electronic Transfer Fee (CHAPS)', price: Number(band.electronicTransferFee), includesVat: true });
+      if (transactionType === 'purchase') {
+        disbursements.push({ name: 'Land Registry Searches', price: 3, includesVat: true });
+        disbursements.push({ name: numBuyers > 1 ? `Bankruptcy Search (x${numBuyers})` : 'Bankruptcy Search', price: 4 * numBuyers, includesVat: true });
+      }
+
+      legalFee = Number(band.legalFee);
+      const supplementTotal = supplements.reduce((s, x) => s + x.price, 0);
+      const disbursementTotal = disbursements.reduce((s, x) => s + x.price, 0);
+      totalExVat = legalFee + supplementTotal;
+      vat = Math.round(totalExVat * 0.20);
+      totalIncVat = totalExVat + vat;
+      sdlt = transactionType === 'purchase' ? calcSDLT(value, input.isFirstTimeBuyer, input.isSecondHome, input.isBuyToLet) : 0;
+      landRegistryFee = transactionType === 'purchase' ? calcLandRegistry(value) : 0;
+      grandTotal = totalIncVat + disbursementTotal + sdlt + landRegistryFee;
+    }
 
     let parsedAccreditations: string[] = [];
     try { parsedAccreditations = firm.accreditations ? JSON.parse(firm.accreditations) : []; } catch { /* ignore */ }
@@ -591,6 +708,8 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
       sdlt,
       landRegistryFee,
       grandTotal,
+      purchaseBreakdown,
+      saleBreakdown,
     });
   }
 

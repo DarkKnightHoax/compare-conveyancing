@@ -1,0 +1,8 @@
+{
+  "query": "SELECT f.id as firmId, f.name, fb.transactionType, fb.minValue, fb.maxValue, fb.legalFee FROM law_firms f JOIN fee_bands fb ON fb.firmId = f.id WHERE fb.transactionType = 'purchase' ORDER BY f.id, fb.minValue;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT f.id as firmId, f.name, fb.transactionType, fb.minValue, fb.maxValue, fb.legalFee FROM law_firms f JOIN fee_bands fb ON fb.firmId = f.id WHERE fb.transactionType = 'purchase' ORDER BY f.id, fb.minValue;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table '5zpoxzglm5cycu3sthcck4.fee_bands' doesn't exist"
+  ]
+}

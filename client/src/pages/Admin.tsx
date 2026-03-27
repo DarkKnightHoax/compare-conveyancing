@@ -212,9 +212,19 @@ function LeadsTab() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {[
                         { label: "Transaction", value: { purchase: "Purchase", sale: "Sale", sale_purchase: "Sale & Purchase", remortgage: "Remortgage" }[lead.transactionType] ?? lead.transactionType },
-                        { label: "Property Value", value: `£${Number(lead.propertyValue).toLocaleString('en-GB')}` },
-                        { label: "Postcode", value: lead.postcode },
-                        { label: "Tenure", value: lead.propertyTenure ? lead.propertyTenure.charAt(0).toUpperCase() + lead.propertyTenure.slice(1) : "—" },
+                        // For sale_purchase: show both sale and purchase prices
+                        ...(lead.transactionType === 'sale_purchase' ? [
+                          { label: "Purchase Price", value: `£${Number(lead.propertyValue).toLocaleString('en-GB')}` },
+                          { label: "Sale Price", value: (lead as any).salePropertyValue ? `£${Number((lead as any).salePropertyValue).toLocaleString('en-GB')}` : "—" },
+                          { label: "Purchase Postcode", value: (lead as any).purchasePostcode || lead.postcode || "—" },
+                          { label: "Sale Postcode", value: (lead as any).salePostcode || "—" },
+                          { label: "Purchase Tenure", value: (lead as any).purchaseTenure ? ((lead as any).purchaseTenure as string).charAt(0).toUpperCase() + ((lead as any).purchaseTenure as string).slice(1) : "—" },
+                          { label: "Sale Tenure", value: (lead as any).saleTenure ? ((lead as any).saleTenure as string).charAt(0).toUpperCase() + ((lead as any).saleTenure as string).slice(1) : "—" },
+                        ] : [
+                          { label: "Property Value", value: `£${Number(lead.propertyValue).toLocaleString('en-GB')}` },
+                          { label: "Postcode", value: lead.postcode },
+                          { label: "Tenure", value: lead.propertyTenure ? lead.propertyTenure.charAt(0).toUpperCase() + lead.propertyTenure.slice(1) : "—" },
+                        ]),
                         { label: "Timeline", value: lead.movingTimeline ?? "—" },
                         { label: "Number of Buyers", value: String(lead.numberOfBuyers ?? 1) },
                       ].map(({ label, value }) => (

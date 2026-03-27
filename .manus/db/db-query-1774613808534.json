@@ -1,0 +1,37 @@
+{
+  "query": "SHOW TABLES;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SHOW TABLES;",
+  "rows": [
+    {
+      "Tables_in_5ZpoxzgLM5cycU3sThccK4": "__drizzle_migrations"
+    },
+    {
+      "Tables_in_5ZpoxzgLM5cycU3sThccK4": "callback_requests"
+    },
+    {
+      "Tables_in_5ZpoxzgLM5cycU3sThccK4": "firm_fee_structures"
+    },
+    {
+      "Tables_in_5ZpoxzgLM5cycU3sThccK4": "firm_lender_panels"
+    },
+    {
+      "Tables_in_5ZpoxzgLM5cycU3sThccK4": "firm_notes"
+    },
+    {
+      "Tables_in_5ZpoxzgLM5cycU3sThccK4": "instruct_requests"
+    },
+    {
+      "Tables_in_5ZpoxzgLM5cycU3sThccK4": "law_firms"
+    },
+    {
+      "Tables_in_5ZpoxzgLM5cycU3sThccK4": "leads"
+    },
+    {
+      "Tables_in_5ZpoxzgLM5cycU3sThccK4": "users"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_5ZpoxzgLM5cycU3sThccK4\n__drizzle_migrations\ncallback_requests\nfirm_fee_structures\nfirm_lender_panels\nfirm_notes\ninstruct_requests\nlaw_firms\nleads\nusers\n",
+  "stderr": "",
+  "execution_time_ms": 67
+}

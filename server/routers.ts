@@ -193,6 +193,12 @@ export const appRouter = router({
         hasMortgageOnSale: z.boolean().optional(),
         isTransferOfEquity: z.boolean().optional(),
         movingTimeline: z.string().optional(),
+        // Sale & Purchase specific
+        salePropertyValue: z.number().optional(),
+        salePostcode: z.string().optional(),
+        purchasePostcode: z.string().optional(),
+        saleTenure: z.enum(["freehold", "leasehold"]).optional(),
+        purchaseTenure: z.enum(["freehold", "leasehold"]).optional(),
         quotedLegalFee: z.string().optional(),
         quotedTotal: z.string().optional(),
         // Source attribution
@@ -525,13 +531,16 @@ export const appRouter = router({
       }),
   }),
 
-  // ── LIVE QUOTES (reads from DB fee structures) ──────────────────────────────
+  // ── LIVE QUOTES (reads from DB fee structures) ──────────────────────────────────────────────
   quotes: router({
     getLive: publicProcedure
       .input(z.object({
         transactionType: z.enum(["purchase", "sale", "sale_purchase", "remortgage"]),
         propertyValue: z.number().min(0),
         tenure: z.enum(["freehold", "leasehold"]),
+        // For sale_purchase: separate sale-side values
+        salePropertyValue: z.number().min(0).optional(),
+        saleTenure: z.enum(["freehold", "leasehold"]).optional(),
         hasMortgage: z.boolean().default(false),
         isFirstTimeBuyer: z.boolean().default(false),
         isNewBuild: z.boolean().default(false),

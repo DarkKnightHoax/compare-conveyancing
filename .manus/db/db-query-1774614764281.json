@@ -1,0 +1,9 @@
+{
+  "query": "SELECT * FROM `firm_fee_structures` WHERE `firmId` = 30003 AND `transactionType` IN ('purchase','sale','sale_purchase') ORDER BY `transactionType`, `minValue`;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT * FROM `firm_fee_structures` WHERE `firmId` = 30003 AND `transactionType` IN ('purchase','sale','sale_purchase') ORDER BY `transactionType`, `minValue`;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 58
+}

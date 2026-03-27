@@ -1,0 +1,178 @@
+{
+  "query": "SELECT f.id as firmId, f.name, fb.transactionType, fb.minValue, fb.maxValue, fb.legalFee FROM law_firms f JOIN firm_fee_structures fb ON fb.firmId = f.id WHERE fb.transactionType = 'purchase' ORDER BY f.id, fb.minValue;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT f.id as firmId, f.name, fb.transactionType, fb.minValue, fb.maxValue, fb.legalFee FROM law_firms f JOIN firm_fee_structures fb ON fb.firmId = f.id WHERE fb.transactionType = 'purchase' ORDER BY f.id, fb.minValue;",
+  "rows": [
+    {
+      "firmId": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "999.00"
+    },
+    {
+      "firmId": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "999.00"
+    },
+    {
+      "firmId": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "1200.00"
+    },
+    {
+      "firmId": "30001",
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "1500.00"
+    },
+    {
+      "firmId": "30002",
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "300000",
+      "legalFee": "599.00"
+    },
+    {
+      "firmId": "30002",
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "599.00"
+    },
+    {
+      "firmId": "30002",
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "899.00"
+    },
+    {
+      "firmId": "30002",
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "999.00"
+    },
+    {
+      "firmId": "30006",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "100000",
+      "legalFee": "549.00"
+    },
+    {
+      "firmId": "30006",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "minValue": "100001",
+      "maxValue": "300000",
+      "legalFee": "599.00"
+    },
+    {
+      "firmId": "30006",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "legalFee": "625.00"
+    },
+    {
+      "firmId": "30006",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "899.00"
+    },
+    {
+      "firmId": "30006",
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "999999999",
+      "legalFee": "999.00"
+    },
+    {
+      "firmId": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "80000",
+      "legalFee": "800.00"
+    },
+    {
+      "firmId": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "legalFee": "800.00"
+    },
+    {
+      "firmId": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "legalFee": "800.00"
+    },
+    {
+      "firmId": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "legalFee": "800.00"
+    },
+    {
+      "firmId": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "legalFee": "800.00"
+    },
+    {
+      "firmId": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "legalFee": "800.00"
+    },
+    {
+      "firmId": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "legalFee": "1000.00"
+    },
+    {
+      "firmId": "60001",
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "legalFee": "1000.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "firmId\tname\ttransactionType\tminValue\tmaxValue\tlegalFee\n30001\tEasy Choice Conveyancing\tpurchase\t0\t300000\t999.00\n30001\tEasy Choice Conveyancing\tpurchase\t300001\t600000\t999.00\n30001\tEasy Choice Conveyancing\tpurchase\t600001\t1000000\t1200.00\n30001\tEasy Choice Conveyancing\tpurchase\t1000001\t9999999\t1500.00\n30002\tPCS Legal\tpurchase\t0\t300000\t599.00\n30002\tPCS Legal\tpurchase\t300001\t600000\t599.00\n30002\tPCS Legal\tpurchase\t600001\t1000000\t899.00\n30002\tPCS Legal\tpurchase\t1000001\t9999999\t999.00\n30006\tTQ Law\tpurchase\t0\t100000\t549.00\n30006\tTQ Law\tpurchase\t100001\t300000\t599.00\n30006\tTQ Law\tpurchase\t300001\t600000\t625.00\n30006\tTQ Law\tpurchase\t600001\t1000000\t899.00\n30006\tTQ Law\tpurchase\t1000001\t999999999\t999.00\n60001\tBurtons Solicitors\tpurchase\t0\t80000\t800.00\n60001\tBurtons Solicitors\tpurchase\t80001\t100000\t800.00\n60001\tBurtons Solicitors\tpurchase\t100001\t200000\t800.00\n60001\tBurtons Solicitors\tpurchase\t200001\t300000\t800.00\n60001\tBurtons Solicitors\tpurchase\t300001\t500000\t800.00\n60001\tBurtons Solicitors\tpurchase\t500001\t600000\t800.00\n60001\tBurtons Solicitors\tpurchase\t600001\t1000000\t1000.00\n60001\tBurtons Solicitors\tpurchase\t1000001\t9999999\t1000.00\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

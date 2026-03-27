@@ -51,6 +51,18 @@ export interface WizardAnswers {
   newMortgageValue?: number;
 }
 
+export interface LegBreakdown {
+  legalFee: number;
+  supplements: SupplementItem[];
+  disbursements: DisbursementItem[];
+  totalExVat: number;
+  vat: number;
+  totalIncVat: number;
+  sdlt: number;
+  landRegistryFee: number;
+  subtotal: number;
+}
+
 export interface FirmQuote {
   id: number;
   firmName: string;
@@ -71,6 +83,9 @@ export interface FirmQuote {
   speciality: string;
   yearsEstablished: number;
   accreditations: string[];
+  // For sale_purchase: separate breakdowns per leg
+  purchaseBreakdown?: LegBreakdown;
+  saleBreakdown?: LegBreakdown;
 }
 
 export interface SupplementItem {
@@ -403,11 +418,70 @@ export function calculateQuotes(answers: WizardAnswers): FirmQuote[] {
       ? calculateSDLT(value, answers.isFirstTimeBuyer, answers.isSecondHome, answers.isBuyToLet)
       : 0;
 
+    // LR fee: per transaction, NOT per buyer
     const landRegistryFee = (transactionType === 'purchase' || transactionType === 'sale_purchase')
-      ? calculateLandRegistryFee(value) * buyerCount
+      ? calculateLandRegistryFee(value)
       : 0;
 
     const grandTotal = totalIncVat + disbursementTotal + sdlt + landRegistryFee;
+
+    // ── SALE_PURCHASE: build separate per-leg breakdowns for display ──
+    let purchaseBreakdown: LegBreakdown | undefined;
+    let saleBreakdown: LegBreakdown | undefined;
+
+    if (transactionType === 'sale_purchase') {
+      // Purchase leg
+      const pSupplements: SupplementItem[] = [];
+      if (purchaseTenure === 'leasehold') pSupplements.push({ ...PURCHASE_SUPPLEMENTS.leasehold });
+      if (answers.hasMortgage) pSupplements.push({ ...PURCHASE_SUPPLEMENTS.mortgage });
+      if (answers.isNewBuild) pSupplements.push({ ...PURCHASE_SUPPLEMENTS.newBuild });
+      if (answers.isSharedOwnership) pSupplements.push({ ...PURCHASE_SUPPLEMENTS.sharedOwnership });
+      if (answers.hasGiftedDeposit) {
+        const count = Math.max(1, giftCount);
+        pSupplements.push({ ...PURCHASE_SUPPLEMENTS.giftedDeposit, name: `Gifted Deposit${count > 1 ? ` (x${count})` : ''}`, price: PURCHASE_SUPPLEMENTS.giftedDeposit.price * count });
+      }
+      if (answers.hasHelpToBuyISA) pSupplements.push({ ...PURCHASE_SUPPLEMENTS.helpToBuyISA });
+      if (answers.isRightToBuy) pSupplements.push({ ...PURCHASE_SUPPLEMENTS.rightToBuy });
+      if (answers.isBuyToLet) pSupplements.push({ ...PURCHASE_SUPPLEMENTS.buyToLet });
+      if (answers.isSecondHome) pSupplements.push({ ...PURCHASE_SUPPLEMENTS.secondHome });
+
+      const pDisbursements: DisbursementItem[] = PURCHASE_DISBURSEMENTS.map(d => {
+        if (d.name === 'Anti-Money Laundering (AML) Check') return { ...d, name: `AML Check${buyerCount > 1 ? ` (x${buyerCount})` : ''}`, price: d.price * buyerCount };
+        if (d.name === 'Bankruptcy Search') return { ...d, name: `Bankruptcy Search${buyerCount > 1 ? ` (x${buyerCount})` : ''}`, price: d.price * buyerCount };
+        return { ...d };
+      });
+      if (firm.purchaseOpeningFee > 0) pDisbursements.unshift({ name: 'File Opening Fee', price: firm.purchaseOpeningFee, includesVat: false });
+
+      const pLegalFee = firm.purchaseBaseFee;
+      const pSupplementTotal = pSupplements.reduce((s, x) => s + x.price, 0);
+      const pDisbursementTotal = pDisbursements.reduce((s, x) => s + x.price, 0);
+      const pTotalExVat = pLegalFee + pSupplementTotal;
+      const pVat = Math.round(pTotalExVat * 0.20);
+      const pTotalIncVat = pTotalExVat + pVat;
+      const pSdlt = calculateSDLT(value, answers.isFirstTimeBuyer, answers.isSecondHome, answers.isBuyToLet);
+      const pLrFee = calculateLandRegistryFee(value);
+      purchaseBreakdown = { legalFee: pLegalFee, supplements: pSupplements, disbursements: pDisbursements, totalExVat: pTotalExVat, vat: pVat, totalIncVat: pTotalIncVat, sdlt: pSdlt, landRegistryFee: pLrFee, subtotal: pTotalIncVat + pDisbursementTotal + pSdlt + pLrFee };
+
+      // Sale leg
+      const saleValue = answers.salePrice || value;
+      const sSupplements: SupplementItem[] = [];
+      if (saleTenure === 'leasehold') sSupplements.push({ ...SALE_SUPPLEMENTS.leasehold });
+      if (answers.hasMortgageOnProperty) sSupplements.push({ ...SALE_SUPPLEMENTS.mortgagedProperty });
+
+      const sDisbursements: DisbursementItem[] = SALE_DISBURSEMENTS.map(d => {
+        if (d.name === 'Anti-Money Laundering (AML) Check') return { ...d, name: `AML Check${buyerCount > 1 ? ` (x${buyerCount})` : ''}`, price: d.price * buyerCount };
+        return { ...d };
+      });
+      if (firm.saleOpeningFee > 0) sDisbursements.unshift({ name: 'File Opening Fee', price: firm.saleOpeningFee, includesVat: false });
+
+      const sLegalFee = firm.saleBaseFee;
+      const sSupplementTotal = sSupplements.reduce((s, x) => s + x.price, 0);
+      const sDisbursementTotal = sDisbursements.reduce((s, x) => s + x.price, 0);
+      const sTotalExVat = sLegalFee + sSupplementTotal;
+      const sVat = Math.round(sTotalExVat * 0.20);
+      const sTotalIncVat = sTotalExVat + sVat;
+      saleBreakdown = { legalFee: sLegalFee, supplements: sSupplements, disbursements: sDisbursements, totalExVat: sTotalExVat, vat: sVat, totalIncVat: sTotalIncVat, sdlt: 0, landRegistryFee: 0, subtotal: sTotalIncVat + sDisbursementTotal };
+    }
 
     return {
       id: firm.id,
@@ -429,6 +503,8 @@ export function calculateQuotes(answers: WizardAnswers): FirmQuote[] {
       speciality: firm.speciality,
       yearsEstablished: firm.yearsEstablished,
       accreditations: firm.accreditations,
+      purchaseBreakdown,
+      saleBreakdown,
     };
   });
 }

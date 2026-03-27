@@ -20,6 +20,20 @@ import {
 import { formatCurrency, type WizardAnswers } from "../lib/feeEngine";
 import { trackEmailQuoteRequest, trackInstructDirectly } from "@/lib/analytics";
 
+export interface LegBreakdown {
+  label: string;
+  propertyValue: number;
+  legalFee: number;
+  supplements: { name: string; price: number }[];
+  disbursements: { name: string; price: number; includesVat: boolean }[];
+  vat: number;
+  totalIncVat: number;
+  sdlt: number;
+  landRegistryFee: number;
+  fileOpeningFee: number;
+  grandTotal: number;
+}
+
 export interface LiveQuoteResult {
   firmId: number;
   firmName: string;
@@ -42,6 +56,9 @@ export interface LiveQuoteResult {
   landRegistryFee: number;
   grandTotal: number;
   fileOpeningFee: number;
+  // For sale_purchase: separate legs
+  purchaseBreakdown?: LegBreakdown;
+  saleBreakdown?: LegBreakdown;
 }
 import { trpc } from "@/lib/trpc";
 
@@ -628,13 +645,13 @@ function QuoteCard({
           {/* Price */}
           <div className="text-right">
             <div className="text-xs mb-0.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-              Legal fees (inc. VAT)
+              Grand total
             </div>
             <div className="text-2xl font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>
-              {formatCurrency(quote.totalIncVat)}
+              {formatCurrency(quote.grandTotal)}
             </div>
             <div className="text-xs mt-0.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-              Grand total: <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.grandTotal)}</span>
+              Legal fees: <span className="font-semibold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.totalIncVat)}</span>
             </div>
           </div>
         </div>
@@ -701,91 +718,168 @@ function QuoteCard({
         {/* Fee Breakdown */}
         {expanded && (
           <div className="mt-4 space-y-3 animate-fade-in">
-            {/* Legal Fees */}
-            <div>
-              <div className="text-xs font-bold mb-2 uppercase tracking-wide" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                Legal Fees
-              </div>
-              <div className="space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Base legal fee</span>
-                  <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.legalFee)}</span>
-                </div>
-                {quote.supplements.map((s) => (
-                  <div key={s.name} className="flex justify-between text-sm">
-                    <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>{s.name}</span>
-                    <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>+{formatCurrency(s.price)}</span>
+            {/* ── SALE & PURCHASE: show two separate leg panels ── */}
+            {quote.purchaseBreakdown && quote.saleBreakdown ? (
+              <>
+                {([quote.purchaseBreakdown, quote.saleBreakdown] as import('../pages/QuoteResults').LegBreakdown[]).map((leg) => (
+                  <div key={leg.label} className="rounded-xl overflow-hidden" style={{ border: '1px solid oklch(0.88 0.015 80)' }}>
+                    {/* Leg header */}
+                    <div className="px-4 py-2 text-xs font-bold uppercase tracking-wide" style={{ background: 'oklch(0.18 0.06 250)', color: 'oklch(0.72 0.12 75)', fontFamily: "'DM Sans', sans-serif" }}>
+                      {leg.label} — {formatCurrency(leg.propertyValue)}
+                    </div>
+                    <div className="p-4 space-y-1">
+                      {/* Legal fees */}
+                      <div className="flex justify-between text-sm">
+                        <span style={{ color: 'oklch(0.45 0.04 250)', fontFamily: "'DM Sans', sans-serif" }}>Base legal fee</span>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'oklch(0.18 0.06 250)' }}>{formatCurrency(leg.legalFee)}</span>
+                      </div>
+                      {leg.supplements.map(s => (
+                        <div key={s.name} className="flex justify-between text-sm">
+                          <span style={{ color: 'oklch(0.45 0.04 250)', fontFamily: "'DM Sans', sans-serif" }}>{s.name}</span>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'oklch(0.18 0.06 250)' }}>+{formatCurrency(s.price)}</span>
+                        </div>
+                      ))}
+                      <div className="flex justify-between text-sm" style={{ borderTop: '1px solid oklch(0.88 0.015 80)', paddingTop: '4px' }}>
+                        <span style={{ color: 'oklch(0.45 0.04 250)', fontFamily: "'DM Sans', sans-serif" }}>VAT (20%)</span>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'oklch(0.18 0.06 250)' }}>{formatCurrency(leg.vat)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm font-semibold">
+                        <span style={{ color: 'oklch(0.18 0.06 250)', fontFamily: "'DM Sans', sans-serif" }}>Legal fees (inc. VAT)</span>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'oklch(0.18 0.06 250)' }}>{formatCurrency(leg.totalIncVat)}</span>
+                      </div>
+                      {/* Disbursements */}
+                      {leg.disbursements.length > 0 && (
+                        <>
+                          <div className="text-xs font-bold mt-2 uppercase tracking-wide" style={{ color: 'oklch(0.55 0.04 250)', fontFamily: "'DM Sans', sans-serif" }}>Disbursements</div>
+                          {leg.disbursements.map(d => (
+                            <div key={d.name} className="flex justify-between text-sm">
+                              <span style={{ color: 'oklch(0.45 0.04 250)', fontFamily: "'DM Sans', sans-serif" }}>{d.name}</span>
+                              <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'oklch(0.18 0.06 250)' }}>{formatCurrency(d.price)}</span>
+                            </div>
+                          ))}
+                        </>
+                      )}
+                      {/* Government fees */}
+                      {(leg.sdlt > 0 || leg.landRegistryFee > 0) && (
+                        <>
+                          <div className="text-xs font-bold mt-2 uppercase tracking-wide" style={{ color: 'oklch(0.55 0.04 250)', fontFamily: "'DM Sans', sans-serif" }}>Government Fees</div>
+                          {leg.sdlt > 0 && (
+                            <div className="flex justify-between text-sm">
+                              <span style={{ color: 'oklch(0.45 0.04 250)', fontFamily: "'DM Sans', sans-serif" }}>Stamp Duty Land Tax (SDLT)</span>
+                              <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'oklch(0.18 0.06 250)' }}>{formatCurrency(leg.sdlt)}</span>
+                            </div>
+                          )}
+                          {leg.landRegistryFee > 0 && (
+                            <div className="flex justify-between text-sm">
+                              <span style={{ color: 'oklch(0.45 0.04 250)', fontFamily: "'DM Sans', sans-serif" }}>Land Registry Fee</span>
+                              <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'oklch(0.18 0.06 250)' }}>{formatCurrency(leg.landRegistryFee)}</span>
+                            </div>
+                          )}
+                        </>
+                      )}
+                      {/* Leg subtotal */}
+                      <div className="flex justify-between text-sm font-bold pt-1" style={{ borderTop: '1px solid oklch(0.88 0.015 80)' }}>
+                        <span style={{ color: 'oklch(0.18 0.06 250)', fontFamily: "'DM Sans', sans-serif" }}>{leg.label} Subtotal</span>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'oklch(0.72 0.12 75)' }}>{formatCurrency(leg.grandTotal)}</span>
+                      </div>
+                    </div>
                   </div>
                 ))}
-                <div className="flex justify-between text-sm" style={{ borderTop: "1px solid oklch(0.88 0.015 80)", paddingTop: "4px" }}>
-                  <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>VAT (20%)</span>
-                  <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.vat)}</span>
-                </div>
-                <div className="flex justify-between text-sm font-bold">
-                  <span style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Total legal fees (inc. VAT)</span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.totalIncVat)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Disbursements */}
-            <div>
-              <div className="text-xs font-bold mb-2 uppercase tracking-wide" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                Disbursements
-              </div>
-              <div className="space-y-1">
-                {quote.disbursements.map((d) => (
-                  <div key={d.name} className="flex justify-between text-sm">
-                    <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>{d.name}</span>
-                    <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(d.price)}</span>
+                {/* Combined Grand Total */}
+                <div className="rounded-xl overflow-hidden" style={{ background: 'oklch(0.18 0.06 250)' }}>
+                  <div className="flex justify-between items-center px-4 py-3">
+                    <span className="text-sm font-bold" style={{ color: 'white', fontFamily: "'DM Sans', sans-serif" }}>Grand Total (Sale + Purchase)</span>
+                    <span className="text-lg font-bold" style={{ color: 'oklch(0.72 0.12 75)', fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.grandTotal)}</span>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Government Fees */}
-            {(quote.sdlt > 0 || quote.landRegistryFee > 0) && (
-              <div>
-                <div className="text-xs font-bold mb-2 uppercase tracking-wide" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                  Government Fees
                 </div>
-                <div className="space-y-1">
+              </>
+            ) : (
+              <>
+                {/* Single transaction breakdown (purchase / sale / remortgage) */}
+                {/* Legal Fees */}
+                <div>
+                  <div className="text-xs font-bold mb-2 uppercase tracking-wide" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                    Legal Fees
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Base legal fee</span>
+                      <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.legalFee)}</span>
+                    </div>
+                    {quote.supplements.map((s) => (
+                      <div key={s.name} className="flex justify-between text-sm">
+                        <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>{s.name}</span>
+                        <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>+{formatCurrency(s.price)}</span>
+                      </div>
+                    ))}
+                    <div className="flex justify-between text-sm" style={{ borderTop: "1px solid oklch(0.88 0.015 80)", paddingTop: "4px" }}>
+                      <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>VAT (20%)</span>
+                      <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.vat)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-bold">
+                      <span style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Total legal fees (inc. VAT)</span>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.totalIncVat)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Disbursements */}
+                <div>
+                  <div className="text-xs font-bold mb-2 uppercase tracking-wide" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                    Disbursements
+                  </div>
+                  <div className="space-y-1">
+                    {quote.disbursements.map((d) => (
+                      <div key={d.name} className="flex justify-between text-sm">
+                        <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>{d.name}</span>
+                        <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(d.price)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Government Fees */}
+                {(quote.sdlt > 0 || quote.landRegistryFee > 0) && (
+                  <div>
+                    <div className="text-xs font-bold mb-2 uppercase tracking-wide" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                      Government Fees
+                    </div>
+                    <div className="space-y-1">
+                      {quote.sdlt > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Stamp Duty Land Tax (SDLT)</span>
+                          <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.sdlt)}</span>
+                        </div>
+                      )}
+                      {quote.landRegistryFee > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Land Registry Fee</span>
+                          <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.landRegistryFee)}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Grand Total */}
+                <div className="rounded-xl overflow-hidden" style={{ background: "oklch(0.18 0.06 250)" }}>
+                  <div className="flex justify-between items-center px-3 pt-3 pb-2" style={{ borderBottom: "1px solid oklch(0.975 0.008 80 / 0.15)" }}>
+                    <span className="text-sm" style={{ color: "oklch(0.975 0.008 80 / 0.75)", fontFamily: "'DM Sans', sans-serif" }}>Legal Fees Total (inc. VAT + Disbursements)</span>
+                    <span className="text-sm font-semibold" style={{ color: "oklch(0.975 0.008 80 / 0.9)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.totalIncVat + quote.disbursements.reduce((s, d) => s + d.price, 0))}</span>
+                  </div>
                   {quote.sdlt > 0 && (
-                    <div className="flex justify-between text-sm">
-                      <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Stamp Duty Land Tax (SDLT)</span>
-                      <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.sdlt)}</span>
+                    <div className="flex justify-between items-center px-3 py-2" style={{ borderBottom: "1px solid oklch(0.975 0.008 80 / 0.15)" }}>
+                      <span className="text-sm" style={{ color: "oklch(0.975 0.008 80 / 0.75)", fontFamily: "'DM Sans', sans-serif" }}>Stamp Duty Land Tax (SDLT)</span>
+                      <span className="text-sm font-semibold" style={{ color: "oklch(0.975 0.008 80 / 0.9)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.sdlt)}</span>
                     </div>
                   )}
-                  {quote.landRegistryFee > 0 && (
-                    <div className="flex justify-between text-sm">
-                      <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Land Registry Fee</span>
-                      <span className="font-mono-numbers" style={{ fontFamily: "'JetBrains Mono', monospace", color: "oklch(0.18 0.06 250)" }}>{formatCurrency(quote.landRegistryFee)}</span>
-                    </div>
-                  )}
+                  <div className="flex justify-between items-center px-3 pt-2 pb-3">
+                    <span className="text-sm font-bold" style={{ color: "white", fontFamily: "'DM Sans', sans-serif" }}>Grand Total</span>
+                    <span className="text-lg font-bold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.grandTotal)}</span>
+                  </div>
                 </div>
-              </div>
+              </>
             )}
-
-            {/* Grand Total */}
-            <div className="rounded-xl overflow-hidden" style={{ background: "oklch(0.18 0.06 250)" }}>
-              {/* Legal Fees Total row */}
-              <div className="flex justify-between items-center px-3 pt-3 pb-2" style={{ borderBottom: "1px solid oklch(0.975 0.008 80 / 0.15)" }}>
-                <span className="text-sm" style={{ color: "oklch(0.975 0.008 80 / 0.75)", fontFamily: "'DM Sans', sans-serif" }}>Legal Fees Total (inc. VAT + Disbursements)</span>
-                <span className="text-sm font-semibold" style={{ color: "oklch(0.975 0.008 80 / 0.9)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.totalIncVat + quote.disbursements.reduce((s, d) => s + d.price, 0))}</span>
-              </div>
-              {/* SDLT row */}
-              {quote.sdlt > 0 && (
-                <div className="flex justify-between items-center px-3 py-2" style={{ borderBottom: "1px solid oklch(0.975 0.008 80 / 0.15)" }}>
-                  <span className="text-sm" style={{ color: "oklch(0.975 0.008 80 / 0.75)", fontFamily: "'DM Sans', sans-serif" }}>Stamp Duty Land Tax (SDLT)</span>
-                  <span className="text-sm font-semibold" style={{ color: "oklch(0.975 0.008 80 / 0.9)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.sdlt)}</span>
-                </div>
-              )}
-              {/* Grand Total row */}
-              <div className="flex justify-between items-center px-3 pt-2 pb-3">
-                <span className="text-sm font-bold" style={{ color: "white", fontFamily: "'DM Sans', sans-serif" }}>Grand Total</span>
-                <span className="text-lg font-bold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(quote.grandTotal)}</span>
-              </div>
-            </div>
           </div>
         )}
       </div>
@@ -897,6 +991,8 @@ export default function QuoteResults() {
     transactionType: "purchase" | "sale" | "sale_purchase" | "remortgage";
     propertyValue: number;
     tenure: "freehold" | "leasehold";
+    salePropertyValue?: number;
+    saleTenure?: "freehold" | "leasehold";
     hasMortgage: boolean;
     isFirstTimeBuyer: boolean;
     isNewBuild: boolean;
@@ -941,6 +1037,9 @@ export default function QuoteResults() {
       landRegistry: q.landRegistryFee,
       // Grand total
       total: q.grandTotal,
+      // Sale & purchase separate legs (if applicable)
+      purchaseBreakdown: q.purchaseBreakdown,
+      saleBreakdown: q.saleBreakdown,
     }));
     setSnapshotSaved(true);
     saveSnapshot.mutate({
@@ -1001,10 +1100,19 @@ export default function QuoteResults() {
     const effectiveTenure = isSalePurchase
       ? (((parsedAnswers as any).purchaseTenure ?? parsedAnswers.tenure ?? "freehold") as "freehold" | "leasehold")
       : ((parsedAnswers.tenure ?? "freehold") as "freehold" | "leasehold");
+    // For sale_purchase: pass sale price and sale tenure as separate fields
+    const salePropertyValue = isSalePurchase
+      ? ((parsedAnswers as any).salePrice ?? (parsedAnswers as any).salePropertyValue ?? undefined)
+      : undefined;
+    const saleTenure = isSalePurchase
+      ? (((parsedAnswers as any).saleTenure ?? 'freehold') as 'freehold' | 'leasehold')
+      : undefined;
     setQueryInput({
       transactionType: (parsedAnswers.transactionType ?? "purchase") as "purchase" | "sale" | "sale_purchase" | "remortgage",
       propertyValue: effectivePropertyValue,
       tenure: effectiveTenure,
+      salePropertyValue,
+      saleTenure,
       hasMortgage: parsedAnswers.hasMortgage ?? false,
       isFirstTimeBuyer: parsedAnswers.isFirstTimeBuyer ?? false,
       isNewBuild: parsedAnswers.isNewBuild ?? false,

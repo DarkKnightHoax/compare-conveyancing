@@ -71,6 +71,13 @@
       "when": 1774541526947,
       "tag": "0009_shallow_rumiko_fujikawa",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1774613858283,
+      "tag": "0010_thick_bug",
+      "breakpoints": true
     }
   ]
 }
