@@ -91,19 +91,22 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
   const [submitted, setSubmitted] = useState(false);
 
   // Calculate initial payment dynamically
-  // Includes: Search Pack (purchase only) + AML checks + File Opening Fee
+  // For purchase/sale_purchase: Search Pack + AML checks + fixed £150 file opening fee
+  // For sale only: AML checks + file opening fee from DB (no search pack)
   const isSale = transactionType === 'sale';
+  const isPurchaseOrMoving = transactionType === 'purchase' || transactionType === 'sale_purchase';
   const searchPack = firm.disbursements.find(d => d.name.includes('Search Pack'));
   const amlChecks = firm.disbursements.filter(d => d.name.includes('AML') || d.name.includes('Anti-Money'));
   const amlTotal = amlChecks.reduce((sum, d) => sum + d.price, 0);
-  const fileOpeningFee = firm.fileOpeningFee || 0;
+  // Fixed £150 file opening fee for purchase/sale_purchase; use DB value for sale only
+  const PURCHASE_FILE_OPENING_FEE = 150;
+  const fileOpeningFeeForPayment = isSale ? (firm.fileOpeningFee || 0) : (isPurchaseOrMoving ? PURCHASE_FILE_OPENING_FEE : 0);
   const searchPackFee = (!isSale && searchPack) ? searchPack.price : 0;
-  const initialPayment = searchPackFee + amlTotal + fileOpeningFee;
-  // Build breakdown label
+  const initialPayment = searchPackFee + amlTotal + fileOpeningFeeForPayment;
+  // Build breakdown label (file opening shown separately below, not in this label)
   const breakdownParts: string[] = [];
   if (!isSale && searchPack) breakdownParts.push(`Search Pack (${formatCurrency(searchPack.price)})`);
   if (amlTotal > 0) breakdownParts.push('AML checks');
-  if (fileOpeningFee > 0) breakdownParts.push(`File Opening (${formatCurrency(fileOpeningFee)})`);
   const breakdownLabel = breakdownParts.join(' + ');
 
   const propertyAddressLabel = transactionType === 'sale' ? 'Property address being sold' : 'Property address being purchased';
@@ -211,14 +214,26 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
                 <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Grand total</span>
                 <span className="font-semibold font-mono-numbers" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(firm.grandTotal)}</span>
               </div>
-              <div className="flex justify-between text-xs">
+              <div className="flex justify-between text-xs mt-1">
                 <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Initial payment on account</span>
                 <span className="font-semibold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(initialPayment)}</span>
               </div>
               <div className="text-xs mt-1" style={{ color: "oklch(0.65 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
                 {breakdownLabel ? `Includes: ${breakdownLabel}` : 'AML checks included'}
               </div>
-              <div className="text-xs mt-1 italic" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              {/* File opening fee line — purchase/sale_purchase only */}
+              {isPurchaseOrMoving && (
+                <div className="mt-2 pt-2" style={{ borderTop: "1px dashed oklch(0.85 0.015 80)" }}>
+                  <div className="flex justify-between text-xs">
+                    <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>File Opening Fee</span>
+                    <span className="font-semibold" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(PURCHASE_FILE_OPENING_FEE)}</span>
+                  </div>
+                  <div className="text-xs mt-0.5 italic" style={{ color: "oklch(0.60 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                    This fee is non-refundable
+                  </div>
+                </div>
+              )}
+              <div className="text-xs mt-2 italic" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
                 This payment is deducted from the final sum on completion
               </div>
             </div>

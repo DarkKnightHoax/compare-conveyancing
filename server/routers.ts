@@ -441,6 +441,7 @@ export const appRouter = router({
         sharedOwnershipSupplement: z.string().optional(),
         giftedDepositSupplement: z.string().optional(),
         platformCommission: z.string().optional(),
+        fileOpeningFee: z.string().optional(),
         isActive: z.boolean().optional(),
       }))
       .mutation(async ({ input }) => {

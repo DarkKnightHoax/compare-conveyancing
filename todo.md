@@ -364,3 +364,9 @@
 - [x] Results page + saved quote page: separate purchase fee breakdown and sale fee breakdown for sale_purchase transactions (purchaseBreakdown/saleBreakdown added to fee engine)
 - [x] Results page firm card heading: grand total in heading must match the grand total figure (card header now shows grandTotal as the big number)
 - [x] Fee editor: non-Burton firms restructured to 8 fine price bands matching LR fee boundaries (0-80k, 80k-100k, 100k-200k, 200k-300k, 300k-500k, 500k-600k, 600k-1m, 1m+)
+
+## File Opening Fee & Layout Fixes (Mar 2026)
+- [x] Instruct Directly modal (purchase/sale_purchase): fixed £150 file opening fee shown as separate line above "deducted from final sum" note; initial payment = search + AML + £150 file opening
+- [x] File opening fee does NOT appear in full fee breakdown tab on results page
+- [x] SavedQuote page: sale/purchase split layout copied from results page (two leg panels + combined grand total)
+- [x] Admin fee editor: File Opening Fee editable field added per transaction type for each firm (fileOpeningFee column in DB, accepted in upsertFeeStructure router)

@@ -613,6 +613,7 @@ function FeesTab({ initialFirmId }: { initialFirmId: number | null }) {
 
   const feeFields = [
     { key: "legalFee", label: "Legal Fee *" },
+    { key: "fileOpeningFee", label: "File Opening Fee" },
     { key: "searchFee", label: "Search Fee" },
     { key: "landRegistryFee", label: "Land Registry Fee" },
     { key: "electronicTransferFee", label: "Electronic Transfer" },
