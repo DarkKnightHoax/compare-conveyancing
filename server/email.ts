@@ -72,6 +72,49 @@ function infoRow(label: string, value: string | number | undefined | null): stri
 // ─── Fee Breakdown HTML helper ─────────────────────────────────────────────────
 function fmt(n: number) { return '\u00a3' + (n || 0).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
+type LegBreakdownEmail = {
+  label: string;
+  propertyValue: number;
+  legalFee: number;
+  supplements: { name: string; price: number }[];
+  disbursements: { name: string; price: number; includesVat: boolean }[];
+  vat: number;
+  totalIncVat: number;
+  sdlt: number;
+  landRegistryFee: number;
+  grandTotal: number;
+};
+
+function buildLegHtml(leg: LegBreakdownEmail, bgColor: string): string {
+  const supplementRows = (leg.supplements || []).map(s =>
+    `<tr><td style="padding:4px 0;font-size:13px;color:#555;">+ ${s.name}</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(s.price)}</td></tr>`
+  ).join('');
+  const disbRows = (leg.disbursements || []).map(d =>
+    `<tr><td style="padding:4px 0;font-size:13px;color:#555;">${d.name}</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(d.price)}</td></tr>`
+  ).join('');
+  const disbTotal = (leg.disbursements || []).reduce((s, d) => s + d.price, 0);
+  return `
+  <div style="background:${bgColor};border-radius:8px;padding:12px 14px;margin-bottom:10px;">
+    <div style="font-size:12px;font-weight:700;color:#0f1f3d;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">${leg.label} — Property Value: ${fmt(leg.propertyValue)}</div>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      <tr><td colspan="2" style="padding:4px 0 2px;font-size:11px;font-weight:700;color:#0f1f3d;text-transform:uppercase;letter-spacing:0.5px;">Legal Fees</td></tr>
+      <tr><td style="padding:4px 0;font-size:13px;color:#555;">Base legal fee</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(leg.legalFee)}</td></tr>
+      ${supplementRows}
+      <tr><td style="padding:4px 0;font-size:13px;color:#555;">VAT (20%)</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(leg.vat)}</td></tr>
+      <tr style="border-top:1px solid #ddd;"><td style="padding:6px 0 4px;font-size:13px;font-weight:700;color:#0f1f3d;">Total legal fees (inc. VAT)</td><td style="padding:6px 0 4px;font-size:13px;font-weight:700;color:#0f1f3d;text-align:right;">${fmt(leg.totalIncVat)}</td></tr>
+      ${disbRows.length ? `
+      <tr><td colspan="2" style="padding:10px 0 2px;font-size:11px;font-weight:700;color:#0f1f3d;text-transform:uppercase;letter-spacing:0.5px;">Disbursements</td></tr>
+      ${disbRows}
+      <tr style="border-top:1px solid #ddd;"><td style="padding:6px 0 4px;font-size:13px;font-weight:700;color:#0f1f3d;">Legal Fees + Disbursements</td><td style="padding:6px 0 4px;font-size:13px;font-weight:700;color:#0f1f3d;text-align:right;">${fmt(leg.totalIncVat + disbTotal)}</td></tr>` : ''}
+      ${leg.sdlt > 0 ? `
+      <tr><td colspan="2" style="padding:10px 0 2px;font-size:11px;font-weight:700;color:#0f1f3d;text-transform:uppercase;letter-spacing:0.5px;">Government Fees</td></tr>
+      <tr><td style="padding:4px 0;font-size:13px;color:#555;">Stamp Duty Land Tax (SDLT)</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(leg.sdlt)}</td></tr>
+      <tr><td style="padding:4px 0;font-size:13px;color:#555;">Land Registry Fee</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(leg.landRegistryFee)}</td></tr>` : ''}
+      <tr style="border-top:1px solid #ddd;"><td style="padding:6px 0 4px;font-size:13px;font-weight:700;color:#0f1f3d;">Leg Grand Total</td><td style="padding:6px 0 4px;font-size:14px;font-weight:700;color:#c9a84c;text-align:right;">${fmt(leg.grandTotal)}</td></tr>
+    </table>
+  </div>`;
+}
+
 function buildFeeBreakdownHtml(snapshotJson: string): string {
   try {
     const quotes: Array<{
@@ -84,33 +127,38 @@ function buildFeeBreakdownHtml(snapshotJson: string): string {
       totalIncVat: number;
       disbursements?: { name: string; price: number; includesVat?: boolean }[];
       sdlt: number;
-      landRegistry: number;
+      landRegistry?: number;
+      landRegistryFee?: number;
       total: number;
+      purchaseBreakdown?: LegBreakdownEmail;
+      saleBreakdown?: LegBreakdownEmail;
     }> = JSON.parse(snapshotJson);
     if (!Array.isArray(quotes) || quotes.length === 0) return "";
 
     const firmCards = quotes.map((q, idx) => {
       const isFirst = idx === 0;
-      const disbTotal = (q.disbursements || []).reduce((s, d) => s + d.price, 0);
+      const lrFee = q.landRegistryFee ?? q.landRegistry ?? 0;
 
-      const supplementRows = (q.supplements || []).map(s =>
-        `<tr><td style="padding:4px 0;font-size:13px;color:#555;">+ ${s.name}</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(s.price)}</td></tr>`
-      ).join('');
+      // For sale_purchase: show two leg panels
+      const hasTwoLegs = q.purchaseBreakdown && q.saleBreakdown;
+      let feeSectionHtml = '';
 
-      const disbRows = (q.disbursements || []).map(d =>
-        `<tr><td style="padding:4px 0;font-size:13px;color:#555;">${d.name}</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(d.price)}</td></tr>`
-      ).join('');
-
-      return `
-      <div style="margin-bottom:20px;border:${isFirst ? '2px solid #c9a84c' : '1px solid #e8e3d8'};border-radius:10px;overflow:hidden;">
-        <div style="background:${isFirst ? '#0f1f3d' : '#f8f6f1'};padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <span style="font-size:15px;font-weight:700;color:${isFirst ? '#ffffff' : '#0f1f3d'};">${q.firmName}</span>
-            ${q.firmLocation ? `<span style="font-size:12px;color:${isFirst ? '#c9a84c' : '#888'};margin-left:8px;">${q.firmLocation}</span>` : ''}
-          </div>
-          ${isFirst ? '<span style="background:#c9a84c;color:#0f1f3d;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">BEST VALUE</span>' : ''}
-        </div>
-        <div style="padding:14px 16px;">
+      if (hasTwoLegs && q.purchaseBreakdown && q.saleBreakdown) {
+        feeSectionHtml = `
+          ${buildLegHtml(q.purchaseBreakdown, '#f0f4ff')}
+          ${buildLegHtml(q.saleBreakdown, '#f4f8f0')}
+          <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-top:4px;">
+            <tr style="background:#0f1f3d;"><td style="padding:10px 12px;font-size:14px;font-weight:700;color:#ffffff;border-radius:0 0 0 6px;">Combined Grand Total</td><td style="padding:10px 12px;font-size:16px;font-weight:700;color:#c9a84c;text-align:right;border-radius:0 0 6px 0;">${fmt(q.total)}</td></tr>
+          </table>`;
+      } else {
+        const disbTotal = (q.disbursements || []).reduce((s, d) => s + d.price, 0);
+        const supplementRows = (q.supplements || []).map(s =>
+          `<tr><td style="padding:4px 0;font-size:13px;color:#555;">+ ${s.name}</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(s.price)}</td></tr>`
+        ).join('');
+        const disbRows = (q.disbursements || []).map(d =>
+          `<tr><td style="padding:4px 0;font-size:13px;color:#555;">${d.name}</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(d.price)}</td></tr>`
+        ).join('');
+        feeSectionHtml = `
           <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
             <tr><td colspan="2" style="padding:4px 0 2px;font-size:11px;font-weight:700;color:#0f1f3d;text-transform:uppercase;letter-spacing:0.5px;">Legal Fees</td></tr>
             <tr><td style="padding:4px 0;font-size:13px;color:#555;">Base legal fee</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(q.legalFee)}</td></tr>
@@ -124,9 +172,20 @@ function buildFeeBreakdownHtml(snapshotJson: string): string {
             ${q.sdlt > 0 ? `
             <tr><td colspan="2" style="padding:10px 0 2px;font-size:11px;font-weight:700;color:#0f1f3d;text-transform:uppercase;letter-spacing:0.5px;">Government Fees</td></tr>
             <tr><td style="padding:4px 0;font-size:13px;color:#555;">Stamp Duty Land Tax (SDLT)</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(q.sdlt)}</td></tr>
-            <tr><td style="padding:4px 0;font-size:13px;color:#555;">Land Registry Fee</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(q.landRegistry)}</td></tr>` : ''}
+            <tr><td style="padding:4px 0;font-size:13px;color:#555;">Land Registry Fee</td><td style="padding:4px 0;font-size:13px;color:#555;text-align:right;">${fmt(lrFee)}</td></tr>` : ''}
             <tr style="background:#0f1f3d;"><td style="padding:10px 12px;font-size:14px;font-weight:700;color:#ffffff;border-radius:0 0 0 6px;">Grand Total</td><td style="padding:10px 12px;font-size:16px;font-weight:700;color:#c9a84c;text-align:right;border-radius:0 0 6px 0;">${fmt(q.total)}</td></tr>
-          </table>
+          </table>`;
+      }
+
+      return `
+      <div style="margin-bottom:20px;border:${isFirst ? '2px solid #c9a84c' : '1px solid #e8e3d8'};border-radius:10px;overflow:hidden;">
+        <div style="background:${isFirst ? '#0f1f3d' : '#f8f6f1'};padding:12px 16px;">
+          <span style="font-size:15px;font-weight:700;color:${isFirst ? '#ffffff' : '#0f1f3d'};">${q.firmName}</span>
+          ${q.firmLocation ? `<span style="font-size:12px;color:${isFirst ? '#c9a84c' : '#888'};margin-left:8px;">${q.firmLocation}</span>` : ''}
+          ${isFirst ? '<span style="background:#c9a84c;color:#0f1f3d;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:8px;">BEST VALUE</span>' : ''}
+        </div>
+        <div style="padding:14px 16px;">
+          ${feeSectionHtml}
         </div>
       </div>`;
     }).join('');

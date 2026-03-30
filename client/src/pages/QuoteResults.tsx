@@ -89,27 +89,29 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
   transactionType: string;
 }) {
   const [submitted, setSubmitted] = useState(false);
+  const [applicantCount, setApplicantCount] = useState(1);
 
-  // Calculate initial payment dynamically
-  // For purchase/sale_purchase: Search Pack + AML checks + fixed £150 file opening fee
-  // For sale only: AML checks + file opening fee from DB (no search pack)
+  // Fixed fees across all firms and price bands
+  const AML_FEE = 49;
+  const FILE_OPENING_FEE = 150;
+  const SEARCH_PACK_FEE = 399;
+
   const isSale = transactionType === 'sale';
-  const isPurchaseOrMoving = transactionType === 'purchase' || transactionType === 'sale_purchase';
-  const searchPack = firm.disbursements.find(d => d.name.includes('Search Pack'));
-  const amlChecks = firm.disbursements.filter(d => d.name.includes('AML') || d.name.includes('Anti-Money'));
-  const amlTotal = amlChecks.reduce((sum, d) => sum + d.price, 0);
-  // Fixed £150 file opening fee for purchase/sale_purchase; use DB value for sale only
-  const PURCHASE_FILE_OPENING_FEE = 150;
-  const fileOpeningFeeForPayment = isSale ? (firm.fileOpeningFee || 0) : (isPurchaseOrMoving ? PURCHASE_FILE_OPENING_FEE : 0);
-  const searchPackFee = (!isSale && searchPack) ? searchPack.price : 0;
-  const initialPayment = searchPackFee + amlTotal + fileOpeningFeeForPayment;
-  // Build breakdown label (file opening shown separately below, not in this label)
-  const breakdownParts: string[] = [];
-  if (!isSale && searchPack) breakdownParts.push(`Search Pack (${formatCurrency(searchPack.price)})`);
-  if (amlTotal > 0) breakdownParts.push('AML checks');
-  const breakdownLabel = breakdownParts.join(' + ');
+  const isSalePurchase = transactionType === 'sale_purchase';
+  const isPurchase = transactionType === 'purchase';
 
-  const propertyAddressLabel = transactionType === 'sale' ? 'Property address being sold' : 'Property address being purchased';
+  // Purchase leg: Search Pack + AML + File Opening = £598
+  const purchaseInitialPayment = SEARCH_PACK_FEE + AML_FEE + FILE_OPENING_FEE;
+  // Sale leg: AML + File Opening = £199
+  const saleInitialPayment = AML_FEE + FILE_OPENING_FEE;
+  // Combined for sale_purchase
+  const initialPayment = isSalePurchase
+    ? purchaseInitialPayment + saleInitialPayment
+    : isSale
+      ? saleInitialPayment
+      : purchaseInitialPayment;
+
+  const propertyAddressLabel = isSale ? 'Property address being sold' : 'Property address being purchased';
 
   const [form, setForm] = useState({
     firstName: contactDetails.firstName || "",
@@ -210,32 +212,100 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             {/* Fee summary */}
             <div className="rounded-xl p-4" style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.88 0.015 80)" }}>
-              <div className="flex justify-between text-sm mb-1">
+              <div className="flex justify-between text-sm mb-2">
                 <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Grand total</span>
                 <span className="font-semibold font-mono-numbers" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(firm.grandTotal)}</span>
               </div>
-              <div className="flex justify-between text-xs mt-1">
-                <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Initial payment on account</span>
-                <span className="font-semibold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(initialPayment)}</span>
-              </div>
-              <div className="text-xs mt-1" style={{ color: "oklch(0.65 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                {breakdownLabel ? `Includes: ${breakdownLabel}` : 'AML checks included'}
-              </div>
-              {/* File opening fee line — purchase/sale_purchase only */}
-              {isPurchaseOrMoving && (
-                <div className="mt-2 pt-2" style={{ borderTop: "1px dashed oklch(0.85 0.015 80)" }}>
-                  <div className="flex justify-between text-xs">
-                    <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>File Opening Fee</span>
-                    <span className="font-semibold" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(PURCHASE_FILE_OPENING_FEE)}</span>
+
+              {/* For sale_purchase: show purchase leg and sale leg separately */}
+              {isSalePurchase ? (
+                <>
+                  <div className="rounded-lg p-3 mb-2" style={{ background: "oklch(0.96 0.01 250 / 0.5)", border: "1px solid oklch(0.85 0.015 80)" }}>
+                    <div className="text-xs font-semibold mb-1.5" style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Purchase initial payment</div>
+                    <div className="flex justify-between text-xs mb-0.5">
+                      <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Search Pack (Local, Drainage & Environmental)</span>
+                      <span style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(SEARCH_PACK_FEE)}</span>
+                    </div>
+                    <div className="flex justify-between text-xs mb-0.5">
+                      <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>AML checks</span>
+                      <span style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(AML_FEE)}</span>
+                    </div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>File Opening Fee <span className="italic">(non-refundable)</span></span>
+                      <span style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(FILE_OPENING_FEE)}</span>
+                    </div>
+                    <div className="flex justify-between text-xs font-semibold" style={{ borderTop: "1px solid oklch(0.85 0.015 80)", paddingTop: "0.375rem" }}>
+                      <span style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Purchase subtotal</span>
+                      <span style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(purchaseInitialPayment)}</span>
+                    </div>
                   </div>
-                  <div className="text-xs mt-0.5 italic" style={{ color: "oklch(0.60 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                    This fee is non-refundable
+                  <div className="rounded-lg p-3 mb-2" style={{ background: "oklch(0.96 0.01 80 / 0.5)", border: "1px solid oklch(0.85 0.015 80)" }}>
+                    <div className="text-xs font-semibold mb-1.5" style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Sale initial payment</div>
+                    <div className="flex justify-between text-xs mb-0.5">
+                      <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>AML checks</span>
+                      <span style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(AML_FEE)}</span>
+                    </div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>File Opening Fee <span className="italic">(non-refundable)</span></span>
+                      <span style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(FILE_OPENING_FEE)}</span>
+                    </div>
+                    <div className="flex justify-between text-xs font-semibold" style={{ borderTop: "1px solid oklch(0.85 0.015 80)", paddingTop: "0.375rem" }}>
+                      <span style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Sale subtotal</span>
+                      <span style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(saleInitialPayment)}</span>
+                    </div>
                   </div>
-                </div>
+                  <div className="flex justify-between text-sm font-bold mt-1 pt-2" style={{ borderTop: "2px solid oklch(0.72 0.12 75)" }}>
+                    <span style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Total initial payment on account</span>
+                    <span style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(initialPayment)}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between text-xs mt-1">
+                    <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Initial payment on account</span>
+                    <span className="font-semibold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(initialPayment)}</span>
+                  </div>
+                  <div className="text-xs mt-1" style={{ color: "oklch(0.65 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                    {isPurchase ? `Includes: Search Pack + AML + File Opening` : `Includes: AML + File Opening`}
+                  </div>
+                  {!isSale && (
+                    <div className="mt-2 pt-2" style={{ borderTop: "1px dashed oklch(0.85 0.015 80)" }}>
+                      <div className="flex justify-between text-xs">
+                        <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>File Opening Fee <span className="italic">(non-refundable)</span></span>
+                        <span className="font-semibold" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(FILE_OPENING_FEE)}</span>
+                      </div>
+                    </div>
+                  )}
+                  {isSale && (
+                    <div className="mt-2 pt-2" style={{ borderTop: "1px dashed oklch(0.85 0.015 80)" }}>
+                      <div className="flex justify-between text-xs">
+                        <span style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>File Opening Fee <span className="italic">(non-refundable)</span></span>
+                        <span className="font-semibold" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(FILE_OPENING_FEE)}</span>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
               <div className="text-xs mt-2 italic" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
                 This payment is deducted from the final sum on completion
               </div>
+            </div>
+
+            {/* Applicant count dropdown */}
+            <div>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Number of applicants</label>
+              <select
+                value={applicantCount}
+                onChange={(e) => setApplicantCount(Number(e.target.value))}
+                className="w-full px-3 py-2.5 rounded-lg text-sm border-2 outline-none"
+                style={{ fontFamily: "'DM Sans', sans-serif", borderColor: "oklch(0.88 0.015 80)", color: "oklch(0.18 0.06 250)", background: "white" }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "oklch(0.72 0.12 75)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "oklch(0.88 0.015 80)")}
+              >
+                {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
+                  <option key={n} value={n}>{n} applicant{n > 1 ? 's' : ''}</option>
+                ))}
+              </select>
             </div>
 
             <div className="grid grid-cols-2 gap-3">

@@ -370,3 +370,9 @@
 - [x] File opening fee does NOT appear in full fee breakdown tab on results page
 - [x] SavedQuote page: sale/purchase split layout copied from results page (two leg panels + combined grand total)
 - [x] Admin fee editor: File Opening Fee editable field added per transaction type for each firm (fileOpeningFee column in DB, accepted in upsertFeeStructure router)
+
+## Instruct Modal & Email Fixes (Mar 2026)
+- [x] Instruct Directly modal (sale_purchase): shows separate purchase initial payment (search £399 + AML £49 + file opening £150 = £598) and sale initial payment (AML £49 + file opening £150 = £199), with combined total
+- [x] Instruct Directly modal: AML always £49 flat, file opening always £150 flat across all firms and transaction types
+- [x] Instruct Directly modal: applicant count dropdown (1–10) added above first name/surname fields
+- [x] Quote emails (customer + info@): buildFeeBreakdownHtml updated to show two-leg purchase/sale split layout for sale_purchase transactions, matching results page
