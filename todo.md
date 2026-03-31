@@ -376,3 +376,6 @@
 - [x] Instruct Directly modal: AML always £49 flat, file opening always £150 flat across all firms and transaction types
 - [x] Instruct Directly modal: applicant count dropdown (1–10) added above first name/surname fields
 - [x] Quote emails (customer + info@): buildFeeBreakdownHtml updated to show two-leg purchase/sale split layout for sale_purchase transactions, matching results page
+
+## AML Fee Fix (Mar 2026)
+- [x] Fix AML fee to flat £49 per person across ALL firms and ALL transaction types (purchase, sale, sale_purchase) — TQ Law had £30 for some bands, now all 16 firm/type combinations show £49

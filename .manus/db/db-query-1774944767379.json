@@ -1,0 +1,710 @@
+{
+  "query": "SELECT f.name, fs.transactionType, fs.minValue, fs.maxValue, fs.antiMoneyLaunderingFee FROM firm_fee_structures fs JOIN law_firms f ON f.id = fs.firmId ORDER BY f.name, fs.transactionType, fs.minValue LIMIT 100;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT f.name, fs.transactionType, fs.minValue, fs.maxValue, fs.antiMoneyLaunderingFee FROM firm_fee_structures fs JOIN law_firms f ON f.id = fs.firmId ORDER BY f.name, fs.transactionType, fs.minValue LIMIT 100;",
+  "rows": [
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "80000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale",
+      "minValue": "0",
+      "maxValue": "300000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale",
+      "minValue": "300001",
+      "maxValue": "600000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale",
+      "minValue": "600001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "minValue": "0",
+      "maxValue": "80000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "remortgage",
+      "minValue": "0",
+      "maxValue": "250000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "remortgage",
+      "minValue": "250001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "remortgage",
+      "minValue": "500001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "80000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "minValue": "0",
+      "maxValue": "80000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale_purchase",
+      "minValue": "0",
+      "maxValue": "80000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale_purchase",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale_purchase",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale_purchase",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale_purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale_purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "remortgage",
+      "minValue": "0",
+      "maxValue": "250000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "remortgage",
+      "minValue": "250001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "remortgage",
+      "minValue": "500001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "80000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "minValue": "0",
+      "maxValue": "80000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale_purchase",
+      "minValue": "0",
+      "maxValue": "80000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale_purchase",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale_purchase",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale_purchase",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale_purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale_purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "remortgage",
+      "minValue": "0",
+      "maxValue": "250000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "remortgage",
+      "minValue": "250001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "remortgage",
+      "minValue": "500001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "minValue": "0",
+      "maxValue": "80000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "30.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "antiMoneyLaunderingFee": "30.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "minValue": "0",
+      "maxValue": "80000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "49.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "minValue": "0",
+      "maxValue": "80000",
+      "antiMoneyLaunderingFee": "30.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "minValue": "80001",
+      "maxValue": "100000",
+      "antiMoneyLaunderingFee": "30.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "minValue": "100001",
+      "maxValue": "200000",
+      "antiMoneyLaunderingFee": "30.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "minValue": "200001",
+      "maxValue": "300000",
+      "antiMoneyLaunderingFee": "30.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "minValue": "300001",
+      "maxValue": "500000",
+      "antiMoneyLaunderingFee": "30.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "minValue": "500001",
+      "maxValue": "600000",
+      "antiMoneyLaunderingFee": "30.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "minValue": "600001",
+      "maxValue": "1000000",
+      "antiMoneyLaunderingFee": "30.00"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "minValue": "1000001",
+      "maxValue": "9999999",
+      "antiMoneyLaunderingFee": "30.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "name\ttransactionType\tminValue\tmaxValue\tantiMoneyLaunderingFee\nBurtons Solicitors\tpurchase\t0\t80000\t49.00\nBurtons Solicitors\tpurchase\t80001\t100000\t49.00\nBurtons Solicitors\tpurchase\t100001\t200000\t49.00\nBurtons Solicitors\tpurchase\t200001\t300000\t49.00\nBurtons Solicitors\tpurchase\t300001\t500000\t49.00\nBurtons Solicitors\tpurchase\t500001\t600000\t49.00\nBurtons Solicitors\tpurchase\t600001\t1000000\t49.00\nBurtons Solicitors\tpurchase\t1000001\t9999999\t49.00\nBurtons Solicitors\tsale\t0\t300000\t49.00\nBurtons Solicitors\tsale\t300001\t600000\t49.00\nBurtons Solicitors\tsale\t600001\t9999999\t49.00\nBurtons Solicitors\tsale_purchase\t0\t80000\t49.00\nBurtons Solicitors\tsale_purchase\t80001\t100000\t49.00\nBurtons Solicitors\tsale_purchase\t100001\t200000\t49.00\nBurtons Solicitors\tsale_purchase\t200001\t300000\t49.00\nBurtons Solicitors\tsale_purchase\t300001\t500000\t49.00\nBurtons Solicitors\tsale_purchase\t500001\t600000\t49.00\nBurtons Solicitors\tsale_purchase\t600001\t1000000\t49.00\nBurtons Solicitors\tsale_purchase\t1000001\t9999999\t49.00\nBurtons Solicitors\tremortgage\t0\t250000\t49.00\nBurtons Solicitors\tremortgage\t250001\t500000\t49.00\nBurtons Solicitors\tremortgage\t500001\t9999999\t49.00\nEasy Choice Conveyancing\tpurchase\t0\t80000\t49.00\nEasy Choice Conveyancing\tpurchase\t80001\t100000\t49.00\nEasy Choice Conveyancing\tpurchase\t100001\t200000\t49.00\nEasy Choice Conveyancing\tpurchase\t200001\t300000\t49.00\nEasy Choice Conveyancing\tpurchase\t300001\t500000\t49.00\nEasy Choice Conveyancing\tpurchase\t500001\t600000\t49.00\nEasy Choice Conveyancing\tpurchase\t600001\t1000000\t49.00\nEasy Choice Conveyancing\tpurchase\t1000001\t9999999\t49.00\nEasy Choice Conveyancing\tsale\t0\t80000\t49.00\nEasy Choice Conveyancing\tsale\t80001\t100000\t49.00\nEasy Choice Conveyancing\tsale\t100001\t200000\t49.00\nEasy Choice Conveyancing\tsale\t200001\t300000\t49.00\nEasy Choice Conveyancing\tsale\t300001\t500000\t49.00\nEasy Choice Conveyancing\tsale\t500001\t600000\t49.00\nEasy Choice Conveyancing\tsale\t600001\t1000000\t49.00\nEasy Choice Conveyancing\tsale\t1000001\t9999999\t49.00\nEasy Choice Conveyancing\tsale_purchase\t0\t80000\t49.00\nEasy Choice Conveyancing\tsale_purchase\t80001\t100000\t49.00\nEasy Choice Conveyancing\tsale_purchase\t100001\t200000\t49.00\nEasy Choice Conveyancing\tsale_purchase\t200001\t300000\t49.00\nEasy Choice Conveyancing\tsale_purchase\t300001\t500000\t49.00\nEasy Choice Conveyancing\tsale_purchase\t500001\t600000\t49.00\nEasy Choice Conveyancing\tsale_purchase\t600001\t1000000\t49.00\nEasy Choice Conveyancing\tsale_purchase\t1000001\t9999999\t49.00\nEasy Choice Conveyancing\tremortgage\t0\t250000\t49.00\nEasy Choice Conveyancing\tremortgage\t250001\t500000\t49.00\nEasy Choice Conveyancing\tremortgage\t500001\t9999999\t49.00\nPCS Legal\tpurchase\t0\t80000\t49.00\nPCS Legal\tpurchase\t80001\t100000\t49.00\nPCS Legal\tpurchase\t100001\t200000\t49.00\nPCS Legal\tpurchase\t200001\t300000\t49.00\nPCS Legal\tpurchase\t300001\t500000\t49.00\nPCS Legal\tpurchase\t500001\t600000\t49.00\nPCS Legal\tpurchase\t600001\t1000000\t49.00\nPCS Legal\tpurchase\t1000001\t9999999\t49.00\nPCS Legal\tsale\t0\t80000\t49.00\nPCS Legal\tsale\t80001\t100000\t49.00\nPCS Legal\tsale\t100001\t200000\t49.00\nPCS Legal\tsale\t200001\t300000\t49.00\nPCS Legal\tsale\t300001\t500000\t49.00\nPCS Legal\tsale\t500001\t600000\t49.00\nPCS Legal\tsale\t600001\t1000000\t49.00\nPCS Legal\tsale\t1000001\t9999999\t49.00\nPCS Legal\tsale_purchase\t0\t80000\t49.00\nPCS Legal\tsale_purchase\t80001\t100000\t49.00\nPCS Legal\tsale_purchase\t100001\t200000\t49.00\nPCS Legal\tsale_purchase\t200001\t300000\t49.00\nPCS Legal\tsale_purchase\t300001\t500000\t49.00\nPCS Legal\tsale_purchase\t500001\t600000\t49.00\nPCS Legal\tsale_purchase\t600001\t1000000\t49.00\nPCS Legal\tsale_purchase\t1000001\t9999999\t49.00\nPCS Legal\tremortgage\t0\t250000\t49.00\nPCS Legal\tremortgage\t250001\t500000\t49.00\nPCS Legal\tremortgage\t500001\t9999999\t49.00\nTQ Law\tpurchase\t0\t80000\t49.00\nTQ Law\tpurchase\t80001\t100000\t49.00\nTQ Law\tpurchase\t100001\t200000\t49.00\nTQ Law\tpurchase\t200001\t300000\t49.00\nTQ Law\tpurchase\t300001\t500000\t30.00\nTQ Law\tpurchase\t500001\t600000\t30.00\nTQ Law\tpurchase\t600001\t1000000\t49.00\nTQ Law\tpurchase\t1000001\t9999999\t49.00\nTQ Law\tsale\t0\t80000\t49.00\nTQ Law\tsale\t80001\t100000\t49.00\nTQ Law\tsale\t100001\t200000\t49.00\nTQ Law\tsale\t200001\t300000\t49.00\nTQ Law\tsale\t300001\t500000\t49.00\nTQ Law\tsale\t500001\t600000\t49.00\nTQ Law\tsale\t600001\t1000000\t49.00\nTQ Law\tsale\t1000001\t9999999\t49.00\nTQ Law\tsale_purchase\t0\t80000\t30.00\nTQ Law\tsale_purchase\t80001\t100000\t30.00\nTQ Law\tsale_purchase\t100001\t200000\t30.00\nTQ Law\tsale_purchase\t200001\t300000\t30.00\nTQ Law\tsale_purchase\t300001\t500000\t30.00\nTQ Law\tsale_purchase\t500001\t600000\t30.00\nTQ Law\tsale_purchase\t600001\t1000000\t30.00\nTQ Law\tsale_purchase\t1000001\t9999999\t30.00\n",
+  "stderr": "",
+  "execution_time_ms": 69
+}

@@ -1,0 +1,106 @@
+{
+  "query": "SELECT f.name, fs.transactionType, fs.antiMoneyLaunderingFee, COUNT(*) as bands FROM firm_fee_structures fs JOIN law_firms f ON f.id = fs.firmId GROUP BY f.name, fs.transactionType, fs.antiMoneyLaunderingFee ORDER BY f.name, fs.transactionType;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT f.name, fs.transactionType, fs.antiMoneyLaunderingFee, COUNT(*) as bands FROM firm_fee_structures fs JOIN law_firms f ON f.id = fs.firmId GROUP BY f.name, fs.transactionType, fs.antiMoneyLaunderingFee ORDER BY f.name, fs.transactionType;",
+  "rows": [
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "purchase",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "8"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "3"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "sale_purchase",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "8"
+    },
+    {
+      "name": "Burtons Solicitors",
+      "transactionType": "remortgage",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "3"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "purchase",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "8"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "8"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "sale_purchase",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "8"
+    },
+    {
+      "name": "Easy Choice Conveyancing",
+      "transactionType": "remortgage",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "3"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "purchase",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "8"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "8"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "sale_purchase",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "8"
+    },
+    {
+      "name": "PCS Legal",
+      "transactionType": "remortgage",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "3"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "purchase",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "8"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "8"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "sale_purchase",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "8"
+    },
+    {
+      "name": "TQ Law",
+      "transactionType": "remortgage",
+      "antiMoneyLaunderingFee": "49.00",
+      "bands": "3"
+    }
+  ],
+  "messages": [],
+  "stdout": "name\ttransactionType\tantiMoneyLaunderingFee\tbands\nBurtons Solicitors\tpurchase\t49.00\t8\nBurtons Solicitors\tsale\t49.00\t3\nBurtons Solicitors\tsale_purchase\t49.00\t8\nBurtons Solicitors\tremortgage\t49.00\t3\nEasy Choice Conveyancing\tpurchase\t49.00\t8\nEasy Choice Conveyancing\tsale\t49.00\t8\nEasy Choice Conveyancing\tsale_purchase\t49.00\t8\nEasy Choice Conveyancing\tremortgage\t49.00\t3\nPCS Legal\tpurchase\t49.00\t8\nPCS Legal\tsale\t49.00\t8\nPCS Legal\tsale_purchase\t49.00\t8\nPCS Legal\tremortgage\t49.00\t3\nTQ Law\tpurchase\t49.00\t8\nTQ Law\tsale\t49.00\t8\nTQ Law\tsale_purchase\t49.00\t8\nTQ Law\tremortgage\t49.00\t3\n",
+  "stderr": "",
+  "execution_time_ms": 213
+}

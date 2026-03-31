@@ -1,0 +1,186 @@
+{
+  "query": "DESCRIBE firm_fee_structures;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute DESCRIBE firm_fee_structures;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "firmId",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "transactionType",
+      "Type": "enum('purchase','sale','sale_purchase','remortgage')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "minValue",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "maxValue",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "",
+      "Default": "9999999",
+      "Extra": ""
+    },
+    {
+      "Field": "legalFee",
+      "Type": "decimal(10,2)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "searchFee",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "landRegistryFee",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "electronicTransferFee",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "30",
+      "Extra": ""
+    },
+    {
+      "Field": "bankTransferFee",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "antiMoneyLaunderingFee",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "6",
+      "Extra": ""
+    },
+    {
+      "Field": "officialCopiesFee",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "leaseholdSupplement",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "newBuildSupplement",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "sharedOwnershipSupplement",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "giftedDepositSupplement",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "platformCommission",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "isActive",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "1",
+      "Extra": ""
+    },
+    {
+      "Field": "createdAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "updatedAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    },
+    {
+      "Field": "logoUrl",
+      "Type": "varchar(1000)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "fileOpeningFee",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint\tNO\tPRI\tNULL\tauto_increment\nfirmId\tint\tNO\t\tNULL\t\ntransactionType\tenum('purchase','sale','sale_purchase','remortgage')\tNO\t\tNULL\t\nminValue\tint\tNO\t\t0\t\nmaxValue\tint\tNO\t\t9999999\t\nlegalFee\tdecimal(10,2)\tNO\t\t0\t\nsearchFee\tdecimal(10,2)\tYES\t\t0\t\nlandRegistryFee\tdecimal(10,2)\tYES\t\t0\t\nelectronicTransferFee\tdecimal(10,2)\tYES\t\t30\t\nbankTransferFee\tdecimal(10,2)\tYES\t\t0\t\nantiMoneyLaunderingFee\tdecimal(10,2)\tYES\t\t6\t\nofficialCopiesFee\tdecimal(10,2)\tYES\t\t0\t\nleaseholdSupplement\tdecimal(10,2)\tYES\t\t0\t\nnewBuildSupplement\tdecimal(10,2)\tYES\t\t0\t\nsharedOwnershipSupplement\tdecimal(10,2)\tYES\t\t0\t\ngiftedDepositSupplement\tdecimal(10,2)\tYES\t\t0\t\nplatformCommission\tdecimal(10,2)\tYES\t\t0\t\nisActive\ttinyint(1)\tNO\t\t1\t\ncreatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\nupdatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\nlogoUrl\tvarchar(1000)\tYES\t\tNULL\t\nfileOpeningFee\tdecimal(10,2)\tYES\t\t0\t\n",
+  "stderr": "",
+  "execution_time_ms": 163
+}

@@ -1,0 +1,8 @@
+{
+  "query": "SELECT f.name, fs.transactionType, fs.propertyValueMin, fs.propertyValueMax, fs.antiMoneyLaunderingFee FROM firm_fee_structures fs JOIN law_firms f ON f.id = fs.firmId ORDER BY f.name, fs.transactionType, fs.propertyValueMin LIMIT 100;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute SELECT f.name, fs.transactionType, fs.propertyValueMin, fs.propertyValueMax, fs.antiMoneyLaunderingFee FROM firm_fee_structures fs JOIN law_firms f ON f.id = fs.firmId ORDER BY f.name, fs.transactionType, fs.propertyValueMin LIMIT 100;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'fs.propertyValueMin' in 'order clause'"
+  ]
+}
