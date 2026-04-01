@@ -131,6 +131,7 @@ export const instructRequests = mysqlTable("instruct_requests", {
   lastName: varchar("lastName", { length: 100 }).notNull(),
   email: varchar("email", { length: 320 }).notNull(),
   phone: varchar("phone", { length: 50 }).notNull(),
+  applicantCount: int("applicantCount").default(1),
   dateOfBirth: varchar("dateOfBirth", { length: 20 }),
   currentAddress: text("currentAddress"),
   propertyAddress: text("propertyAddress"),

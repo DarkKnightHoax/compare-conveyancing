@@ -390,6 +390,13 @@ function CallbacksTab() {
 function InstructionsTab() {
   const { data: instructions, refetch } = trpc.instruct.list.useQuery({ limit: 100 });
   const updateStatus = trpc.instruct.updateStatus.useMutation({ onSuccess: () => refetch() });
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+
+  const paymentStatusColor = (s: string) => {
+    if (s === 'paid')   return { bg: 'oklch(0.93 0.08 145)', text: 'oklch(0.28 0.14 145)' };
+    if (s === 'failed') return { bg: 'oklch(0.93 0.06 25)',  text: 'oklch(0.38 0.18 25)'  };
+    return                     { bg: 'oklch(0.95 0.06 75)',  text: 'oklch(0.40 0.15 75)'  };
+  };
 
   return (
     <div>
@@ -409,38 +416,123 @@ function InstructionsTab() {
         </div>
       ) : (
         <div className="space-y-3">
-          {instructions.map((inst) => (
-            <div key={inst.id} className="bg-white rounded-2xl p-5 shadow-sm flex items-center justify-between" style={{ border: "1px solid oklch(0.92 0.01 250)" }}>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "oklch(0.95 0.08 75)", color: "oklch(0.35 0.15 75)" }}>
-                  <FileCheck size={16} />
-                </div>
-                <div>
-                  <div className="font-semibold text-sm" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                    {inst.firstName} {inst.lastName} → {inst.firmName}
-                  </div>
-                  <div className="text-xs" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                    {inst.email} · {new Date(inst.createdAt).toLocaleDateString("en-GB")}
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <StatusBadge status={inst.status} />
-                <select
-                  value={inst.status}
-                  onChange={(e) => updateStatus.mutate({ id: inst.id, status: e.target.value as any })}
-                  className="text-xs px-2 py-1.5 rounded-lg"
-                  style={{ border: "1px solid oklch(0.88 0.02 250)", fontFamily: "'DM Sans', sans-serif", color: "oklch(0.25 0.05 250)" }}
+          {instructions.map((inst) => {
+            const isExpanded = expandedId === inst.id;
+            const pColor = paymentStatusColor(inst.paymentStatus);
+            return (
+              <div key={inst.id} className="bg-white rounded-2xl shadow-sm overflow-hidden" style={{ border: "1px solid oklch(0.92 0.01 250)" }}>
+
+                {/* ── Summary row (always visible, click to expand) ── */}
+                <div
+                  className="p-5 flex items-center justify-between cursor-pointer"
+                  onClick={() => setExpandedId(isExpanded ? null : inst.id)}
                 >
-                  <option value="submitted">Submitted</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "oklch(0.95 0.08 75)", color: "oklch(0.35 0.15 75)" }}>
+                      <FileCheck size={16} />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                        {inst.firstName} {inst.lastName} → {inst.firmName}
+                      </div>
+                      <div className="text-xs mt-0.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                        {inst.email} · {inst.phone} · {new Date(inst.createdAt).toLocaleDateString("en-GB")}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: pColor.bg, color: pColor.text, fontFamily: "'DM Sans', sans-serif" }}>
+                      {inst.paymentStatus === 'paid' ? '✓ Paid' : inst.paymentStatus === 'failed' ? '✗ Failed' : '⏳ Pending payment'}
+                    </span>
+                    {inst.paymentAmount && (
+                      <span className="text-xs font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>
+                        £{Number(inst.paymentAmount).toFixed(2)}
+                      </span>
+                    )}
+                    <StatusBadge status={inst.status} />
+                    <ChevronDown size={16} style={{ color: "oklch(0.55 0.04 250)", transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                  </div>
+                </div>
+
+                {/* ── Expanded detail panel ── */}
+                {isExpanded && (
+                  <div className="px-5 pb-6" style={{ borderTop: "1px solid oklch(0.93 0.01 250)" }}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-5">
+
+                      {/* Left: personal details */}
+                      <div className="space-y-4">
+                        <h4 className="text-xs font-bold uppercase tracking-widest" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Personal Details</h4>
+                        <div className="space-y-2.5">
+                          {([
+                            { label: 'Full Name',           value: `${inst.firstName} ${inst.lastName}` },
+                            { label: 'Email',               value: inst.email },
+                            { label: 'Phone',               value: inst.phone },
+                            { label: 'Date of Birth',       value: inst.dateOfBirth || '—' },
+                            { label: 'No. of Applicants',   value: inst.applicantCount ? String(inst.applicantCount) : '1' },
+                          ] as { label: string; value: string }[]).map(({ label, value }) => (
+                            <div key={label} className="flex gap-3">
+                              <span className="text-xs flex-shrink-0 w-36" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>{label}</span>
+                              <span className="text-xs font-semibold break-all" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>{value}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {inst.currentAddress && (
+                          <div>
+                            <div className="text-xs mb-1.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Current Residential Address</div>
+                            <div className="text-xs font-semibold p-3 rounded-xl" style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.90 0.01 80)", color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif", whiteSpace: 'pre-wrap' }}>{inst.currentAddress}</div>
+                          </div>
+                        )}
+
+                        {inst.propertyAddress && (
+                          <div>
+                            <div className="text-xs mb-1.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Property Address</div>
+                            <div className="text-xs font-semibold p-3 rounded-xl" style={{ background: "oklch(0.975 0.008 80)", border: "1px solid oklch(0.90 0.01 80)", color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif", whiteSpace: 'pre-wrap' }}>{inst.propertyAddress}</div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Right: instruction & payment details */}
+                      <div className="space-y-4">
+                        <h4 className="text-xs font-bold uppercase tracking-widest" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Instruction & Payment</h4>
+                        <div className="space-y-2.5">
+                          {([
+                            { label: 'Firm',            value: inst.firmName },
+                            { label: 'Submitted',       value: new Date(inst.createdAt).toLocaleString('en-GB') },
+                            { label: 'Payment Amount',  value: inst.paymentAmount ? `£${Number(inst.paymentAmount).toFixed(2)}` : '—' },
+                            { label: 'Payment Status',  value: inst.paymentStatus.charAt(0).toUpperCase() + inst.paymentStatus.slice(1) },
+                            { label: 'Stripe ID',       value: inst.stripePaymentIntentId || '—' },
+                          ] as { label: string; value: string }[]).map(({ label, value }) => (
+                            <div key={label} className="flex gap-3">
+                              <span className="text-xs flex-shrink-0 w-36" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>{label}</span>
+                              <span className="text-xs font-semibold break-all" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>{value}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Status update dropdown */}
+                        <div className="pt-2">
+                          <div className="text-xs mb-1.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Update Status</div>
+                          <select
+                            value={inst.status}
+                            onChange={(e) => updateStatus.mutate({ id: inst.id, status: e.target.value as any })}
+                            className="text-xs px-3 py-2 rounded-xl w-full"
+                            style={{ border: "1px solid oklch(0.88 0.02 250)", fontFamily: "'DM Sans', sans-serif", color: "oklch(0.25 0.05 250)" }}
+                          >
+                            <option value="submitted">Submitted</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

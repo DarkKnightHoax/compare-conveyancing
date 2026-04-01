@@ -379,3 +379,6 @@
 
 ## AML Fee Fix (Mar 2026)
 - [x] Fix AML fee to flat £49 per person across ALL firms and ALL transaction types (purchase, sale, sale_purchase) — TQ Law had £30 for some bands, now all 16 firm/type combinations show £49
+
+## Admin Instructions Tab - Full Customer Details (Apr 2026)
+- [x] Show all Instruct Directly fields in admin Instructions tab: date of birth, current residential address, property address, applicant count, phone, email, firm name, payment amount, payment status, Stripe ID — expandable card layout

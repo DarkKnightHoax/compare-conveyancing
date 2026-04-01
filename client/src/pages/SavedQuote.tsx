@@ -128,6 +128,7 @@ function InstructModal({
       lastName: form.lastName,
       email: form.email,
       phone: form.phone,
+      applicantCount,
       dateOfBirth: form.dateOfBirth || undefined,
       currentAddress: form.currentAddress || undefined,
       propertyAddress: form.propertyAddress || undefined,

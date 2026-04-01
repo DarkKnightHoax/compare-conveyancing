@@ -374,13 +374,14 @@ export const appRouter = router({
         lastName: z.string().min(1),
         email: z.string().email(),
         phone: z.string().min(1),
+        applicantCount: z.number().int().min(1).max(10).optional(),
         dateOfBirth: z.string().optional(),
         currentAddress: z.string().optional(),
         propertyAddress: z.string().optional(),
         paymentAmount: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
-        const id = await createInstructRequest({ ...input, paymentStatus: "pending", status: "submitted" } as any);
+        const id = await createInstructRequest({ ...input, applicantCount: input.applicantCount ?? 1, paymentStatus: "pending", status: "submitted" } as any);
         await notifyOwner({
           title: `Instruction Request — ${input.firstName} ${input.lastName} → ${input.firmName}`,
           content: `Email: ${input.email} | Phone: ${input.phone} | Payment on account: £${input.paymentAmount ?? "TBC"}`,

@@ -1,0 +1,1 @@
+ALTER TABLE `instruct_requests` ADD `applicantCount` int DEFAULT 1;
