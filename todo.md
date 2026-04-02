@@ -382,3 +382,9 @@
 
 ## Admin Instructions Tab - Full Customer Details (Apr 2026)
 - [x] Show all Instruct Directly fields in admin Instructions tab: date of birth, current residential address, property address, applicant count, phone, email, firm name, payment amount, payment status, Stripe ID — expandable card layout
+
+## Burton's Rebrand (Apr 2026)
+- [x] Rename Burton's to "Burtons Legal Group part of David J. Fosters & Co (Solicitors)" everywhere (database, admin panel, results page, emails, saved quote page, feeEngine.ts)
+- [x] Upload DJF square logo from https://burtonslegalgroup.co.uk to S3 CDN
+- [x] Update rating from 4.2 to 4.8
+- [x] Update website URL to https://burtonslegalgroup.co.uk

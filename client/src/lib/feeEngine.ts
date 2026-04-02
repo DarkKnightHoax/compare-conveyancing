@@ -2,7 +2,7 @@
  * FEE CALCULATION ENGINE
  * All fees in GBP (£)
  *
- * Firms: Easy Choice Conveyancing, PCS Legal, Burton's Solicitors, TQ Law
+ * Firms: Easy Choice Conveyancing, PCS Legal, Burtons Legal Group part of David J. Fosters & Co (Solicitors), TQ Law
  *
  * Rules:
  * - Purchase fees (base + opening) are shared flat rates across all firms
@@ -264,9 +264,9 @@ const LAW_FIRMS = [
   },
   {
     id: 3,
-    firmName: "Burton's Solicitors",
+    firmName: 'Burtons Legal Group part of David J. Fosters & Co (Solicitors)',
     firmLocation: 'London, EC2',
-    rating: 4.9,
+    rating: 4.8,
     reviewCount: 541,
     sraNumber: '11223344',
     regulated: 'SRA' as const,
@@ -275,7 +275,7 @@ const LAW_FIRMS = [
     accreditations: ['Law Society Conveyancing Quality Scheme', 'Lexcel Accredited', 'ISO 9001:2015'],
     saleBaseFee: 1400,
     saleOpeningFee: 550,    // Opening fee for sale
-    purchaseBaseFee: 895,   // Burton's purchase base fee (specified by user)
+    purchaseBaseFee: 895,   // Burtons Legal Group purchase base fee
     purchaseOpeningFee: 0,
     excludeLeaseholdPurchase: false,
   },
