@@ -239,11 +239,12 @@ const LAW_FIRMS = [
     yearsEstablished: 12,
     accreditations: ['Law Society Conveyancing Quality Scheme', 'Lexcel Accredited'],
     saleBaseFee: 1200,
-    saleOpeningFee: 0,      // No separate opening fee specified for Easy Choice sale
-    purchaseBaseFee: 999,   // Shared purchase base fee
+    saleOpeningFee: 0,
+    purchaseBaseFee: 999,
     purchaseOpeningFee: 0,
-    // TQ Law leasehold restriction: false = no restriction
     excludeLeaseholdPurchase: false,
+    // Easy Choice: left unchanged — no lender panel restriction
+    lenderPanel: null as string[] | null,
   },
   {
     id: 2,
@@ -257,10 +258,30 @@ const LAW_FIRMS = [
     yearsEstablished: 8,
     accreditations: ['Law Society Conveyancing Quality Scheme'],
     saleBaseFee: 560,
-    saleOpeningFee: 119,    // Opening fee for sale
-    purchaseBaseFee: 999,   // Shared purchase base fee (unchanged)
+    saleOpeningFee: 119,
+    purchaseBaseFee: 999,
     purchaseOpeningFee: 0,
     excludeLeaseholdPurchase: false,
+    lenderPanel: [
+      'accord mortgages', 'accord buy to let', 'aldermore', 'alliance & leicester',
+      'allica bank', 'april mortgages', 'atom bank', 'bank of china', 'bank of cyprus',
+      'bank of scotland', 'bank of ireland', 'barclays bank uk plc', 'barnsley building society',
+      'bluestone mortgages', 'bradford & bingley / mortgage express', 'buckinghamshire bs',
+      'cambridge bs', 'canada life', 'chelsea bs', 'co-operative bank', 'cynergy bank',
+      'danske bank', 'darlington bs', 'dudley bs', 'earl shilton bs', 'ecology bs',
+      'family bs', 'furness bs', 'gatehouse bank', 'generation home loans', 'habito',
+      'halifax', 'hinckley & rugby bs', 'hodge bank', 'ing', 'help to buy isa',
+      'intelligent finance', 'ipswich bs', 'itl', 'landmark mortgages', 'leek united bs',
+      'livemore capital', 'lloyds banking group', 'marsden bs', 'marks & spencer',
+      'melton mowbray bs', 'metro bank', 'mqube', 'national counties bs', 'nationwide',
+      'natwest', 'natwest international', 'newbury bs', 'nomo', 'norwich & peterborough',
+      'penrith bs', 'perenna', 'pepper money', 'platform home loans', 'portman bs',
+      'precise mortgages', 'principality', 'reliance bank', 'royal bank of scotland',
+      'saffron bs', "sainsbury's bank", 'santander', 'scottish widows', 'skipton bs',
+      'stafford railway bs', 'suffolk bs', 'tipton & coseley bs', 'the loughborough',
+      'tsb', 'vida homeloans', 'vernon', 'west bromwich bs', 'woolwich / barclays',
+      'yorkshire bs',
+    ] as string[],
   },
   {
     id: 3,
@@ -274,10 +295,19 @@ const LAW_FIRMS = [
     yearsEstablished: 22,
     accreditations: ['Law Society Conveyancing Quality Scheme', 'Lexcel Accredited', 'ISO 9001:2015'],
     saleBaseFee: 1400,
-    saleOpeningFee: 550,    // Opening fee for sale
-    purchaseBaseFee: 895,   // Burtons Legal Group purchase base fee
+    saleOpeningFee: 550,
+    purchaseBaseFee: 895,
     purchaseOpeningFee: 0,
     excludeLeaseholdPurchase: false,
+    lenderPanel: [
+      'lloyds banking group', 'co-operative bank', 'atom bank', 'better homeownership',
+      'bluestone mortgages', 'buckinghamshire bs', 'clydesdale & yorkshire bank',
+      'cynergy bank', 'danske bank', 'darlington bs', 'dudley bs', 'ecology bs',
+      'generation home loans', 'hanley economic building society', 'hinckley & rugby bs',
+      'hsbc', 'livemore capital', 'marsden bs', 'monmouthshire bs', 'national counties bs',
+      'skipton bs', 'stafford railway bs', 'tandem', 'tipton & coseley bs',
+      'harpenden bs', 'moda mortgages', 'scottish building society',
+    ] as string[],
   },
   {
     id: 4,
@@ -291,11 +321,32 @@ const LAW_FIRMS = [
     yearsEstablished: 5,
     accreditations: ['Law Society Conveyancing Quality Scheme'],
     saleBaseFee: 499,
-    saleOpeningFee: 394,    // Opening fee for sale
-    purchaseBaseFee: 999,   // Shared purchase base fee (unchanged)
+    saleOpeningFee: 394,
+    purchaseBaseFee: 999,
     purchaseOpeningFee: 0,
-    // TQ Law does NOT handle leasehold purchase — only leasehold sale
     excludeLeaseholdPurchase: true,
+    lenderPanel: [
+      'accord mortgages', 'aldermore', 'alliance & leicester', 'atom bank',
+      'bank of china', 'bank of cyprus', 'barclays bank uk plc', 'barnsley building society',
+      'bluestone mortgages', 'britannia', 'buckinghamshire bs', 'cambridge bs',
+      'chelsea bs', 'chl mortgages', 'chorley bs', 'clydesdale & yorkshire bank',
+      'co-operative bank', 'coventry bs', 'cumberland bs', 'cynergy bank',
+      'darlington bs', 'digital bs', 'dudley bs', 'esbs', 'first direct',
+      'fleet mortgages', 'foundation home loans', 'furness bs', 'generation home loans',
+      'godiva', 'habito', 'hanley economic building society', 'help to buy isa',
+      'hinckley & rugby bs', 'hodge bank', 'hsbc', 'ing', 'ipswich bs',
+      'kent reliance', 'kensington', 'leeds bs', 'leek united bs', 'm&s bank',
+      'market harborough bs', 'marsden bs', 'mansfield bs', 'melton mowbray bs',
+      'metro bank', 'monmouthshire bs', 'mortgage works uk', 'mpowered',
+      'national counties bs', 'nationwide', 'natwest', 'newbury bs',
+      'norwich & peterborough', 'nottingham bs', 'perenna', 'precise mortgages',
+      'principality', 'platform home loans', 'royal bank of scotland', 'saffron bs',
+      "sainsbury's bank", 'santander', 'skipton bs', 'smile', 'suffolk bs',
+      'teachers bs', 'tesco bank', 'the bank of east asia', 'the hanley',
+      'the loughborough', 'the melton', 'the mortgage lender', 'tipton & coseley bs',
+      'vernon', 'vida homeloans', 'virgin money', 'west bromwich bs',
+      'woolwich / barclays', 'yorkshire bs', 'yorkshire bank',
+    ] as string[],
   },
 ];
 
@@ -310,11 +361,22 @@ export function calculateQuotes(answers: WizardAnswers): FirmQuote[] {
   const saleTenure = answers.saleTenure ?? answers.tenure;
   const purchaseTenure = answers.purchaseTenure ?? answers.tenure;
 
+  // Normalise the chosen lender for panel matching
+  const chosenLender = (answers.mortgageLender ?? '').toLowerCase().trim();
+
   return LAW_FIRMS.filter((firm) => {
     // TQ Law: exclude if leasehold purchase (or sale_purchase with leasehold purchase leg)
     if (firm.excludeLeaseholdPurchase) {
       if (transactionType === 'purchase' && purchaseTenure === 'leasehold') return false;
       if (transactionType === 'sale_purchase' && purchaseTenure === 'leasehold') return false;
+    }
+    // Lender panel filter: if a lender was chosen and this firm has a panel, only include
+    // the firm if the chosen lender appears in its panel (bidirectional prefix match)
+    if (answers.hasMortgage && chosenLender && firm.lenderPanel !== null) {
+      const onPanel = firm.lenderPanel.some(p =>
+        p === chosenLender || p.startsWith(chosenLender) || chosenLender.startsWith(p)
+      );
+      if (!onPanel) return false;
     }
     return true;
   }).map((firm) => {

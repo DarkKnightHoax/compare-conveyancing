@@ -550,9 +550,17 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
   if (input.hasMortgage && input.mortgageLender) {
     const panelRows = await db.select().from(firmLenderPanels);
     const lenderNorm = input.mortgageLender.toLowerCase().trim();
+    // Use bidirectional prefix matching so slight name variations still match:
+    // e.g. "Lloyds Banking Group" matches panel entry "Lloyds Banking Group - New Mortgage"
+    // and vice versa. Also handles "Natwest" matching "NatWest International" etc.
     const approvedFirmIds = new Set(
       panelRows
-        .filter(row => row.lenderName.toLowerCase().trim() === lenderNorm)
+        .filter(row => {
+          const panelNorm = row.lenderName.toLowerCase().trim();
+          return panelNorm === lenderNorm ||
+            panelNorm.startsWith(lenderNorm) ||
+            lenderNorm.startsWith(panelNorm);
+        })
         .map(row => row.firmId)
     );
     firms = firms.filter(f => approvedFirmIds.has(f.id));

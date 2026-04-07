@@ -388,3 +388,11 @@
 - [x] Upload DJF square logo from https://burtonslegalgroup.co.uk to S3 CDN
 - [x] Update rating from 4.2 to 4.8
 - [x] Update website URL to https://burtonslegalgroup.co.uk
+
+## Lender Panel Update & Filtering (Apr 2026)
+- [x] Extract correct lender lists from TQ Law PDF, PCS Legal PDF, Burtons Legal Group image
+- [x] Update lender panel data in DB: TQ Law (83 lenders), PCS Legal (79 lenders), Burtons (27 lenders)
+- [x] Implement automatic filtering: results only show firms on the chosen lender's panel (bidirectional prefix matching)
+- [x] Leave Easy Choice Conveyancing lender list unchanged
+- [x] Add lenderPanel arrays to feeEngine.ts LAW_FIRMS for client-side fallback filtering
+- [x] Add lender panel filter to calculateQuotes() in feeEngine.ts
