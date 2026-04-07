@@ -88,6 +88,9 @@ export const leads = mysqlTable("leads", {
   quoteSnapshot: text("quoteSnapshot"),
   // Admin notes
   adminNotes: text("adminNotes"),
+  // Contact tracking
+  contactedViaEmail: boolean("contactedViaEmail").default(false),
+  contactedViaPhone: boolean("contactedViaPhone").default(false),
   // Source / attribution tracking
   utmSource: varchar("utmSource", { length: 100 }),      // e.g. "google", "facebook", "email"
   utmMedium: varchar("utmMedium", { length: 100 }),      // e.g. "cpc", "organic", "referral"

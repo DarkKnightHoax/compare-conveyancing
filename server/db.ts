@@ -141,6 +141,12 @@ export async function updateLeadStatus(id: number, status: "new" | "contacted" |
   await db.update(leads).set(updateData).where(eq(leads.id, id));
 }
 
+export async function updateLeadContactStatus(id: number, field: "contactedViaEmail" | "contactedViaPhone", value: boolean) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(leads).set({ [field]: value }).where(eq(leads.id, id));
+}
+
 export async function updateLeadSnapshot(referenceNumber: string, quoteSnapshot: string) {
   const db = await getDb();
   if (!db) return;

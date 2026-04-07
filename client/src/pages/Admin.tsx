@@ -134,6 +134,7 @@ function DashboardTab() {
 function LeadsTab() {
   const { data: leads, refetch } = trpc.leads.list.useQuery({ limit: 100 });
   const updateStatus = trpc.leads.updateStatus.useMutation({ onSuccess: () => refetch() });
+  const markContacted = trpc.leads.markContacted.useMutation({ onSuccess: () => refetch() });
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
   const txLabel: Record<string, string> = {
@@ -301,6 +302,7 @@ function LeadsTab() {
                       </div>
                     </div>
                   )}
+                  {/* ── STATUS BUTTONS ── */}
                   <div className="flex flex-wrap gap-2 mt-3">
                     {(["new", "contacted", "instructed", "lost"] as const).map((s) => (
                       <button
@@ -316,6 +318,36 @@ function LeadsTab() {
                         Mark as {s.charAt(0).toUpperCase() + s.slice(1)}
                       </button>
                     ))}
+                  </div>
+
+                  {/* ── CONTACT TRACKING BUTTONS ── */}
+                  <div className="flex flex-wrap gap-2 mt-2 pt-2" style={{ borderTop: "1px solid oklch(0.93 0.01 250)" }}>
+                    <button
+                      onClick={() => markContacted.mutate({ id: lead.id, field: "contactedViaEmail", value: !(lead as any).contactedViaEmail })}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                      style={{
+                        background: (lead as any).contactedViaEmail ? "oklch(0.55 0.15 145)" : "oklch(0.96 0.01 250)",
+                        color: (lead as any).contactedViaEmail ? "white" : "oklch(0.35 0.04 250)",
+                        fontFamily: "'DM Sans', sans-serif",
+                        border: (lead as any).contactedViaEmail ? "none" : "1px solid oklch(0.88 0.01 250)",
+                      }}
+                      title={(lead as any).contactedViaEmail ? "Click to undo" : "Mark as contacted via email"}
+                    >
+                      ✉ {(lead as any).contactedViaEmail ? "✓ Contacted via Email" : "Mark as Contacted via Email"}
+                    </button>
+                    <button
+                      onClick={() => markContacted.mutate({ id: lead.id, field: "contactedViaPhone", value: !(lead as any).contactedViaPhone })}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                      style={{
+                        background: (lead as any).contactedViaPhone ? "oklch(0.55 0.15 145)" : "oklch(0.96 0.01 250)",
+                        color: (lead as any).contactedViaPhone ? "white" : "oklch(0.35 0.04 250)",
+                        fontFamily: "'DM Sans', sans-serif",
+                        border: (lead as any).contactedViaPhone ? "none" : "1px solid oklch(0.88 0.01 250)",
+                      }}
+                      title={(lead as any).contactedViaPhone ? "Click to undo" : "Mark as contacted via phone"}
+                    >
+                      📞 {(lead as any).contactedViaPhone ? "✓ Contacted via Phone" : "Mark as Contacted via Phone"}
+                    </button>
                   </div>
                 </div>
               )}

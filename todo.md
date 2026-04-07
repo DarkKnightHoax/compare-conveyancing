@@ -396,3 +396,8 @@
 - [x] Leave Easy Choice Conveyancing lender list unchanged
 - [x] Add lenderPanel arrays to feeEngine.ts LAW_FIRMS for client-side fallback filtering
 - [x] Add lender panel filter to calculateQuotes() in feeEngine.ts
+
+## Contact Tracking Buttons (Apr 2026)
+- [x] Add contactedViaEmail and contactedViaPhone boolean fields to leads table in DB schema
+- [x] Add leads.markContacted tRPC mutation to toggle these fields
+- [x] Add "Mark as Contacted via Email" and "Mark as Contacted via Phone" buttons to admin leads panel (green when active, toggleable, separated from status buttons)
