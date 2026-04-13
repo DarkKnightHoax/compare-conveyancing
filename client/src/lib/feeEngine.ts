@@ -9,7 +9,7 @@
  * - Sale fees (base + opening) are firm-specific flat rates
  * - Search Pack is purchase-only (not included for sale)
  * - Mortgage Redemption fee (sale, has mortgage on property) is fixed at £100
- * - TQ Law: shown for leasehold SALE but NOT leasehold PURCHASE
+ * - TQ Law: excluded for new build only (leasehold purchase now included)
  */
 
 export interface WizardAnswers {
@@ -115,7 +115,7 @@ const REMORTGAGE_BASE_FEES = [
 // ─── PURCHASE SUPPLEMENTS (ex. VAT) ─────────────────────────────────────────
 const PURCHASE_SUPPLEMENTS = {
   leasehold: { name: 'Leasehold Supplement', price: 149 },
-  mortgage: { name: 'Mortgage / Re-mortgage', price: 234 },
+  mortgage: { name: 'Mortgage / Re-mortgage', price: 100 },
   newBuild: { name: 'New Build Supplement', price: 149 },
   sharedOwnership: { name: 'Shared Ownership', price: 249 },
   giftedDeposit: { name: 'Gifted Deposit', price: 49 },
@@ -243,6 +243,7 @@ const LAW_FIRMS = [
     purchaseBaseFee: 999,
     purchaseOpeningFee: 0,
     excludeLeaseholdPurchase: false,
+    excludeNewBuild: false,
     // Easy Choice: left unchanged — no lender panel restriction
     lenderPanel: null as string[] | null,
   },
@@ -257,11 +258,11 @@ const LAW_FIRMS = [
     speciality: 'First-Time Buyer Experts',
     yearsEstablished: 8,
     accreditations: ['Law Society Conveyancing Quality Scheme'],
+    excludeNewBuild: false,
     saleBaseFee: 560,
     saleOpeningFee: 119,
     purchaseBaseFee: 999,
     purchaseOpeningFee: 0,
-    excludeLeaseholdPurchase: false,
     lenderPanel: [
       'accord mortgages', 'accord buy to let', 'aldermore', 'alliance & leicester',
       'allica bank', 'april mortgages', 'atom bank', 'bank of china', 'bank of cyprus',
@@ -298,7 +299,7 @@ const LAW_FIRMS = [
     saleOpeningFee: 550,
     purchaseBaseFee: 895,
     purchaseOpeningFee: 0,
-    excludeLeaseholdPurchase: false,
+    excludeNewBuild: false,
     lenderPanel: [
       'lloyds banking group', 'co-operative bank', 'atom bank', 'better homeownership',
       'bluestone mortgages', 'buckinghamshire bs', 'clydesdale & yorkshire bank',
@@ -324,7 +325,8 @@ const LAW_FIRMS = [
     saleOpeningFee: 394,
     purchaseBaseFee: 999,
     purchaseOpeningFee: 0,
-    excludeLeaseholdPurchase: true,
+    excludeLeaseholdPurchase: false,
+    excludeNewBuild: true,
     lenderPanel: [
       'accord mortgages', 'aldermore', 'alliance & leicester', 'atom bank',
       'bank of china', 'bank of cyprus', 'barclays bank uk plc', 'barnsley building society',
@@ -365,19 +367,9 @@ export function calculateQuotes(answers: WizardAnswers): FirmQuote[] {
   const chosenLender = (answers.mortgageLender ?? '').toLowerCase().trim();
 
   return LAW_FIRMS.filter((firm) => {
-    // TQ Law: exclude if leasehold purchase (or sale_purchase with leasehold purchase leg)
-    if (firm.excludeLeaseholdPurchase) {
-      if (transactionType === 'purchase' && purchaseTenure === 'leasehold') return false;
-      if (transactionType === 'sale_purchase' && purchaseTenure === 'leasehold') return false;
-    }
-    // Lender panel filter: if a lender was chosen and this firm has a panel, only include
-    // the firm if the chosen lender appears in its panel (bidirectional prefix match)
-    if (answers.hasMortgage && chosenLender && firm.lenderPanel !== null) {
-      const onPanel = firm.lenderPanel.some(p =>
-        p === chosenLender || p.startsWith(chosenLender) || chosenLender.startsWith(p)
-      );
-      if (!onPanel) return false;
-    }
+    // TQ Law: exclude only for new build (leasehold purchase is now allowed)
+    if (firm.excludeNewBuild && answers.isNewBuild) return false;
+    // Lender panel filtering removed — all 4 firms always show regardless of lender
     return true;
   }).map((firm) => {
     let baseFee = 0;

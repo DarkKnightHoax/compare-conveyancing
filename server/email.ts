@@ -373,3 +373,103 @@ export async function sendContactFormEmail(contact: {
     html: emailWrapper("New Contact Enquiry", body),
   });
 }
+
+// ─── 6. James Fellows Follow-Up Email to Customer ─────────────────────────────
+export async function sendJamesFellowsFollowUpEmail(params: {
+  name: string;           // e.g. "Kerry Herbert"
+  email: string;
+  referenceNumber: string;
+  quoteUrl: string;
+  transactionType: string; // 'purchase' | 'sale' | 'sale_purchase' | 'remortgage'
+  propertyValue: number;   // purchase price (or single property value)
+  tenure?: string;         // 'freehold' | 'leasehold'
+  salePropertyValue?: number; // sale price for sale_purchase
+  saleTenure?: string;        // sale tenure for sale_purchase
+}) {
+  const {
+    name, email, referenceNumber, quoteUrl,
+    transactionType, propertyValue, tenure,
+    salePropertyValue, saleTenure,
+  } = params;
+
+  // Build the transaction sentence matching the email sample
+  let transactionSentence = '';
+  if (transactionType === 'purchase') {
+    const tenureLabel = tenure === 'leasehold' ? 'leasehold' : 'freehold';
+    transactionSentence = `I have noticed that you were interested to get a free conveyancing quote on the purchase of a ${tenureLabel} property for £${propertyValue.toLocaleString()}.`;
+  } else if (transactionType === 'sale') {
+    const tenureLabel = tenure === 'leasehold' ? 'leasehold' : 'freehold';
+    transactionSentence = `I have noticed that you were interested to get a free conveyancing quote on the sale of your ${tenureLabel} property for £${propertyValue.toLocaleString()}.`;
+  } else if (transactionType === 'sale_purchase') {
+    const pTenure = tenure === 'leasehold' ? 'leasehold' : 'freehold';
+    const sTenure = saleTenure === 'leasehold' ? 'leasehold' : 'freehold';
+    const salePrice = salePropertyValue ?? propertyValue;
+    transactionSentence = `I have noticed that you were interested to get a free conveyancing quote on the purchase of a ${pTenure} property for £${propertyValue.toLocaleString()} and on the sale of your ${sTenure} property for £${salePrice.toLocaleString()}.`;
+  } else if (transactionType === 'remortgage') {
+    transactionSentence = `I have noticed that you were interested to get a free conveyancing quote on a remortgage for £${propertyValue.toLocaleString()}.`;
+  }
+
+  const refNum = referenceNumber.replace(/^CCM-\d{4}-/, '').replace(/^0+/, '');
+  const paddedRef = referenceNumber;
+
+  const body = `
+    <div style="font-family:'DM Sans',Arial,sans-serif;font-size:15px;color:#222;line-height:1.7;max-width:600px;">
+      <p style="margin:0 0 16px;">Dear ${name},<br/>I hope this email finds you well.</p>
+
+      <p style="margin:0 0 16px;">${transactionSentence}<br/>
+      May I ask if any of our listed law firms have caught your attention? Would you like to proceed to instruct with us later on?</p>
+
+      <p style="margin:0 0 8px;">You can access your saved quote from the link provided down below as well:</p>
+      <p style="margin:0 0 24px;"><a href="${quoteUrl}" style="color:#1a56db;">${quoteUrl}</a></p>
+
+      <p style="margin:0 0 32px;">Regards,</p>
+
+      <!-- Signature block -->
+      <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;max-width:560px;">
+        <tr>
+          <td style="padding-bottom:4px;">
+            <span style="font-size:22px;font-weight:700;color:#0f1f3d;font-family:'Playfair Display',Georgia,serif;">James Fellows</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-bottom:16px;">
+            <span style="font-size:13px;font-weight:700;color:#c9a84c;letter-spacing:1px;text-transform:uppercase;">Account Manager</span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;">
+              <tr>
+                <td style="width:110px;padding-right:20px;vertical-align:top;border-right:3px solid #0f1f3d;">
+                  <div style="width:100px;height:100px;background:#c9a84c;border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;">
+                    <img src="https://files.manuscdn.com/user_upload_by_module/session_file/109506846/AMpvREVqFOfDvSzS.jpg" alt="Compare the Conveyancing Market" width="100" height="100" style="border-radius:6px;display:block;" />
+                  </div>
+                </td>
+                <td style="padding-left:20px;vertical-align:top;">
+                  <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                    <tr><td style="padding-bottom:6px;font-size:14px;color:#222;"><strong>Email</strong> &nbsp;|&nbsp; <a href="mailto:info@comparetheconveyancingmarket.co.uk" style="color:#222;text-decoration:none;">info@comparetheconveyancingmarket.co.uk</a></td></tr>
+                    <tr><td style="padding-bottom:6px;font-size:14px;color:#222;"><strong>Direct</strong> &nbsp;|&nbsp; 0330 128 9488</td></tr>
+                    <tr><td style="padding-bottom:10px;font-size:14px;color:#222;"><strong>Web</strong> &nbsp;|&nbsp; <a href="https://www.comparetheconveyancingmarket.co.uk" style="color:#222;text-decoration:none;">www.comparetheconveyancingmarket.co.uk</a></td></tr>
+                    <tr><td style="padding-bottom:2px;font-size:14px;font-weight:700;color:#0f1f3d;">Compare the Conveyancing Market Ltd</td></tr>
+                    <tr><td style="font-size:13px;color:#555;font-style:italic;">Helping clients compare conveyancing options with clarity, speed and confidence.</td></tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+
+      <hr style="border:none;border-top:1px solid #ddd;margin:24px 0;" />
+
+      <p style="font-size:11px;color:#888;margin:0 0 6px;">Please do not send bank details or payment instructions by email without verbal confirmation through a trusted contact route.</p>
+      <p style="font-size:11px;color:#888;margin:0;">This email and any attachments are intended only for the named recipient and may contain confidential business information. If you received it by mistake, please reply to let us know and then delete it. Views expressed in this email are those of the sender unless clearly stated otherwise on behalf of Compare the Conveyancing Market Ltd.</p>
+    </div>`;
+
+  return resend.emails.send({
+    from: 'James Fellows <noreply@comparetheconveyancingmarket.co.uk>',
+    to: email,
+    subject: `Compare the Conveyancing Market (REF: ${paddedRef})`,
+    html: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Compare the Conveyancing Market</title></head><body style="margin:0;padding:32px 16px;background:#ffffff;font-family:'DM Sans',Arial,sans-serif;">${body}</body></html>`,
+  });
+}

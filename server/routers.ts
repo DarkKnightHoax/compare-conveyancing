@@ -21,7 +21,7 @@ import {
   calculateLiveQuotes,
 } from "./db";
 import { notifyOwner } from "./_core/notification";
-import { sendNewLeadEmail, sendNewCallbackEmail, sendNewInstructEmail, sendContactFormEmail, sendQuoteEmail } from "./email";
+import { sendNewLeadEmail, sendNewCallbackEmail, sendNewInstructEmail, sendContactFormEmail, sendQuoteEmail, sendJamesFellowsFollowUpEmail } from "./email";
 
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== "admin") {
@@ -259,6 +259,9 @@ export const appRouter = router({
         isFirstTimeBuyer: z.boolean().optional(),
         quoteUrl: z.string().optional(),
         origin: z.string().optional(),
+        tenure: z.enum(['freehold', 'leasehold']).optional(),
+        salePropertyValue: z.number().optional(),
+        saleTenure: z.enum(['freehold', 'leasehold']).optional(),
       }))
       .mutation(async ({ input }) => {
         await updateLeadSnapshot(input.referenceNumber, input.quoteSnapshot);
@@ -296,6 +299,21 @@ export const appRouter = router({
             if (r.error) console.error('[Email] saveSnapshot sendNewLeadEmail failed:', JSON.stringify(r.error));
             else console.log('[Email] saveSnapshot sendNewLeadEmail sent, id:', r.data?.id);
           }).catch(e => console.error('[Email] saveSnapshot sendNewLeadEmail error:', e?.message));
+          // James Fellows follow-up email to customer
+          sendJamesFellowsFollowUpEmail({
+            name: input.name,
+            email: input.email,
+            referenceNumber: input.referenceNumber,
+            quoteUrl,
+            transactionType: input.transactionType || 'purchase',
+            propertyValue: input.propertyValue || 0,
+            tenure: input.tenure,
+            salePropertyValue: input.salePropertyValue,
+            saleTenure: input.saleTenure,
+          }).then(r => {
+            if (r.error) console.error('[Email] JamesFellows follow-up failed:', JSON.stringify(r.error));
+            else console.log('[Email] JamesFellows follow-up sent to', input.email, 'id:', r.data?.id);
+          }).catch(e => console.error('[Email] JamesFellows follow-up error:', e?.message));
         } else {
           console.warn('[Email] saveSnapshot: skipping emails — email or name missing', { email: input.email, name: input.name });
         }

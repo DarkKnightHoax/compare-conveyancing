@@ -493,7 +493,7 @@ function computeLeg(
       supplements.push({ name: giftCount > 1 ? `Gifted Deposit (x${giftCount})` : 'Gifted Deposit', price: giftPrice });
     }
     if (input.hasMortgage)
-      supplements.push({ name: 'Mortgage / Re-mortgage', price: 234 });
+      supplements.push({ name: 'Mortgage / Re-mortgage', price: 100 });
     if (input.isBuyToLet)
       supplements.push({ name: 'Buy to Let Supplement', price: 99 });
     if (input.isSecondHome)
@@ -552,25 +552,7 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
   let firms = await db.select().from(lawFirms).where(eq(lawFirms.isActive, true));
   if (firms.length === 0) return [];
 
-  // Filter firms by mortgage lender panel when a lender has been chosen
-  if (input.hasMortgage && input.mortgageLender) {
-    const panelRows = await db.select().from(firmLenderPanels);
-    const lenderNorm = input.mortgageLender.toLowerCase().trim();
-    // Use bidirectional prefix matching so slight name variations still match:
-    // e.g. "Lloyds Banking Group" matches panel entry "Lloyds Banking Group - New Mortgage"
-    // and vice versa. Also handles "Natwest" matching "NatWest International" etc.
-    const approvedFirmIds = new Set(
-      panelRows
-        .filter(row => {
-          const panelNorm = row.lenderName.toLowerCase().trim();
-          return panelNorm === lenderNorm ||
-            panelNorm.startsWith(lenderNorm) ||
-            lenderNorm.startsWith(panelNorm);
-        })
-        .map(row => row.firmId)
-    );
-    firms = firms.filter(f => approvedFirmIds.has(f.id));
-  }
+  // Lender panel filtering removed — all 4 firms always show regardless of lender selected
 
   const feeRows = await db.select().from(firmFeeStructures)
     .where(and(
@@ -584,10 +566,9 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
   const results: LiveQuoteResult[] = [];
 
   for (const firm of firms) {
-    // Exclude TQ Law from new build transactions and leasehold PURCHASE (but allow leasehold SALE)
+    // Exclude TQ Law only for new build (leasehold purchase is now allowed)
     const isTQLaw = firm.name.toLowerCase().includes('tq law');
-    const isLeaseholdPurchase = input.tenure === 'leasehold' && (transactionType === 'purchase' || transactionType === 'sale_purchase');
-    if (isTQLaw && (input.isNewBuild || isLeaseholdPurchase)) continue;
+    if (isTQLaw && input.isNewBuild) continue;
 
     // Find the matching fee band for this firm + property value
     type FeeRow = typeof feeRows[number];

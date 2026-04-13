@@ -401,3 +401,9 @@
 - [x] Add contactedViaEmail and contactedViaPhone boolean fields to leads table in DB schema
 - [x] Add leads.markContacted tRPC mutation to toggle these fields
 - [x] Add "Mark as Contacted via Email" and "Mark as Contacted via Phone" buttons to admin leads panel (green when active, toggleable, separated from status buttons)
+
+## Fee & Filter Fixes + Follow-up Email (Apr 2026)
+- [x] Fix mortgage fee to flat £100 for purchase and purchase leg of sale & purchase (in feeEngine.ts and DB fee structures)
+- [x] Remove lender panel filtering — all 4 firms always show regardless of lender selected
+- [x] Update TQ Law exclusion: include for leasehold purchase, exclude only for new build (new build only)
+- [x] Add automatic James Fellows follow-up email to lead's email address on quote save (name, transaction type, property values, saved quote link, James Fellows signature)

@@ -1142,6 +1142,9 @@ export default function QuoteResults() {
       isFirstTimeBuyer: answers.isFirstTimeBuyer,
       quoteUrl: quoteUrl || undefined,
       origin: window.location.origin,
+      tenure: (answers.tenure as 'freehold' | 'leasehold') || 'freehold',
+      salePropertyValue: (answers as any).salePrice ?? (answers as any).salePropertyValue ?? undefined,
+      saleTenure: ((answers as any).saleTenure as 'freehold' | 'leasehold') ?? undefined,
     });
   }, [liveQuotes, quoteRef, snapshotSaved, contactDetails, answers, quoteUrl]);
 
