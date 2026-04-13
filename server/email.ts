@@ -414,6 +414,10 @@ export async function sendJamesFellowsFollowUpEmail(params: {
 
   const body = `
     <div style="font-family:'DM Sans',Arial,sans-serif;font-size:15px;color:#222;line-height:1.7;max-width:600px;">
+
+      <!-- Do not reply notice -->
+      <p style="margin:0 0 20px;font-size:14px;"><strong><em><u>Please do not reply to this message as this is a no-reply email address. Instead, please email us directly at <a href="mailto:info@comparetheconveyancingmarket.co.uk" style="color:#0f1f3d;">info@comparetheconveyancingmarket.co.uk</a></u></em></strong></p>
+
       <p style="margin:0 0 16px;">Dear ${name},<br/>I hope this email finds you well.</p>
 
       <p style="margin:0 0 16px;">${transactionSentence}<br/>
@@ -441,8 +445,8 @@ export async function sendJamesFellowsFollowUpEmail(params: {
             <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;">
               <tr>
                 <td style="width:110px;padding-right:20px;vertical-align:top;border-right:3px solid #0f1f3d;">
-                  <div style="width:100px;height:100px;background:#c9a84c;border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;">
-                    <img src="https://files.manuscdn.com/user_upload_by_module/session_file/109506846/AMpvREVqFOfDvSzS.jpg" alt="Compare the Conveyancing Market" width="100" height="100" style="border-radius:6px;display:block;" />
+                  <div style="width:100px;height:100px;background:#c9a84c;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;">
+                    <img src="https://d2xsxph8kpxj0f.cloudfront.net/109506846/5ZpoxzgLM5cycU3sThccK4/favicon-logo-v2-VpvW9vnDQBVjC9fgzHCMg6.png" alt="Compare the Conveyancing Market" width="100" height="100" style="border-radius:8px;display:block;object-fit:cover;" />
                   </div>
                 </td>
                 <td style="padding-left:20px;vertical-align:top;">

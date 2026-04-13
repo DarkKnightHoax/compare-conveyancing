@@ -407,3 +407,7 @@
 - [x] Remove lender panel filtering — all 4 firms always show regardless of lender selected
 - [x] Update TQ Law exclusion: include for leasehold purchase, exclude only for new build (new build only)
 - [x] Add automatic James Fellows follow-up email to lead's email address on quote save (name, transaction type, property values, saved quote link, James Fellows signature)
+
+## Follow-Up Email Fixes (Apr 2026)
+- [x] Add bold/italic/underline "do not reply" notice at top of James Fellows follow-up email (links to info@ address)
+- [x] Replace hero background photo with actual gold house/key company logo in James Fellows email signature
