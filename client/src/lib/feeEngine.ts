@@ -114,7 +114,7 @@ const REMORTGAGE_BASE_FEES = [
 
 // ─── PURCHASE SUPPLEMENTS (ex. VAT) ─────────────────────────────────────────
 const PURCHASE_SUPPLEMENTS = {
-  leasehold: { name: 'Leasehold Supplement', price: 149 },
+  leasehold: { name: 'Leasehold Supplement', price: 249 },
   mortgage: { name: 'Mortgage / Re-mortgage', price: 100 },
   newBuild: { name: 'New Build Supplement', price: 149 },
   sharedOwnership: { name: 'Shared Ownership', price: 249 },
@@ -127,7 +127,7 @@ const PURCHASE_SUPPLEMENTS = {
 
 // ─── SALE SUPPLEMENTS (ex. VAT) ─────────────────────────────────────────────
 const SALE_SUPPLEMENTS = {
-  leasehold: { name: 'Leasehold Supplement', price: 149 },
+  leasehold: { name: 'Leasehold Supplement', price: 249 },
   mortgagedProperty: { name: 'Mortgage Redemption', price: 100 }, // Fixed at £100
 };
 

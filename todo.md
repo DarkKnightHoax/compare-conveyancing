@@ -411,3 +411,6 @@
 ## Follow-Up Email Fixes (Apr 2026)
 - [x] Add bold/italic/underline "do not reply" notice at top of James Fellows follow-up email (links to info@ address)
 - [x] Replace hero background photo with actual gold house/key company logo in James Fellows email signature
+
+## Leasehold Fee Fix (Apr 2026)
+- [x] Fix leasehold supplement to £249 fixed fee on purchase leasehold quotations — updated all 103 DB bands and both PURCHASE_SUPPLEMENTS and SALE_SUPPLEMENTS in feeEngine.ts
