@@ -414,3 +414,9 @@
 
 ## Leasehold Fee Fix (Apr 2026)
 - [x] Fix leasehold supplement to £249 fixed fee on purchase leasehold quotations — updated all 103 DB bands and both PURCHASE_SUPPLEMENTS and SALE_SUPPLEMENTS in feeEngine.ts
+
+## Leasehold Fee Split (Apr 2026)
+- [x] Purchase leasehold supplement: £249 (kept as is)
+- [x] Sale leasehold supplement: £149 — added saleLeaseholdSupplement column to DB (103 bands set to £149)
+- [x] Sale leg of sale & purchase leasehold supplement: £149 (computeLeg sale leg updated)
+- [x] feeEngine.ts SALE_SUPPLEMENTS.leasehold updated to £149

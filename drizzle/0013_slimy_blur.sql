@@ -1,0 +1,1 @@
+ALTER TABLE `firm_fee_structures` ADD `saleLeaseholdSupplement` decimal(10,2) DEFAULT '0';

@@ -515,9 +515,12 @@ function computeLeg(
     disbursements.push({ name: 'Land Registry Searches', price: 3, includesVat: true });
     disbursements.push({ name: numBuyers > 1 ? `Bankruptcy Search (x${numBuyers})` : 'Bankruptcy Search', price: 4 * numBuyers, includesVat: true });
   } else {
-    // sale leg
-    if (legTenure === 'leasehold' && Number(band.leaseholdSupplement) > 0)
-      supplements.push({ name: 'Leasehold Supplement', price: Number(band.leaseholdSupplement) });
+    // sale leg — use saleLeaseholdSupplement (£149) instead of purchase leaseholdSupplement (£249)
+    const saleLeaseholdFee = Number(band.saleLeaseholdSupplement ?? 0) > 0
+      ? Number(band.saleLeaseholdSupplement)
+      : Number(band.leaseholdSupplement);
+    if (legTenure === 'leasehold' && saleLeaseholdFee > 0)
+      supplements.push({ name: 'Leasehold Supplement', price: saleLeaseholdFee });
     if (input.hasMortgageOnProperty)
       supplements.push({ name: 'Mortgage Redemption', price: 100 });
     // AML for sale
@@ -642,8 +645,12 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
           supplements.push({ name: 'Second Home Supplement', price: 99 });
       }
       if (transactionType === 'sale') {
-        if (input.tenure === 'leasehold' && Number(band.leaseholdSupplement) > 0)
-          supplements.push({ name: 'Leasehold Supplement', price: Number(band.leaseholdSupplement) });
+        // sale-only: use saleLeaseholdSupplement (£149)
+        const saleLeaseholdFee = Number(band.saleLeaseholdSupplement ?? 0) > 0
+          ? Number(band.saleLeaseholdSupplement)
+          : Number(band.leaseholdSupplement);
+        if (input.tenure === 'leasehold' && saleLeaseholdFee > 0)
+          supplements.push({ name: 'Leasehold Supplement', price: saleLeaseholdFee });
         if (input.hasMortgageOnProperty)
           supplements.push({ name: 'Mortgage Redemption', price: 100 });
       }

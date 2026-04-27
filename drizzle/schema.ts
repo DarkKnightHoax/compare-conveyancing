@@ -168,8 +168,9 @@ export const firmFeeStructures = mysqlTable("firm_fee_structures", {
   bankTransferFee: decimal("bankTransferFee", { precision: 10, scale: 2 }).default("0"),
   antiMoneyLaunderingFee: decimal("antiMoneyLaunderingFee", { precision: 10, scale: 2 }).default("6"),
   officialCopiesFee: decimal("officialCopiesFee", { precision: 10, scale: 2 }).default("0"),
-  // Leasehold supplement
+  // Leasehold supplement (purchase = £249, sale = £149)
   leaseholdSupplement: decimal("leaseholdSupplement", { precision: 10, scale: 2 }).default("0"),
+  saleLeaseholdSupplement: decimal("saleLeaseholdSupplement", { precision: 10, scale: 2 }).default("0"),
   // New build supplement
   newBuildSupplement: decimal("newBuildSupplement", { precision: 10, scale: 2 }).default("0"),
   // Shared ownership supplement

@@ -127,7 +127,7 @@ const PURCHASE_SUPPLEMENTS = {
 
 // ─── SALE SUPPLEMENTS (ex. VAT) ─────────────────────────────────────────────
 const SALE_SUPPLEMENTS = {
-  leasehold: { name: 'Leasehold Supplement', price: 249 },
+  leasehold: { name: 'Leasehold Supplement', price: 149 }, // Sale leasehold = £149 (purchase = £249)
   mortgagedProperty: { name: 'Mortgage Redemption', price: 100 }, // Fixed at £100
 };
 
