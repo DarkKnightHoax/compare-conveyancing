@@ -95,8 +95,8 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
   const isSalePurchase = transactionType === 'sale_purchase';
   const isPurchase = transactionType === 'purchase';
 
-  // FILE_OPENING_FEE is firm-specific (from the quote result)
-  const FILE_OPENING_FEE = firm.fileOpeningFee || 150;
+  // File Opening Fee is always £150 (fixed across all firms — business rule)
+  const FILE_OPENING_FEE = 150;
 
   // Helper: extract a disbursement price from a disbursements array by name fragment
   const getDisbFee = (disbs: { name: string; price: number }[], fragment: string): number => {
