@@ -420,3 +420,18 @@
 - [x] Sale leasehold supplement: £149 — added saleLeaseholdSupplement column to DB (103 bands set to £149)
 - [x] Sale leg of sale & purchase leasehold supplement: £149 (computeLeg sale leg updated)
 - [x] feeEngine.ts SALE_SUPPLEMENTS.leasehold updated to £149
+
+## Bulk Follow-Up Email to Existing Leads (Apr 2026)
+- [x] Query all existing leads from DB and verify data completeness (226 total, 90 real unique leads selected)
+- [x] Confirmed list with user before sending
+- [x] Sent personalised James Fellows follow-up email to 90 leads via Resend (CCM-2026-00113 to CCM-2026-00226, deduplicated by email, CC: info@comparetheconveyancingmarket.co.uk) — 90 sent, 0 failed
+
+## Dynamic Fee Linking: Instruct Directly + Fee Editor (Apr 2026)
+- [x] Fix: server/db.ts computeLeg and single-leg purchase to use band.searchFee (DB column) instead of hardcoded £349 for Search Pack
+- [x] Fix: server/db.ts to expose searchPackFee and amlFee on LiveQuoteResult so client can read them
+- [x] Fix: QuoteResults.tsx InstructModal to derive search pack and AML fees from firm.purchaseBreakdown disbursements (not hardcoded £399/£49)
+- [x] Fix: SavedQuote.tsx InstructModal same — derive from firm.purchaseBreakdown disbursements
+- [x] Fix: Admin Fee Editor — for sale & purchase, show two separate sections: Purchase Fee Variables and Sale Fee Variables
+- [x] Fix: Admin Fee Editor — add saleLegalFee field for sale leg of sale & purchase
+- [x] Fix: server schema — add saleLegalFee column to firm_fee_structures for sale & purchase sale leg
+- [x] Verify: changing search pack or AML in fee editor updates both fee breakdown and Instruct Directly modal

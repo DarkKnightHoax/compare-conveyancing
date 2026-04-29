@@ -161,8 +161,10 @@ export const firmFeeStructures = mysqlTable("firm_fee_structures", {
   maxValue: int("maxValue").notNull().default(9999999),
   // Core legal fee (excl. VAT)
   legalFee: decimal("legalFee", { precision: 10, scale: 2 }).notNull().default("0"),
+  // Sale leg legal fee for sale_purchase (purchase leg uses legalFee above)
+  saleLegalFee: decimal("saleLegalFee", { precision: 10, scale: 2 }).default("0"),
   // Disbursements
-  searchFee: decimal("searchFee", { precision: 10, scale: 2 }).default("0"),
+  searchFee: decimal("searchFee", { precision: 10, scale: 2 }).default("349"),
   landRegistryFee: decimal("landRegistryFee", { precision: 10, scale: 2 }).default("0"),
   electronicTransferFee: decimal("electronicTransferFee", { precision: 10, scale: 2 }).default("30"),
   bankTransferFee: decimal("bankTransferFee", { precision: 10, scale: 2 }).default("0"),

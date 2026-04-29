@@ -91,24 +91,46 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
   const [submitted, setSubmitted] = useState(false);
   const [applicantCount, setApplicantCount] = useState(1);
 
-  // Fixed fees across all firms and price bands
-  const AML_FEE = 49;
-  const FILE_OPENING_FEE = 150;
-  const SEARCH_PACK_FEE = 399;
-
   const isSale = transactionType === 'sale';
   const isSalePurchase = transactionType === 'sale_purchase';
   const isPurchase = transactionType === 'purchase';
 
-  // Purchase leg: Search Pack + AML + File Opening = £598
-  const purchaseInitialPayment = SEARCH_PACK_FEE + AML_FEE + FILE_OPENING_FEE;
-  // Sale leg: AML + File Opening = £199
-  const saleInitialPayment = AML_FEE + FILE_OPENING_FEE;
+  // FILE_OPENING_FEE is firm-specific (from the quote result)
+  const FILE_OPENING_FEE = firm.fileOpeningFee || 150;
+
+  // Helper: extract a disbursement price from a disbursements array by name fragment
+  const getDisbFee = (disbs: { name: string; price: number }[], fragment: string): number => {
+    const match = disbs.find(d => d.name.toLowerCase().includes(fragment.toLowerCase()));
+    return match ? match.price : 0;
+  };
+
+  // For sale_purchase: read from the per-leg breakdowns (already computed by the server)
+  // For single-leg: read from the top-level disbursements
+  const purchaseDisbursements = isSalePurchase
+    ? (firm.purchaseBreakdown?.disbursements ?? firm.disbursements)
+    : firm.disbursements;
+  const saleDisbursements = isSalePurchase
+    ? (firm.saleBreakdown?.disbursements ?? firm.disbursements)
+    : firm.disbursements;
+
+  // Search pack is purchase-only
+  const SEARCH_PACK_FEE = getDisbFee(purchaseDisbursements, 'Search Pack');
+  // AML fee — purchase leg (may be multiplied by buyer count)
+  const PURCHASE_AML_FEE = getDisbFee(purchaseDisbursements, 'Anti-Money Laundering') || getDisbFee(purchaseDisbursements, 'AML');
+  // AML fee — sale leg
+  const SALE_AML_FEE = getDisbFee(saleDisbursements, 'Anti-Money Laundering') || getDisbFee(saleDisbursements, 'AML');
+  // For single-leg transactions, use the same AML fee
+  const AML_FEE = isSalePurchase ? PURCHASE_AML_FEE : (getDisbFee(firm.disbursements, 'Anti-Money Laundering') || getDisbFee(firm.disbursements, 'AML') || 49);
+
+  // Purchase leg: Search Pack + AML + File Opening
+  const purchaseInitialPayment = SEARCH_PACK_FEE + PURCHASE_AML_FEE + FILE_OPENING_FEE;
+  // Sale leg: AML + File Opening
+  const saleInitialPayment = SALE_AML_FEE + FILE_OPENING_FEE;
   // Combined for sale_purchase
   const initialPayment = isSalePurchase
     ? purchaseInitialPayment + saleInitialPayment
     : isSale
-      ? saleInitialPayment
+      ? (AML_FEE + FILE_OPENING_FEE)
       : purchaseInitialPayment;
 
   const propertyAddressLabel = isSale ? 'Property address being sold' : 'Property address being purchased';
@@ -229,7 +251,7 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
                     </div>
                     <div className="flex justify-between text-xs mb-0.5">
                       <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>AML checks</span>
-                      <span style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(AML_FEE)}</span>
+                      <span style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(PURCHASE_AML_FEE)}</span>
                     </div>
                     <div className="flex justify-between text-xs mb-1">
                       <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>File Opening Fee <span className="italic">(non-refundable)</span></span>
@@ -244,7 +266,7 @@ function InstructModal({ firm, onClose, contactDetails, transactionType }: {
                     <div className="text-xs font-semibold mb-1.5" style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'DM Sans', sans-serif" }}>Sale initial payment</div>
                     <div className="flex justify-between text-xs mb-0.5">
                       <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>AML checks</span>
-                      <span style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(AML_FEE)}</span>
+                      <span style={{ color: "oklch(0.35 0.06 250)", fontFamily: "'JetBrains Mono', monospace" }}>{formatCurrency(SALE_AML_FEE)}</span>
                     </div>
                     <div className="flex justify-between text-xs mb-1">
                       <span style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>File Opening Fee <span className="italic">(non-refundable)</span></span>

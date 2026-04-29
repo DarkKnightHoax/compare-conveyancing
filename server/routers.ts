@@ -459,6 +459,7 @@ export const appRouter = router({
         minValue: z.number().min(0).default(0),
         maxValue: z.number().min(1).default(9999999),
         legalFee: z.string(),
+        saleLegalFee: z.string().optional(),
         searchFee: z.string().optional(),
         landRegistryFee: z.string().optional(),
         electronicTransferFee: z.string().optional(),

@@ -730,21 +730,33 @@ function FeesTab({ initialFirmId }: { initialFirmId: number | null }) {
     onError: (e) => toast.error(e.message),
   });
 
-  const emptyForm = { firmId: firmId ?? 0, transactionType: txType, minValue: 0, maxValue: 500000, legalFee: "", searchFee: "", landRegistryFee: "", electronicTransferFee: "", bankTransferFee: "", antiMoneyLaunderingFee: "", platformCommission: "", isActive: true };
+  const emptyForm = { firmId: firmId ?? 0, transactionType: txType, minValue: 0, maxValue: 500000, legalFee: "", saleLegalFee: "", searchFee: "", landRegistryFee: "", electronicTransferFee: "", bankTransferFee: "", antiMoneyLaunderingFee: "", platformCommission: "", isActive: true };
   const [form, setForm] = useState<any>(emptyForm);
 
   const filteredBands = bands?.filter((b: any) => b.transactionType === txType) ?? [];
 
-  const feeFields = [
-    { key: "legalFee", label: "Legal Fee *" },
+  // For sale_purchase: split fields into purchase leg and sale leg sections
+  const isSalePurchase = txType === 'sale_purchase';
+
+  // Purchase leg fields (used for all transaction types)
+  const purchaseFeeFields = [
+    { key: "legalFee", label: isSalePurchase ? "Purchase Legal Fee *" : "Legal Fee *" },
     { key: "fileOpeningFee", label: "File Opening Fee" },
-    { key: "searchFee", label: "Search Fee" },
+    { key: "searchFee", label: "Search Pack Fee" },
     { key: "landRegistryFee", label: "Land Registry Fee" },
     { key: "electronicTransferFee", label: "Electronic Transfer" },
     { key: "bankTransferFee", label: "Bank Transfer Fee" },
-    { key: "antiMoneyLaunderingFee", label: "AML Fee" },
+    { key: "antiMoneyLaunderingFee", label: "AML Fee (per person)" },
     { key: "platformCommission", label: "Platform Commission" },
   ];
+
+  // Sale leg fields (only shown for sale_purchase)
+  const saleFeeFields = [
+    { key: "saleLegalFee", label: "Sale Legal Fee *" },
+  ];
+
+  // For non-sale_purchase, use the same fields as before
+  const feeFields = purchaseFeeFields;
 
   return (
     <div>
@@ -803,13 +815,45 @@ function FeesTab({ initialFirmId }: { initialFirmId: number | null }) {
                       <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>Max Value (£)</Label>
                       <Input type="number" value={form.maxValue} onChange={(e) => setForm((p: any) => ({ ...p, maxValue: Number(e.target.value) }))} style={{ fontFamily: "'DM Sans', sans-serif" }} />
                     </div>
-                    {feeFields.map(({ key, label }) => (
-                      <div key={key}>
-                        <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>{label}</Label>
-                        <Input value={form[key] ?? ""} onChange={(e) => setForm((p: any) => ({ ...p, [key]: e.target.value }))} placeholder="e.g. 850" style={{ fontFamily: "'DM Sans', sans-serif" }} />
-                      </div>
-                    ))}
                   </div>
+                  {isSalePurchase ? (
+                    <div className="space-y-3">
+                      <div className="rounded-lg p-3" style={{ background: "oklch(0.97 0.01 250)", border: "1px solid oklch(0.88 0.02 250)" }}>
+                        <div className="text-xs font-bold mb-2" style={{ color: "oklch(0.25 0.10 230)", fontFamily: "'DM Sans', sans-serif" }}>Purchase Leg Fees</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          {purchaseFeeFields.map(({ key, label }) => (
+                            <div key={key}>
+                              <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>{label}</Label>
+                              <Input value={form[key] ?? ""} onChange={(e) => setForm((p: any) => ({ ...p, [key]: e.target.value }))} placeholder="e.g. 850" style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="rounded-lg p-3" style={{ background: "oklch(0.97 0.03 75)", border: "1px solid oklch(0.88 0.05 75)" }}>
+                        <div className="text-xs font-bold mb-2" style={{ color: "oklch(0.35 0.15 75)", fontFamily: "'DM Sans', sans-serif" }}>Sale Leg Fees</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          {saleFeeFields.map(({ key, label }) => (
+                            <div key={key}>
+                              <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>{label}</Label>
+                              <Input value={form[key] ?? ""} onChange={(e) => setForm((p: any) => ({ ...p, [key]: e.target.value }))} placeholder="e.g. 650" style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                            </div>
+                          ))}
+                          <div className="col-span-2 text-xs" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                            Note: AML, File Opening, Search Pack, and other shared fees above also apply to the sale leg.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3">
+                      {feeFields.map(({ key, label }) => (
+                        <div key={key}>
+                          <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>{label}</Label>
+                          <Input value={form[key] ?? ""} onChange={(e) => setForm((p: any) => ({ ...p, [key]: e.target.value }))} placeholder="e.g. 850" style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div className="flex gap-2">
                     <button onClick={() => upsert.mutate({ ...form, firmId: firmId! })} disabled={upsert.isPending} className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-semibold" style={{ background: "oklch(0.18 0.06 250)", color: "white", fontFamily: "'DM Sans', sans-serif" }}>
                       <Save size={13} /> Save
@@ -824,8 +868,16 @@ function FeesTab({ initialFirmId }: { initialFirmId: number | null }) {
                       £{Number(band.minValue).toLocaleString()} – £{Number(band.maxValue).toLocaleString()}
                     </div>
                     <div className="text-xs mt-1 flex gap-4 flex-wrap" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                      <span>Legal: <strong style={{ color: "oklch(0.18 0.06 250)" }}>£{band.legalFee}</strong></span>
-                      {band.searchFee && <span>Search: £{band.searchFee}</span>}
+                      {isSalePurchase ? (
+                        <>
+                          <span>Purchase Legal: <strong style={{ color: "oklch(0.18 0.06 250)" }}>£{band.legalFee}</strong></span>
+                          <span>Sale Legal: <strong style={{ color: "oklch(0.35 0.15 75)" }}>£{band.saleLegalFee || '—'}</strong></span>
+                        </>
+                      ) : (
+                        <span>Legal: <strong style={{ color: "oklch(0.18 0.06 250)" }}>£{band.legalFee}</strong></span>
+                      )}
+                      {band.searchFee && <span>Search Pack: £{band.searchFee}</span>}
+                      {band.antiMoneyLaunderingFee && <span>AML: £{band.antiMoneyLaunderingFee}</span>}
                       {band.platformCommission && <span>Commission: £{band.platformCommission}</span>}
                     </div>
                   </div>
@@ -854,13 +906,45 @@ function FeesTab({ initialFirmId }: { initialFirmId: number | null }) {
                   <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>Max Value (£)</Label>
                   <Input type="number" value={form.maxValue} onChange={(e) => setForm((p: any) => ({ ...p, maxValue: Number(e.target.value) }))} style={{ fontFamily: "'DM Sans', sans-serif" }} />
                 </div>
-                {feeFields.map(({ key, label }) => (
-                  <div key={key}>
-                    <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>{label}</Label>
-                    <Input value={form[key] ?? ""} onChange={(e) => setForm((p: any) => ({ ...p, [key]: e.target.value }))} placeholder="e.g. 850" style={{ fontFamily: "'DM Sans', sans-serif" }} />
-                  </div>
-                ))}
               </div>
+              {isSalePurchase ? (
+                <div className="space-y-3">
+                  <div className="rounded-lg p-3" style={{ background: "oklch(0.97 0.01 250)", border: "1px solid oklch(0.88 0.02 250)" }}>
+                    <div className="text-xs font-bold mb-2" style={{ color: "oklch(0.25 0.10 230)", fontFamily: "'DM Sans', sans-serif" }}>Purchase Leg Fees</div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {purchaseFeeFields.map(({ key, label }) => (
+                        <div key={key}>
+                          <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>{label}</Label>
+                          <Input value={form[key] ?? ""} onChange={(e) => setForm((p: any) => ({ ...p, [key]: e.target.value }))} placeholder="e.g. 850" style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="rounded-lg p-3" style={{ background: "oklch(0.97 0.03 75)", border: "1px solid oklch(0.88 0.05 75)" }}>
+                    <div className="text-xs font-bold mb-2" style={{ color: "oklch(0.35 0.15 75)", fontFamily: "'DM Sans', sans-serif" }}>Sale Leg Fees</div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {saleFeeFields.map(({ key, label }) => (
+                        <div key={key}>
+                          <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>{label}</Label>
+                          <Input value={form[key] ?? ""} onChange={(e) => setForm((p: any) => ({ ...p, [key]: e.target.value }))} placeholder="e.g. 650" style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                        </div>
+                      ))}
+                      <div className="col-span-2 text-xs" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                        Note: AML, File Opening, Search Pack, and other shared fees above also apply to the sale leg.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  {feeFields.map(({ key, label }) => (
+                    <div key={key}>
+                      <Label className="text-xs mb-1 block" style={{ color: "oklch(0.45 0.04 250)" }}>{label}</Label>
+                      <Input value={form[key] ?? ""} onChange={(e) => setForm((p: any) => ({ ...p, [key]: e.target.value }))} placeholder="e.g. 850" style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="flex gap-2">
                 <button onClick={() => upsert.mutate({ ...form, firmId: firmId!, transactionType: txType })} disabled={upsert.isPending} className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-semibold" style={{ background: "oklch(0.18 0.06 250)", color: "white", fontFamily: "'DM Sans', sans-serif" }}>
                   <Save size={13} /> Save Band

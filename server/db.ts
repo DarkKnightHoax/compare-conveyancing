@@ -468,14 +468,17 @@ function calcLandRegistry(value: number): number {
 }
 
 // ── Helper: compute one leg's fees for a given property value + tenure ──
-function computeLeg(
+export function computeLeg(
   band: any,
   legType: 'purchase' | 'sale',
   legValue: number,
   legTenure: 'freehold' | 'leasehold',
   input: LiveQuoteInput,
 ): LegBreakdown {
-  const legalFee = Number(band.legalFee);
+  // For sale leg of sale_purchase, use saleLegalFee if set; otherwise fall back to legalFee
+  const legalFee = legType === 'sale' && Number(band.saleLegalFee) > 0
+    ? Number(band.saleLegalFee)
+    : Number(band.legalFee);
   const supplements: { name: string; price: number }[] = [];
   const disbursements: { name: string; price: number; includesVat: boolean }[] = [];
   const numBuyers = Math.max(1, input.buyerCount ?? 1);
@@ -507,7 +510,8 @@ function computeLeg(
         includesVat: true,
       });
     }
-    disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: 349, includesVat: true });
+    const searchPackPrice = Number(band.searchFee) > 0 ? Number(band.searchFee) : 349;
+    disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: searchPackPrice, includesVat: true });
     if (Number(band.officialCopiesFee) > 0)
       disbursements.push({ name: 'Official Copies (Title Register & Plan)', price: Number(band.officialCopiesFee), includesVat: true });
     if (Number(band.electronicTransferFee) > 0)
@@ -663,8 +667,10 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
           includesVat: true,
         });
       }
-      if (transactionType === 'purchase')
-        disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: 349, includesVat: true });
+      if (transactionType === 'purchase') {
+        const searchPackPrice = Number(band.searchFee) > 0 ? Number(band.searchFee) : 349;
+        disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: searchPackPrice, includesVat: true });
+      }
       if (Number(band.officialCopiesFee) > 0)
         disbursements.push({ name: 'Official Copies (Title Register & Plan)', price: Number(band.officialCopiesFee), includesVat: true });
       if (Number(band.electronicTransferFee) > 0)
