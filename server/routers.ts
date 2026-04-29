@@ -13,7 +13,7 @@ import { ENV } from "./_core/env";
 import {
 
   getAllLawFirms, getAllLawFirmsAdmin, createLawFirm, updateLawFirm, deleteLawFirm,
-  createLead, getAllLeads, getLeadById, getLeadByRef, updateLeadStatus, updateLeadContactStatus, updateLeadSnapshot, getLeadsStats,
+  createLead, getAllLeads, getLeadById, getLeadByRef, updateLeadStatus, updateLeadContactStatus, updateLeadSnapshot, getLeadsStats, deleteLeadById,
   createCallbackRequest, getAllCallbacks, updateCallbackStatus, getPendingCallbacksCount,
   createInstructRequest, getAllInstructRequests, updateInstructStatus,
   getFeeStructuresForFirm, getAllFeeStructures, upsertFeeStructure, deleteFeeStructure,
@@ -349,6 +349,12 @@ export const appRouter = router({
         return { success: true };
       }),
     stats: standaloneAdminProcedure.query(() => getLeadsStats()),
+    delete: standaloneAdminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await deleteLeadById(input.id);
+        return { success: true };
+      }),
   }),
 
   callbacks: router({

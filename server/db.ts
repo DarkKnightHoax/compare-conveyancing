@@ -153,6 +153,12 @@ export async function updateLeadSnapshot(referenceNumber: string, quoteSnapshot:
   await db.update(leads).set({ quoteSnapshot }).where(eq(leads.referenceNumber, referenceNumber));
 }
 
+export async function deleteLeadById(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(leads).where(eq(leads.id, id));
+}
+
 export async function getLeadsStats() {
   const db = await getDb();
   if (!db) return { total: 0, new: 0, contacted: 0, instructed: 0, lost: 0, todayCount: 0, weekCount: 0 };

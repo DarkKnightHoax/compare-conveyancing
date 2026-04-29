@@ -131,22 +131,42 @@ function DashboardTab() {
 }
 
 // ─── LEADS TAB ────────────────────────────────────────────────────────────────
+const LEADS_PER_PAGE = 10;
+
 function LeadsTab() {
-  const { data: leads, refetch } = trpc.leads.list.useQuery({ limit: 100 });
+  const [page, setPage] = useState(1);
+  const { data: leads, refetch } = trpc.leads.list.useQuery({ limit: 1000 });
   const updateStatus = trpc.leads.updateStatus.useMutation({ onSuccess: () => refetch() });
   const markContacted = trpc.leads.markContacted.useMutation({ onSuccess: () => refetch() });
+  const deleteLead = trpc.leads.delete.useMutation({
+    onSuccess: () => { refetch(); toast.success('Lead deleted'); },
+    onError: () => toast.error('Failed to delete lead'),
+  });
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
   const txLabel: Record<string, string> = {
     purchase: "Purchase", sale: "Sale", sale_purchase: "Sale & Purchase", remortgage: "Remortgage"
   };
 
+  const totalLeads = leads?.length ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalLeads / LEADS_PER_PAGE));
+  const safePage = Math.min(page, totalPages);
+  const pagedLeads = (leads ?? []).slice((safePage - 1) * LEADS_PER_PAGE, safePage * LEADS_PER_PAGE);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
-          All Leads
-        </h2>
+        <div>
+          <h2 className="text-2xl font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+            All Leads
+          </h2>
+          {totalLeads > 0 && (
+            <p className="text-sm mt-0.5" style={{ color: "oklch(0.55 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              {totalLeads} total &mdash; page {safePage} of {totalPages}
+            </p>
+          )}
+        </div>
         <button onClick={() => refetch()} className="flex items-center gap-2 text-sm px-4 py-2 rounded-lg" style={{ background: "oklch(0.18 0.06 250)", color: "white", fontFamily: "'DM Sans', sans-serif" }}>
           <RefreshCw size={14} /> Refresh
         </button>
@@ -160,8 +180,28 @@ function LeadsTab() {
         </div>
       ) : (
         <div className="space-y-3">
-          {leads.map((lead) => (
+          {pagedLeads.map((lead) => (
             <div key={lead.id} className="bg-white rounded-2xl shadow-sm overflow-hidden" style={{ border: "1px solid oklch(0.92 0.01 250)" }}>
+              {/* ── CONFIRM DELETE OVERLAY ── */}
+              {confirmDeleteId === lead.id && (
+                <div className="p-4 flex items-center justify-between" style={{ background: "oklch(0.97 0.02 25)", borderBottom: "1px solid oklch(0.90 0.04 25)" }}>
+                  <span className="text-sm font-semibold" style={{ color: "oklch(0.35 0.08 25)", fontFamily: "'DM Sans', sans-serif" }}>
+                    Delete {lead.firstName} {lead.lastName}? This cannot be undone.
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setConfirmDeleteId(null)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold"
+                      style={{ background: "oklch(0.93 0.01 250)", color: "oklch(0.35 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}
+                    >Cancel</button>
+                    <button
+                      onClick={() => { deleteLead.mutate({ id: lead.id }); setConfirmDeleteId(null); setExpandedId(null); }}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold"
+                      style={{ background: "oklch(0.50 0.18 25)", color: "white", fontFamily: "'DM Sans', sans-serif" }}
+                    >Yes, Delete</button>
+                  </div>
+                </div>
+              )}
               <div
                 className="p-5 cursor-pointer flex items-center justify-between"
                 onClick={() => setExpandedId(expandedId === lead.id ? null : lead.id)}
@@ -184,6 +224,14 @@ function LeadsTab() {
                   <span className="text-xs" style={{ color: "oklch(0.6 0.03 250)", fontFamily: "'DM Sans', sans-serif" }}>
                     {new Date(lead.createdAt).toLocaleDateString("en-GB")}
                   </span>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(confirmDeleteId === lead.id ? null : lead.id); }}
+                    className="p-1.5 rounded-lg transition-colors"
+                    style={{ color: "oklch(0.55 0.15 25)", background: "oklch(0.96 0.02 25)" }}
+                    title="Delete lead"
+                  >
+                    <Trash2 size={14} />
+                  </button>
                   <ChevronDown size={16} style={{ color: "oklch(0.6 0.03 250)", transform: expandedId === lead.id ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
                 </div>
               </div>
@@ -353,6 +401,50 @@ function LeadsTab() {
               )}
             </div>
           ))}
+
+          {/* ── PAGINATION ── */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-6">
+              <button
+                onClick={() => setPage(1)}
+                disabled={safePage === 1}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-40"
+                style={{ background: "oklch(0.93 0.01 250)", color: "oklch(0.35 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}
+              >« First</button>
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={safePage === 1}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-40"
+                style={{ background: "oklch(0.93 0.01 250)", color: "oklch(0.35 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}
+              >‹ Prev</button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(p => Math.abs(p - safePage) <= 2)
+                .map(p => (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p)}
+                    className="w-8 h-8 rounded-lg text-xs font-semibold"
+                    style={{
+                      background: p === safePage ? "oklch(0.18 0.06 250)" : "oklch(0.93 0.01 250)",
+                      color: p === safePage ? "white" : "oklch(0.35 0.04 250)",
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >{p}</button>
+                ))}
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={safePage === totalPages}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-40"
+                style={{ background: "oklch(0.93 0.01 250)", color: "oklch(0.35 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}
+              >Next ›</button>
+              <button
+                onClick={() => setPage(totalPages)}
+                disabled={safePage === totalPages}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-40"
+                style={{ background: "oklch(0.93 0.01 250)", color: "oklch(0.35 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}
+              >Last »</button>
+            </div>
+          )}
         </div>
       )}
     </div>
