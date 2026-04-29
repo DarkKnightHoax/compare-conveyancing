@@ -510,8 +510,8 @@ export function computeLeg(
         includesVat: true,
       });
     }
-    const searchPackPrice = Number(band.searchFee) > 0 ? Number(band.searchFee) : 349;
-    disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: searchPackPrice, includesVat: true });
+    // Search Pack is always £349 (fixed across all firms)
+    disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: 349, includesVat: true });
     if (Number(band.officialCopiesFee) > 0)
       disbursements.push({ name: 'Official Copies (Title Register & Plan)', price: Number(band.officialCopiesFee), includesVat: true });
     if (Number(band.electronicTransferFee) > 0)
@@ -668,8 +668,8 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
         });
       }
       if (transactionType === 'purchase') {
-        const searchPackPrice = Number(band.searchFee) > 0 ? Number(band.searchFee) : 349;
-        disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: searchPackPrice, includesVat: true });
+        // Search Pack is always £349 (fixed across all firms)
+        disbursements.push({ name: 'Search Pack (Local, Drainage & Environmental)', price: 349, includesVat: true });
       }
       if (Number(band.officialCopiesFee) > 0)
         disbursements.push({ name: 'Official Copies (Title Register & Plan)', price: Number(band.officialCopiesFee), includesVat: true });

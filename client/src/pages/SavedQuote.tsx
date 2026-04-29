@@ -107,8 +107,8 @@ function InstructModal({
     ? (firm.saleBreakdown?.disbursements ?? firm.disbursements)
     : firm.disbursements;
 
-  // Search pack is purchase-only
-  const SEARCH_PACK_FEE = getDisbFee(purchaseDisbursements, 'Search Pack');
+  // Search Pack is always £349 (fixed across all firms — business rule)
+  const SEARCH_PACK_FEE = 349;
   // AML fee — purchase leg (may be multiplied by buyer count)
   const PURCHASE_AML_FEE = getDisbFee(purchaseDisbursements, 'Anti-Money Laundering') || getDisbFee(purchaseDisbursements, 'AML');
   // AML fee — sale leg

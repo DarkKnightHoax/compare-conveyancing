@@ -54,11 +54,12 @@ const baseInput = {
 };
 
 describe("Fee linking: computeLeg uses DB search fee and saleLegalFee", () => {
-  it("purchase leg uses band.searchFee (375) not hardcoded 349", () => {
+  it("purchase leg always uses fixed £349 for Search Pack regardless of band.searchFee", () => {
     const result = computeLeg(mockBand, "purchase", 300000, "freehold", baseInput);
     const searchPack = result.disbursements.find(d => d.name.includes("Search Pack"));
     expect(searchPack).toBeDefined();
-    expect(searchPack!.price).toBe(375);
+    // Search Pack is always £349 regardless of band.searchFee value (375 in mock)
+    expect(searchPack!.price).toBe(349);
   });
 
   it("purchase leg uses band.legalFee (1000) not saleLegalFee", () => {
@@ -84,7 +85,7 @@ describe("Fee linking: computeLeg uses DB search fee and saleLegalFee", () => {
     expect(aml!.price).toBe(49);
   });
 
-  it("falls back to 349 when band.searchFee is 0 or null", () => {
+  it("Search Pack is always 349 even when band.searchFee is 0", () => {
     const bandNoSearch = { ...mockBand, searchFee: "0" };
     const result = computeLeg(bandNoSearch, "purchase", 300000, "freehold", baseInput);
     const searchPack = result.disbursements.find(d => d.name.includes("Search Pack"));
