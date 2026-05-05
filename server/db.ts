@@ -1,4 +1,4 @@
-import { eq, desc, count, gte, and } from "drizzle-orm";
+import { eq, desc, count, gte, and, like, max, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql2 from "mysql2";
 import {
@@ -105,10 +105,20 @@ export async function createLead(data: InsertLead) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   // Generate unique reference number: CCM-YYYY-NNNNN
+  // Use MAX sequence (not COUNT) to avoid collisions when leads are deleted
   const year = new Date().getFullYear();
-  const countResult = await db.select().from(leads);
-  const seq = String(countResult.length + 1).padStart(5, '0');
-  const referenceNumber = `CCM-${year}-${seq}`;
+  const prefix = `CCM-${year}-`;
+  const maxResult = await db
+    .select({ ref: leads.referenceNumber })
+    .from(leads)
+    .where(like(leads.referenceNumber, `${prefix}%`))
+    .orderBy(desc(leads.referenceNumber))
+    .limit(1);
+  const lastSeq = maxResult.length > 0
+    ? parseInt(maxResult[0].ref!.replace(prefix, ''), 10)
+    : 0;
+  const seq = String(lastSeq + 1).padStart(5, '0');
+  const referenceNumber = `${prefix}${seq}`;
   const result = await db.insert(leads).values({ ...data, referenceNumber });
   const leadId = (result[0] as any).insertId as number;
   return { id: leadId, referenceNumber };
