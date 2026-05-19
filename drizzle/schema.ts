@@ -218,3 +218,12 @@ export const firmLenderPanels = mysqlTable("firm_lender_panels", {
 });
 export type FirmLenderPanel = typeof firmLenderPanels.$inferSelect;
 export type InsertFirmLenderPanel = typeof firmLenderPanels.$inferInsert;
+
+// ─── PLATFORM FEE CONSTANTS ───────────────────────────────────────────────────
+// Single-row table (always id=1) for platform-wide editable fee constants.
+export const platformSettings = mysqlTable("platform_settings", {
+  id: int("id").primaryKey().default(1),
+  remortgageLegalFee: int("remortgageLegalFee").notNull().default(150),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type PlatformSettings = typeof platformSettings.$inferSelect;

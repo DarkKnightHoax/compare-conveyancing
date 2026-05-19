@@ -19,6 +19,7 @@ import {
   getFeeStructuresForFirm, getAllFeeStructures, upsertFeeStructure, deleteFeeStructure,
   getNotesForFirm, createFirmNote, deleteFirmNote, getInvestorStats,
   calculateLiveQuotes,
+  getPlatformSettings, updatePlatformSettings,
 } from "./db";
 import { notifyOwner } from "./_core/notification";
 import { sendNewLeadEmail, sendNewCallbackEmail, sendNewInstructEmail, sendContactFormEmail, sendQuoteEmail, sendJamesFellowsFollowUpEmail } from "./email";
@@ -591,7 +592,10 @@ export const appRouter = router({
         buyerCount: z.number().min(1).max(15).optional(),
         mortgageLender: z.string().optional(),
       }))
-      .query(({ input }) => calculateLiveQuotes(input)),
+      .query(async ({ input }) => {
+        const settings = await getPlatformSettings();
+        return calculateLiveQuotes({ ...input, remortgageLegalFee: settings.remortgageLegalFee });
+      }),
 
     emailQuote: publicProcedure
       .input(z.object({
@@ -663,6 +667,18 @@ export const appRouter = router({
         }).catch(() => {});
         return { success: true };
       }),
+  }),
+
+  // ─── PLATFORM SETTINGS (admin-only) ──────────────────────────────────────────────────────
+  platform: router({
+    getSettings: adminProcedure
+      .query(() => getPlatformSettings()),
+
+    updateSettings: adminProcedure
+      .input(z.object({
+        remortgageLegalFee: z.number().min(0).max(10000),
+      }))
+      .mutation(({ input }) => updatePlatformSettings(input)),
   }),
 });
 

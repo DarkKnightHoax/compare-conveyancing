@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Users, Phone, Building2, FileCheck,
   LogOut, Scale, ChevronDown, CheckCircle, XCircle,
   Clock, AlertCircle, TrendingUp, RefreshCw,
-  DollarSign, StickyNote, Plus, Trash2, Edit3, Save, Loader2,
+  DollarSign, StickyNote, Plus, Trash2, Edit3, Save, Loader2, Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -856,6 +856,8 @@ function FeesTab({ initialFirmId }: { initialFirmId: number | null }) {
         Fee Editor
       </h2>
 
+      <PlatformSettingsSection />
+
       <div className="flex gap-4 mb-6 flex-wrap">
         <div>
           <label className="block text-xs font-semibold mb-1" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>Select Firm</label>
@@ -1061,7 +1063,103 @@ function FeesTab({ initialFirmId }: { initialFirmId: number | null }) {
   );
 }
 
-// ─── NOTES TAB ────────────────────────────────────────────────────────────────
+// ─── PLATFORM SETTINGS SECTION ──────────────────────────────────────────────────────────────────────────────────
+function PlatformSettingsSection() {
+  const utils = trpc.useUtils();
+  const { data: settings, isLoading } = trpc.platform.getSettings.useQuery();
+  const [remortgageFee, setRemortgageFee] = useState<string>("");
+  const [editing, setEditing] = useState(false);
+
+  useEffect(() => {
+    if (settings && !editing) setRemortgageFee(String(settings.remortgageLegalFee));
+  }, [settings, editing]);
+
+  const updateSettings = trpc.platform.updateSettings.useMutation({
+    onSuccess: () => {
+      utils.platform.getSettings.invalidate();
+      setEditing(false);
+      toast.success("Platform fee settings saved");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const handleSave = () => {
+    const val = parseFloat(remortgageFee);
+    if (isNaN(val) || val < 0) { toast.error("Please enter a valid fee"); return; }
+    updateSettings.mutate({ remortgageLegalFee: val });
+  };
+
+  return (
+    <div className="rounded-xl border p-5 mb-6" style={{ background: "oklch(0.98 0.005 250)", borderColor: "oklch(0.88 0.03 250)" }}>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h3 className="font-semibold text-sm" style={{ color: "oklch(0.25 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>Platform Fee Constants</h3>
+          <p className="text-xs mt-0.5" style={{ color: "oklch(0.55 0.03 250)" }}>Fixed fees applied platform-wide across all firms</p>
+        </div>
+        {!editing && (
+          <button onClick={() => setEditing(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ background: "oklch(0.95 0.08 75)", color: "oklch(0.35 0.15 75)" }}>
+            <Pencil size={12} /> Edit
+          </button>
+        )}
+      </div>
+
+      {isLoading ? (
+        <div className="text-xs" style={{ color: "oklch(0.55 0.03 250)" }}>Loading…</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* Remortgage Legal Fee — editable */}
+          <div className="rounded-lg p-3" style={{ background: "white", border: "1px solid oklch(0.88 0.03 250)" }}>
+            <div className="text-xs font-medium mb-1" style={{ color: "oklch(0.45 0.05 250)" }}>Remortgage Legal Fee (ex. VAT)</div>
+            {editing ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold" style={{ color: "oklch(0.35 0.05 250)" }}>£</span>
+                <input
+                  type="number"
+                  value={remortgageFee}
+                  onChange={(e) => setRemortgageFee(e.target.value)}
+                  className="w-24 px-2 py-1 rounded border text-sm"
+                  style={{ borderColor: "oklch(0.72 0.12 75)", fontFamily: "'DM Sans', sans-serif" }}
+                />
+              </div>
+            ) : (
+              <div className="text-lg font-bold" style={{ color: "oklch(0.35 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>
+                £{settings?.remortgageLegalFee ?? 150}
+                <span className="text-xs font-normal ml-1" style={{ color: "oklch(0.55 0.03 250)" }}>+ VAT</span>
+              </div>
+            )}
+          </div>
+          {/* Search Pack — read-only */}
+          <div className="rounded-lg p-3" style={{ background: "white", border: "1px solid oklch(0.88 0.03 250)" }}>
+            <div className="text-xs font-medium mb-1" style={{ color: "oklch(0.45 0.05 250)" }}>Search Pack (fixed)</div>
+            <div className="text-lg font-bold" style={{ color: "oklch(0.35 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              £349 <span className="text-xs font-normal" style={{ color: "oklch(0.55 0.03 250)" }}>inc. VAT</span>
+            </div>
+          </div>
+          {/* AML — read-only */}
+          <div className="rounded-lg p-3" style={{ background: "white", border: "1px solid oklch(0.88 0.03 250)" }}>
+            <div className="text-xs font-medium mb-1" style={{ color: "oklch(0.45 0.05 250)" }}>AML Check (per person)</div>
+            <div className="text-lg font-bold" style={{ color: "oklch(0.35 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>
+              £49 <span className="text-xs font-normal" style={{ color: "oklch(0.55 0.03 250)" }}>inc. VAT</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editing && (
+        <div className="flex gap-2 mt-4">
+          <button onClick={handleSave} disabled={updateSettings.isPending} className="px-4 py-2 rounded-lg text-sm font-semibold" style={{ background: "oklch(0.72 0.12 75)", color: "white" }}>
+            {updateSettings.isPending ? "Saving…" : "Save Changes"}
+          </button>
+          <button onClick={() => { setEditing(false); setRemortgageFee(String(settings?.remortgageLegalFee ?? 150)); }} className="px-4 py-2 rounded-lg text-sm font-semibold" style={{ background: "oklch(0.93 0.01 250)", color: "oklch(0.35 0.05 250)" }}>
+            Cancel
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── NOTES TAB ──────────────────────────────────────────────────────────────────────────────────
 function NotesTab() {
   const utils = trpc.useUtils();
   const { data: firms } = trpc.firms.listAdmin.useQuery();

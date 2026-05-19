@@ -7,6 +7,7 @@ import {
   leads, InsertLead,
   callbackRequests, InsertCallbackRequest,
   instructRequests, InsertInstructRequest,
+  platformSettings,
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -243,6 +244,25 @@ export async function updateInstructStatus(id: number, status: "submitted" | "co
   await db.update(instructRequests).set({ status }).where(eq(instructRequests.id, id));
 }
 
+// ─── PLATFORM SETTINGS ───────────────────────────────────────────────────────
+export async function getPlatformSettings() {
+  const db = await getDb();
+  if (!db) return { id: 1, remortgageLegalFee: 150, updatedAt: new Date() };
+  const rows = await db.select().from(platformSettings).limit(1);
+  if (rows.length === 0) {
+    // Seed the default row if missing
+    await db.insert(platformSettings).values({ id: 1, remortgageLegalFee: 150 }).onDuplicateKeyUpdate({ set: { remortgageLegalFee: 150 } });
+    return { id: 1, remortgageLegalFee: 150, updatedAt: new Date() };
+  }
+  return rows[0];
+}
+
+export async function updatePlatformSettings(data: { remortgageLegalFee: number }) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.insert(platformSettings).values({ id: 1, ...data }).onDuplicateKeyUpdate({ set: data });
+}
+
 // ─── FIRM FEE STRUCTURES ──────────────────────────────────────────────────────
 import {
   firmFeeStructures, InsertFirmFeeStructure,
@@ -346,6 +366,7 @@ export interface LiveQuoteInput {
   newMortgageValue?: number;
   buyerCount?: number;
   mortgageLender?: string;
+  remortgageLegalFee?: number; // Platform-wide flat fee for remortgage (default £150)
 }
 
 export interface LegBreakdown {
@@ -603,7 +624,7 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
 
     if (!band) continue; // No fee band configured for this firm
 
-    let legalFee: number;
+    let legalFee: number = 0;
     let supplements: { name: string; price: number }[];
     let disbursements: { name: string; price: number; includesVat: boolean }[];
     let totalExVat: number, vat: number, totalIncVat: number, sdlt: number, landRegistryFee: number, grandTotal: number;
@@ -645,6 +666,10 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
       supplements = [];
       disbursements = [];
 
+      if (transactionType === 'remortgage') {
+        // Remortgage: fixed flat fee from platform settings (default £150)
+        legalFee = input.remortgageLegalFee ?? 150;
+      }
       if (transactionType === 'purchase' || transactionType === 'remortgage') {
         if (input.tenure === 'leasehold' && Number(band.leaseholdSupplement) > 0)
           supplements.push({ name: 'Leasehold Supplement', price: Number(band.leaseholdSupplement) });
@@ -657,7 +682,7 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
           const giftPrice = Number(band.giftedDepositSupplement) * giftCount;
           supplements.push({ name: giftCount > 1 ? `Gifted Deposit (x${giftCount})` : 'Gifted Deposit', price: giftPrice });
         }
-        if (input.hasMortgage)
+        if (input.hasMortgage && transactionType !== 'remortgage')
           supplements.push({ name: 'Mortgage / Re-mortgage', price: 234 });
         if (input.isBuyToLet)
           supplements.push({ name: 'Buy to Let Supplement', price: 99 });
@@ -696,7 +721,7 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
         disbursements.push({ name: numBuyers > 1 ? `Bankruptcy Search (x${numBuyers})` : 'Bankruptcy Search', price: 4 * numBuyers, includesVat: true });
       }
 
-      legalFee = Number(band.legalFee);
+      if (transactionType !== 'remortgage') legalFee = Number(band.legalFee);
       const supplementTotal = supplements.reduce((s, x) => s + x.price, 0);
       const disbursementTotal = disbursements.reduce((s, x) => s + x.price, 0);
       totalExVat = legalFee + supplementTotal;
