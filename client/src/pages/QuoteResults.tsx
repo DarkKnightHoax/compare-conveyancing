@@ -1107,6 +1107,7 @@ export default function QuoteResults() {
     isSharedOwnership: boolean;
     hasGiftedDeposit: boolean;
     giftCount?: number;
+    hasHelpToBuyISA?: boolean;
     isBuyToLet: boolean;
     isSecondHome: boolean;
     hasMortgageOnProperty?: boolean;
@@ -1230,6 +1231,7 @@ export default function QuoteResults() {
       isSharedOwnership: parsedAnswers.isSharedOwnership ?? false,
       hasGiftedDeposit: parsedAnswers.hasGiftedDeposit ?? false,
       giftCount: parsedAnswers.giftCount ?? 0,
+      hasHelpToBuyISA: parsedAnswers.hasHelpToBuyISA ?? false,
       isBuyToLet: parsedAnswers.isBuyToLet ?? false,
       isSecondHome: parsedAnswers.isSecondHome ?? false,
       hasMortgageOnProperty: parsedAnswers.hasMortgageOnProperty,

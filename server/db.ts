@@ -360,6 +360,7 @@ export interface LiveQuoteInput {
   isSharedOwnership: boolean;
   hasGiftedDeposit: boolean;
   giftCount?: number;
+  hasHelpToBuyISA?: boolean;
   isBuyToLet: boolean;
   isSecondHome: boolean;
   hasMortgageOnProperty?: boolean;
@@ -527,11 +528,13 @@ export function computeLeg(
       supplements.push({ name: 'New Build Supplement', price: Number(band.newBuildSupplement) });
     if (input.isSharedOwnership && Number(band.sharedOwnershipSupplement) > 0)
       supplements.push({ name: 'Shared Ownership', price: Number(band.sharedOwnershipSupplement) });
-    if (input.hasGiftedDeposit && Number(band.giftedDepositSupplement) > 0) {
+    if (input.hasGiftedDeposit) {
       const giftCount = Math.max(1, input.giftCount ?? 1);
-      const giftPrice = Number(band.giftedDepositSupplement) * giftCount;
+      const giftPrice = 50 * giftCount;
       supplements.push({ name: giftCount > 1 ? `Gifted Deposit (x${giftCount})` : 'Gifted Deposit', price: giftPrice });
     }
+    if (input.hasHelpToBuyISA)
+      supplements.push({ name: 'Help to Buy ISA', price: 50 });
     if (input.hasMortgage)
       supplements.push({ name: 'Mortgage / Re-mortgage', price: 100 });
     if (input.isBuyToLet)
@@ -677,13 +680,15 @@ export async function calculateLiveQuotes(input: LiveQuoteInput): Promise<LiveQu
           supplements.push({ name: 'New Build Supplement', price: Number(band.newBuildSupplement) });
         if (input.isSharedOwnership && Number(band.sharedOwnershipSupplement) > 0)
           supplements.push({ name: 'Shared Ownership', price: Number(band.sharedOwnershipSupplement) });
-        if (input.hasGiftedDeposit && Number(band.giftedDepositSupplement) > 0) {
+        if (input.hasGiftedDeposit) {
           const giftCount = Math.max(1, input.giftCount ?? 1);
-          const giftPrice = Number(band.giftedDepositSupplement) * giftCount;
+          const giftPrice = 50 * giftCount;
           supplements.push({ name: giftCount > 1 ? `Gifted Deposit (x${giftCount})` : 'Gifted Deposit', price: giftPrice });
         }
+        if (input.hasHelpToBuyISA)
+          supplements.push({ name: 'Help to Buy ISA', price: 50 });
         if (input.hasMortgage && transactionType !== 'remortgage')
-          supplements.push({ name: 'Mortgage / Re-mortgage', price: 234 });
+          supplements.push({ name: 'Mortgage / Re-mortgage', price: 100 });
         if (input.isBuyToLet)
           supplements.push({ name: 'Buy to Let Supplement', price: 99 });
         if (input.isSecondHome)

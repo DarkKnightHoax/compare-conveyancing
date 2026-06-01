@@ -1,0 +1,66 @@
+{
+  "query": "\nSELECT id, firstName, lastName, email, referenceNumber, status\nFROM leads\nWHERE (\n  (LOWER(firstName) LIKE '%sharon%' AND LOWER(lastName) LIKE '%scott%')\n  OR (LOWER(firstName) LIKE '%chris%' AND LOWER(lastName) LIKE '%davies%')\n  OR (LOWER(firstName) LIKE '%sarah%' AND LOWER(lastName) LIKE '%lauwers%')\n  OR (LOWER(firstName) LIKE '%richard%' AND LOWER(lastName) LIKE '%swan%')\n  OR (LOWER(lastName) LIKE '%sworn%')\n  OR (LOWER(firstName) LIKE '%john%' AND LOWER(lastName) LIKE '%black%')\n)\nORDER BY lastName, firstName;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2vXpCTTcqFdycTg.root --database 5ZpoxzgLM5cycU3sThccK4 --execute \nSELECT id, firstName, lastName, email, referenceNumber, status\nFROM leads\nWHERE (\n  (LOWER(firstName) LIKE '%sharon%' AND LOWER(lastName) LIKE '%scott%')\n  OR (LOWER(firstName) LIKE '%chris%' AND LOWER(lastName) LIKE '%davies%')\n  OR (LOWER(firstName) LIKE '%sarah%' AND LOWER(lastName) LIKE '%lauwers%')\n  OR (LOWER(firstName) LIKE '%richard%' AND LOWER(lastName) LIKE '%swan%')\n  OR (LOWER(lastName) LIKE '%sworn%')\n  OR (LOWER(firstName) LIKE '%john%' AND LOWER(lastName) LIKE '%black%')\n)\nORDER BY lastName, firstName;\n",
+  "rows": [
+    {
+      "id": "8280001",
+      "firstName": "John",
+      "lastName": "Black",
+      "email": "tsherwood@sky.com",
+      "referenceNumber": "CCM-2026-00335",
+      "status": "new"
+    },
+    {
+      "id": "8070001",
+      "firstName": "Chris",
+      "lastName": "Davies",
+      "email": "chrisd0924@gmail.com",
+      "referenceNumber": "CCM-2026-00328",
+      "status": "new"
+    },
+    {
+      "id": "8130001",
+      "firstName": "Sarah",
+      "lastName": "Lauwers",
+      "email": "lauwerssarah@hotmail.com",
+      "referenceNumber": "CCM-2026-00330",
+      "status": "new"
+    },
+    {
+      "id": "8010001",
+      "firstName": "Sharon",
+      "lastName": "Scott",
+      "email": "Sharon2premier@hotmail.co.uk",
+      "referenceNumber": "CCM-2026-00326",
+      "status": "contacted"
+    },
+    {
+      "id": "8040001",
+      "firstName": "Sharon",
+      "lastName": "Scott",
+      "email": "Sharon2premier@hotmail.co.uk",
+      "referenceNumber": "CCM-2026-00327",
+      "status": "contacted"
+    },
+    {
+      "id": "8190001",
+      "firstName": "Richard",
+      "lastName": "Swan",
+      "email": "rswan11@btinternet.com",
+      "referenceNumber": "CCM-2026-00332",
+      "status": "new"
+    },
+    {
+      "id": "8220001",
+      "firstName": "Gall",
+      "lastName": "Sworn",
+      "email": "gall.sworn_0f@icloud.com",
+      "referenceNumber": "CCM-2026-00333",
+      "status": "new"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tfirstName\tlastName\temail\treferenceNumber\tstatus\n8280001\tJohn\tBlack\ttsherwood@sky.com\tCCM-2026-00335\tnew\n8070001\tChris\tDavies\tchrisd0924@gmail.com\tCCM-2026-00328\tnew\n8130001\tSarah\tLauwers\tlauwerssarah@hotmail.com\tCCM-2026-00330\tnew\n8010001\tSharon\tScott\tSharon2premier@hotmail.co.uk\tCCM-2026-00326\tcontacted\n8040001\tSharon\tScott\tSharon2premier@hotmail.co.uk\tCCM-2026-00327\tcontacted\n8190001\tRichard\tSwan\trswan11@btinternet.com\tCCM-2026-00332\tnew\n8220001\tGall\tSworn\tgall.sworn_0f@icloud.com\tCCM-2026-00333\tnew\n",
+  "stderr": "",
+  "execution_time_ms": 3258
+}

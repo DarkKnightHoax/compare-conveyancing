@@ -435,3 +435,16 @@
 - [x] Fix: Admin Fee Editor — add saleLegalFee field for sale leg of sale & purchase
 - [x] Fix: server schema — add saleLegalFee column to firm_fee_structures for sale & purchase sale leg
 - [x] Verify: changing search pack or AML in fee editor updates both fee breakdown and Instruct Directly modal
+
+## Fee Supplement Corrections (Jun 2026)
+- [x] Gifted Deposit supplement: changed from £49 to £50+VAT (hardcoded in both client feeEngine.ts and server db.ts, no longer reads from DB giftedDepositSupplement column)
+- [x] Help to Buy ISA supplement: changed from £149 to £50+VAT (hardcoded in both client feeEngine.ts and server db.ts; added hasHelpToBuyISA to LiveQuoteInput interface and getLive router input)
+- [x] hasHelpToBuyISA now correctly passed from QuoteResults.tsx queryInput to server
+
+## Terms & Conditions Strengthening (Jun 2026)
+- [x] Rewrote Clause 6 (Payment on Account) with strict no-refund policy citing Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013 (SI 2013/3134) Reg 36, Consumer Rights Act 2015 s.54, Payment Services Regulations 2017 (SI 2017/752)
+- [x] Added Clause 6.5 explicitly prohibiting chargebacks/disputes with card issuers and stating right to contest disputes with evidence
+- [x] Added Clause 6.6 mandatory complaints procedure before chargeback
+- [x] Added Clause 7 (Cancellation Rights) with statutory basis and cancellation process
+- [x] Added Data Protection clause referencing UK GDPR and Data Protection Act 2018
+- [x] Updated Limitation of Liability to reference Consumer Rights Act 2015 and Unfair Contract Terms Act 1977
