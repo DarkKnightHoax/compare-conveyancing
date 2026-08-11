@@ -52,11 +52,11 @@
 - [x] Tests cover: law firms, leads, callbacks, instruct requests, fee engine validation
 
 ## Remaining / Future
-- [ ] Stripe payment integration for "Instruct Directly" flow (Stripe keys needed)
-- [ ] Update Contact Us page with real business phone/email
+- [x] Stripe payment integration for "Instruct Directly" flow (checkout session, webhook, and payment pages implemented)
+- [x] Update Contact Us page with real business phone/email
 - [x] SEO meta tags: description, keywords, Open Graph, Twitter Card, robots
-- [ ] Custom domain (user to buy GoDaddy domain and point DNS to Manus)
-- [ ] Promote owner account to admin role via database
+- [x] Custom domain connected and live at www.comparetheconveyancingmarket.co.uk
+- [x] Owner account is automatically promoted to admin by OWNER_OPEN_ID in server/db.ts
 
 ## SEO Improvements
 - [x] FAQ page with FAQPage JSON-LD schema
@@ -136,18 +136,18 @@
 - [x] Update business registration: ComparetheConveyancingMarket Ltd, 71-75 Shelton Street, Covent Garden, London WC2H 9JQ across all footers, Terms, Privacy Policy, and Contact pages
 
 ## Fee & Wizard Fixes Batch 3 (Feb 2026)
-- [ ] AML check fee: multiply by number of purchasers (buyerCount)
-- [ ] Land Registry fee: multiply by number of purchasers (buyerCount)
-- [ ] Split "Help to Buy ISA or LISA?" into two separate wizard questions: (1) Are you using a Help to Buy ISA? (2) Are you using a Lifetime ISA (LISA)?
-- [ ] Moving home / additional property question: remove "Neither" option and remove the 3%/5% surcharge labels from the answer buttons
+- [x] AML check fee multiplied by number of purchasers (buyerCount) in server/db.ts
+- [x] Superseded by later fee correction: Land Registry fee is per transaction, not per purchaser
+- [x] Split Help to Buy ISA and Lifetime ISA (LISA) into two separate wizard questions
+- [x] Moving home / additional property question uses clear answer labels without a Neither option or surcharge percentages
 
 ## Lender Panel Filtering
-- [ ] Add firm_lender_panels table to schema (firmId, lenderName)
-- [ ] Seed Burtons Solicitors panel with 27 lenders from David J Foster & Co - London column
-- [ ] Seed other 3 firms (PCS Legal, Easy Choice, TQ Law) with full standard lender list
-- [ ] Update liveQuotes router to filter firms by chosen mortgage lender
-- [ ] Update wizard to pass mortgageLender to results query
-- [ ] Results page shows only firms that work with the chosen lender (with explanatory message)
+- [x] firm_lender_panels table exists in schema
+- [x] Seed Burtons lender panel with 27 lenders
+- [x] Seed lender panel data for PCS Legal, Easy Choice, and TQ Law
+- [x] Lender panel filtering implemented in live quote calculation (later superseded by all-firms display policy)
+- [x] Wizard passes mortgageLender through to results query
+- [x] Results page shows lender-panel status messaging; current policy displays all active firms
 
 ## Fee & Wizard Corrections Batch 4
 - [x] Add "Gifted Deposit" question (yes/no) and "How many gifts?" dropdown (0-10); multiply gifted deposit fee by count in results
@@ -317,8 +317,8 @@
 - [x] Replaced Premier Property Law, Clarity, Meridian with Burton's and TQ Law as active firms
 
 ## Bug Fixes (Mar 2026)
-- [ ] Search Pack still showing for sale transactions on results page (server-side calculation not updated)
-- [ ] File opening fees not updated on results page (server-side calculation not updated)
+- [x] Search Pack removed from sale transactions in server-side calculation
+- [x] File opening fees correctly handled in server-side calculation and Instruct Directly modal
 
 ## Fee Engine & DB Fixes (Mar 2026)
 - [x] Search Pack removed from sale transactions (was hardcoded unconditionally in calculateLiveQuotes, now purchase/sale_purchase only)
