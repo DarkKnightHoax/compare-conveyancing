@@ -224,6 +224,8 @@ function Navbar() {
 }
 
 // ─── MAIN HOME PAGE ───────────────────────────────────────────────────────────
+import SEOHead from "@/components/SEOHead";
+
 export default function Home() {
   const [, navigate] = useLocation();
   const [statsStarted, setStatsStarted] = useState(false);
@@ -246,6 +248,22 @@ export default function Home() {
 
   return (
     <div className="min-h-screen" style={{ background: "oklch(0.975 0.008 80)" }}>
+      <SEOHead
+        title="Compare the Conveyancing Market | Free Conveyancing Quotes"
+        description="Compare instant conveyancing quotes from SRA & CLC regulated UK solicitors. Free, no-obligation quotes in under 2 minutes."
+        canonicalPath="/"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Compare the Conveyancing Market",
+          "url": "https://www.comparetheconveyancingmarket.co.uk",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://www.comparetheconveyancingmarket.co.uk/get-quote?type={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }}
+      />
       <Navbar />
 
       {/* ── HERO SECTION ── */}

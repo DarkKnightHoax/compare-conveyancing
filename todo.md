@@ -448,3 +448,12 @@
 - [x] Added Clause 7 (Cancellation Rights) with statutory basis and cancellation process
 - [x] Added Data Protection clause referencing UK GDPR and Data Protection Act 2018
 - [x] Updated Limitation of Liability to reference Consumer Rights Act 2015 and Unfair Contract Terms Act 1977
+
+## SEO Improvements (Aug 2026)
+- [x] Correct robots.txt sitemap URL to the live .co.uk domain and disallow private admin/API paths
+- [x] Add crawl-friendly static metadata: canonical, hreflang, Open Graph URL/image, Twitter image, author, and image-preview directives
+- [x] Add reusable SEOHead component for dynamic page titles, descriptions, canonical URLs, and JSON-LD
+- [x] Add page-specific SEO metadata and BreadcrumbList schema to homepage and three core landing pages
+- [x] Update sitemap lastmod dates for SEO pages improved in this pass
+- [x] Add Vitest coverage for robots.txt, sitemap.xml, and static SEO metadata
+- [x] Validate SEO changes with 51 passing Vitest tests and a successful production build

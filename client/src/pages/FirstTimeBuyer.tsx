@@ -98,6 +98,8 @@ const faqs = [
   },
 ];
 
+import SEOHead from "@/components/SEOHead";
+
 export default function FirstTimeBuyer() {
   const [, navigate] = useLocation();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -115,6 +117,19 @@ export default function FirstTimeBuyer() {
 
   return (
     <div className="min-h-screen" style={{ background: "oklch(0.975 0.008 80)" }}>
+      <SEOHead
+        title="First-Time Buyer Conveyancing Quotes & Fees | Compare the Conveyancing Market"
+        description="Compare fixed-fee conveyancing quotes for first-time buyers from SRA & CLC regulated solicitors. No hidden extras, clear disbursements, and expert guidance."
+        canonicalPath="/first-time-buyer-conveyancing"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.comparetheconveyancingmarket.co.uk/" },
+            { "@type": "ListItem", "position": 2, "name": "First Time Buyer Conveyancing", "item": "https://www.comparetheconveyancingmarket.co.uk/first-time-buyer-conveyancing" }
+          ]
+        }}
+      />
       <Navbar />
 
       {/* ── HERO ── */}

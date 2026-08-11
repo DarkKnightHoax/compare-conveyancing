@@ -99,6 +99,8 @@ const faqs = [
   },
 ];
 
+import SEOHead from "@/components/SEOHead";
+
 export default function CompareConveyancingFees() {
   const [, navigate] = useLocation();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -116,6 +118,19 @@ export default function CompareConveyancingFees() {
 
   return (
     <div className="min-h-screen" style={{ background: "oklch(0.975 0.008 80)" }}>
+      <SEOHead
+        title="Compare Conveyancing Fees Online | Transparent Solicitor Quotes"
+        description="Compare transparent conveyancing fees online from SRA & CLC regulated UK solicitors. See itemised legal fees, search packs, and disbursements instantly."
+        canonicalPath="/compare-conveyancing-fees"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.comparetheconveyancingmarket.co.uk/" },
+            { "@type": "ListItem", "position": 2, "name": "Compare Conveyancing Fees", "item": "https://www.comparetheconveyancingmarket.co.uk/compare-conveyancing-fees" }
+          ]
+        }}
+      />
       <Navbar />
 
       {/* ── HERO ── */}

@@ -100,6 +100,8 @@ const faqs = [
   },
 ];
 
+import SEOHead from "@/components/SEOHead";
+
 export default function SaleAndPurchaseConveyancing() {
   const [, navigate] = useLocation();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -152,6 +154,19 @@ export default function SaleAndPurchaseConveyancing() {
 
   return (
     <div className="min-h-screen" style={{ background: "oklch(0.975 0.008 80)" }}>
+      <SEOHead
+        title="Moving Home Conveyancing Quotes | Compare Sale & Purchase Solicitors"
+        description="Compare instant sale and purchase conveyancing quotes from regulated UK solicitors. One fixed fee covers both your sale and purchase. Free, no-obligation quotes in under 2 minutes."
+        canonicalPath="/sale-and-purchase-conveyancing"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.comparetheconveyancingmarket.co.uk/" },
+            { "@type": "ListItem", "position": 2, "name": "Sale and Purchase Conveyancing", "item": "https://www.comparetheconveyancingmarket.co.uk/sale-and-purchase-conveyancing" }
+          ]
+        }}
+      />
       <Navbar />
 
       {/* ── HERO ── */}
