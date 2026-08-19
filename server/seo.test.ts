@@ -32,6 +32,7 @@ describe("SEO foundation", () => {
 
     for (const path of [
       "/",
+      "/get-quote",
       "/first-time-buyer-conveyancing",
       "/sale-and-purchase-conveyancing",
       "/compare-conveyancing-fees",
@@ -40,5 +41,15 @@ describe("SEO foundation", () => {
     }
 
     expect(sitemap).toContain("<lastmod>2026-08-11</lastmod>");
+    expect(sitemap).toContain("<lastmod>2026-08-19</lastmod>");
+  });
+
+  it("gives the free-quotes conversion page dedicated metadata and visible commercial context", () => {
+    const quoteWizard = readProjectFile("client/src/pages/QuoteWizard.tsx");
+
+    expect(quoteWizard).toContain('title="Free Conveyancing Quotes | Compare Regulated UK Solicitors"');
+    expect(quoteWizard).toContain('canonicalPath="/get-quote"');
+    expect(quoteWizard).toContain("Free Conveyancing Quotes");
+    expect(quoteWizard).toContain("No obligation to instruct.");
   });
 });

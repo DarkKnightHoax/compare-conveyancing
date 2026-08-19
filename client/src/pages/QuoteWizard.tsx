@@ -13,6 +13,7 @@ import { useLocation, useSearch } from "wouter";
 import { ChevronLeft, ChevronRight, Scale, HelpCircle, MapPin, X, Check } from "lucide-react";
 import type { WizardAnswers } from "../lib/feeEngine";
 import { trpc } from "@/lib/trpc";
+import SEOHead from "@/components/SEOHead";
 
 // ─── TOOLTIP ─────────────────────────────────────────────────────────────────
 function Tooltip({ text }: { text: string }) {
@@ -1234,6 +1235,18 @@ export default function QuoteWizard() {
 
   return (
     <div className="min-h-screen" style={{ background: "oklch(0.975 0.008 80)" }}>
+      <SEOHead
+        title="Free Conveyancing Quotes | Compare Regulated UK Solicitors"
+        description="Get free, no-obligation conveyancing quotes from regulated UK firms. Compare transparent legal fees and disbursements for buying, selling, or moving home."
+        canonicalPath="/get-quote"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Free Conveyancing Quotes",
+          "url": "https://www.comparetheconveyancingmarket.co.uk/get-quote",
+          "description": "Compare free, no-obligation conveyancing quotes from regulated UK firms."
+        }}
+      />
       {/* Header */}
       <div style={{ background: "oklch(0.18 0.06 250)", borderBottom: "1px solid oklch(0.72 0.12 75 / 0.2)" }}>
         <div className="container py-4 flex items-center justify-between">
@@ -1253,9 +1266,14 @@ export default function QuoteWizard() {
       </div>
 
       <div className="container py-12 max-w-xl mx-auto">
-        {/* SEO headings — visually subtle but semantically present for crawlers */}
-        <h1 className="sr-only">Compare Conveyancing Quotes Online — Free Instant Quotes from Regulated UK Solicitors</h1>
-        <h2 className="sr-only">Get accurate, no-obligation conveyancing quotes from SRA and CLC regulated firms in under 2 minutes</h2>
+        <div className="text-center mb-7">
+          <h1 className="text-3xl sm:text-4xl font-bold" style={{ color: "oklch(0.18 0.06 250)", fontFamily: "'Playfair Display', serif" }}>
+            Free Conveyancing Quotes
+          </h1>
+          <p className="mt-2 text-sm sm:text-base" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
+            Compare transparent quotes from regulated UK conveyancers in under two minutes. No obligation to instruct.
+          </p>
+        </div>
 
         {/* Transaction type badge */}
         <div className="flex items-center justify-center mb-6">

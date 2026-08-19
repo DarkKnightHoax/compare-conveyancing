@@ -372,7 +372,7 @@ export default function Home() {
                       ))}
                     </div>
                     <div className="text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.6)", fontFamily: "'DM Sans', sans-serif" }}>
-                      <span style={{ color: "oklch(0.82 0.10 75)", fontWeight: 600 }}>5 regulated firms</span> ready to quote
+                      <span style={{ color: "oklch(0.82 0.10 75)", fontWeight: 600 }}>4 regulated firms</span> ready to quote
                     </div>
                   </div>
                 </div>
@@ -464,8 +464,8 @@ export default function Home() {
                 Why Choose Us
               </div>
               <h2 className="text-4xl font-bold mb-4" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
-                Trusted by Thousands of<br />
-                <em>UK Home Buyers</em>
+                Compare with clarity<br />
+                <em>and confidence</em>
               </h2>
               <div className="gold-rule w-24 mb-6" />
               <p className="text-base mb-8 leading-relaxed" style={{ color: "oklch(0.975 0.008 80 / 0.7)", fontFamily: "'DM Sans', sans-serif" }}>
@@ -475,9 +475,9 @@ export default function Home() {
               <div className="space-y-4">
                 {[
                   { icon: Shield, text: "All firms SRA or CLC regulated" },
-                  { icon: Star, text: "Minimum 4.5 star rating required" },
+                  { icon: CheckCircle, text: "Transparent, itemised quote breakdowns" },
                   { icon: Clock, text: "Quotes generated in under 2 minutes" },
-                  { icon: Award, text: "Law Society Conveyancing Quality Scheme members" },
+                  { icon: Award, text: "No obligation when you compare" },
                 ].map(({ icon: Icon, text }) => (
                   <div key={text} className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "oklch(0.72 0.12 75 / 0.15)" }}>
@@ -495,17 +495,12 @@ export default function Home() {
               <div className="rounded-2xl overflow-hidden shadow-2xl" style={{ border: "1px solid oklch(0.72 0.12 75 / 0.2)" }}>
                 <img src={OFFICE_IMG} alt="Professional solicitor's office" className="w-full h-80 object-cover" />
               </div>
-              <div className="absolute -bottom-6 -left-6 rounded-xl p-5 shadow-xl" style={{ background: "oklch(0.72 0.12 75)", minWidth: "200px" }}>
-                <div className="flex items-center gap-1 mb-1">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} size={14} fill="oklch(0.12 0.05 250)" style={{ color: "oklch(0.12 0.05 250)" }} />
-                  ))}
-                </div>
+              <div className="absolute -bottom-6 -left-6 rounded-xl p-5 shadow-xl" style={{ background: "oklch(0.72 0.12 75)", minWidth: "220px" }}>
                 <div className="text-sm font-bold" style={{ color: "oklch(0.12 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                  "Saved £340 on my purchase"
+                  Your quote, clearly explained
                 </div>
-                <div className="text-xs mt-1" style={{ color: "oklch(0.12 0.05 250 / 0.7)", fontFamily: "'DM Sans', sans-serif" }}>
-                  — Sarah T., First-Time Buyer
+                <div className="text-xs mt-1 leading-relaxed" style={{ color: "oklch(0.12 0.05 250 / 0.75)", fontFamily: "'DM Sans', sans-serif" }}>
+                  Review legal fees and relevant disbursements before choosing a firm.
                 </div>
               </div>
             </div>
@@ -619,7 +614,7 @@ export default function Home() {
                   { label: "Moving Home Conveyancing", path: "/sale-and-purchase-conveyancing" },
                   { label: "Get Free Quotes", path: "/get-quote" },
                 ].map(({ label, path }) => (
-                  <button key={label} onClick={() => navigate(path)} className="text-left hover:text-white transition-colors text-xs" style={{ background: "none", border: "none", color: "oklch(0.975 0.008 80 / 0.5)", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>{label}</button>
+                  <a key={label} href={path} className="text-left hover:text-white transition-colors text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.5)", fontFamily: "'DM Sans', sans-serif" }}>{label}</a>
                 ))}
               </div>
             </div>
@@ -633,7 +628,7 @@ export default function Home() {
                   { label: "Blog", path: "/blog" },
                   { label: "Contact Us", path: "/contact" },
                 ].map(({ label, path }) => (
-                  <button key={label} onClick={() => navigate(path)} className="text-left hover:text-white transition-colors text-xs" style={{ background: "none", border: "none", color: "oklch(0.975 0.008 80 / 0.5)", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>{label}</button>
+                  <a key={label} href={path} className="text-left hover:text-white transition-colors text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.5)", fontFamily: "'DM Sans', sans-serif" }}>{label}</a>
                 ))}
               </div>
             </div>

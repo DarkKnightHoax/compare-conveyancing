@@ -457,3 +457,17 @@
 - [x] Update sitemap lastmod dates for SEO pages improved in this pass
 - [x] Add Vitest coverage for robots.txt, sitemap.xml, and static SEO metadata
 - [x] Validate SEO changes with 51 passing Vitest tests and a successful production build
+
+## Meta Ads Campaign (Aug 2026)
+- [ ] Check Meta Ads connector and account access
+- [ ] Resolve Meta Business Portfolio permission blocker preventing system-user creation
+- [ ] Open Meta Business settings through the user’s session and verify system-user creation availability
+- [ ] Create a Meta developer app and attach it to the active Business Portfolio
+- [ ] Define objective, audience, budget, creative, and conversion tracking
+- [ ] Prepare campaign draft and obtain explicit confirmation before publishing or spending
+
+## Organic SEO and Lead Generation (Aug 2026)
+- [x] Measure current organic ranking, keyword, traffic, and lead-conversion baseline (Google Search Console audit recorded)
+- [x] Identify high-intent UK conveyancing keyword and landing-page opportunities
+- [x] Implement SEO and conversion changes informed by the audit
+- [x] Validate the improvements and document an organic lead-generation plan (52 tests passed, production build succeeded, sitemap resubmitted in Search Console)
