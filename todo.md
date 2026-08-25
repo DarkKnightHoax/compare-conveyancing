@@ -457,3 +457,6 @@
 - [x] Update sitemap lastmod dates for SEO pages improved in this pass
 - [x] Add Vitest coverage for robots.txt, sitemap.xml, and static SEO metadata
 - [x] Validate SEO changes with 51 passing Vitest tests and a successful production build
+
+## GitHub Repository Inventory (Aug 2026)
+- [x] Listed all repositories accessible through the current GitHub connection; no ghostwriting project is available
