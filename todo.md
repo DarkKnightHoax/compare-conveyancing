@@ -472,3 +472,8 @@
 - [x] Prepare outreach materials and validate the authority-building updates
 - [x] Publish original UK conveyancing cost-and-process and seller-checklist reference pages with primary-source citations
 - [x] Prepare a tailored outreach prospect list and ethical partner-pitch templates
+
+## Authority Outreach Execution (Aug 2026)
+- [x] Prepare personalised first-contact emails and an outreach tracking register for credible UK property and homebuyer organisations
+- [x] Obtain explicit approval before sending any third-party outreach
+- [x] Record delivery status and follow-up dates for approved outreach
