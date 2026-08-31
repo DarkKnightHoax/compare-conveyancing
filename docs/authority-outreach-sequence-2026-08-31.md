@@ -1,6 +1,6 @@
 # First Authority Outreach Sequence — Compare the Conveyancing Market
 
-**Status:** Draft only. No outreach has been sent.  
+**Status:** Initial outreach and a user-requested visible-copy resend completed on 31 August 2026.  
 **Sender:** James Fellows, Compare the Conveyancing Market  
 **Suggested reply address:** `info@comparetheconveyancingmarket.co.uk`
 
@@ -8,9 +8,9 @@
 
 | Order | Organisation | Recipient | Purpose | Proposed resource | Send status | Follow-up date |
 |---:|---|---|---|---|---|---|
-| 1 | HomeOwners Alliance | `katherine@hoa.org.uk` | Partnership/resource consideration | UK Conveyancing Costs & Process Guide | Sent 31 August 2026 — Resend ID `d59850eb-daa6-4fd7-adb3-1d07b0d3ab5c` | 9 September 2026 |
-| 2 | First Time Buyer Magazine | `sophie@firsttimebuyermag.co.uk` | Editorial content consideration | UK Conveyancing Costs & Process Guide | Sent 31 August 2026 — Resend ID `bd5c247b-22a5-49a1-abbf-499a0ae3b14f` | 9 September 2026 |
-| 3 | Property Industry Eye | `editor@propertyindustryeye.com` | Timely expert comment / editorial consideration | Seller Conveyancing Checklist | Sent 31 August 2026 — Resend ID `67a03b41-1351-41b6-9fea-488272942a7c` | 7 September 2026 |
+| 1 | HomeOwners Alliance | `katherine@hoa.org.uk` | Partnership/resource consideration | UK Conveyancing Costs & Process Guide | Initial send `d59850eb-daa6-4fd7-adb3-1d07b0d3ab5c`; resent with visible CC to `info@` `80b2c0d4-5db0-4330-ad24-b4961d0d5240` | 9 September 2026 |
+| 2 | First Time Buyer Magazine | `sophie@firsttimebuyermag.co.uk` | Editorial content consideration | UK Conveyancing Costs & Process Guide | Initial send `bd5c247b-22a5-49a1-abbf-499a0ae3b14f`; resent with visible CC to `info@` `6b182c90-b6ed-4896-a2f6-6d3d6bbe0303` | 9 September 2026 |
+| 3 | Property Industry Eye | `editor@propertyindustryeye.com` | Timely expert comment / editorial consideration | Seller Conveyancing Checklist | Initial send `67a03b41-1351-41b6-9fea-488272942a7c`; resent with visible CC to `info@` `26059c2d-23f1-4e70-9b46-17a04a222d0f` | 7 September 2026 |
 
 ## 1. HomeOwners Alliance — Partnership Pitch
 

@@ -4,6 +4,7 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 const from = "James Fellows <noreply@comparetheconveyancingmarket.co.uk>";
 const replyTo = "info@comparetheconveyancingmarket.co.uk";
+const cc = "info@comparetheconveyancingmarket.co.uk";
 const site = "https://www.comparetheconveyancingmarket.co.uk";
 
 const messages = [
@@ -74,6 +75,7 @@ for (const message of messages) {
     const { data, error } = await resend.emails.send({
       from,
       to: [message.to],
+      cc: [cc],
       replyTo,
       subject: message.subject,
       text: message.text,

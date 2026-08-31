@@ -477,3 +477,6 @@
 - [x] Prepare personalised first-contact emails and an outreach tracking register for credible UK property and homebuyer organisations
 - [x] Obtain explicit approval before sending any third-party outreach
 - [x] Record delivery status and follow-up dates for approved outreach
+
+## Outreach Copy Resend (Aug 2026)
+- [x] Resent the three approved authority-outreach emails with info@comparetheconveyancingmarket.co.uk copied on each message
