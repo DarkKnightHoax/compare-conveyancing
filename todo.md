@@ -492,3 +492,11 @@
 - [x] Verified a fifth suitable conveyancing-firm contact and prepared a non-disclosing offer for up to 450 recent, consented enquiries generated during the preceding two months at £9 per lead
 - [x] Sent the user-approved proposal to five firms with info@comparetheconveyancingmarket.co.uk visibly copied
 - [x] Recorded firm-proposal delivery results; no follow-up will occur without user approval
+
+## SME Conveyancing Prospecting (Aug 2026)
+- [x] Identified three smaller or regional conveyancing practices with public introducer routes and suitable business contacts
+- [x] Prepared tailored non-disclosing £9-per-lead proposal drafts for user review before sending
+
+## Three-Firm SME Lead-Supply Outreach (Aug 2026)
+- [x] Sent the approved non-disclosing proposals to The Partnership, Juno Legal, and Independent Property Lawyers with info@comparetheconveyancingmarket.co.uk visibly copied
+- [x] Recorded delivery results and retained follow-up control pending user approval
