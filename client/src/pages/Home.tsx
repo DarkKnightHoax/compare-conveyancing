@@ -372,7 +372,7 @@ export default function Home() {
                       ))}
                     </div>
                     <div className="text-xs" style={{ color: "oklch(0.975 0.008 80 / 0.6)", fontFamily: "'DM Sans', sans-serif" }}>
-                      <span style={{ color: "oklch(0.82 0.10 75)", fontWeight: 600 }}>5 regulated firms</span> ready to quote
+                      <span style={{ color: "oklch(0.82 0.10 75)", fontWeight: 600 }}>Regulated firms</span> ready to quote
                     </div>
                   </div>
                 </div>
@@ -389,10 +389,10 @@ export default function Home() {
       <section ref={statsRef} className="py-12" style={{ background: "oklch(0.18 0.06 250)" }}>
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <StatCard value={4200} suffix="+" label="Quotes Compared" started={statsStarted} />
-            <StatCard value={5} suffix="" label="Regulated Firms" started={statsStarted} />
-            <StatCard value={98} suffix="%" label="Customer Satisfaction" started={statsStarted} />
-            <StatCard value={2} suffix=" min" label="Average Quote Time" started={statsStarted} />
+            <div className="text-center"><div className="text-2xl font-bold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'Playfair Display', serif" }}>Itemised</div><div className="text-sm mt-1 font-medium" style={{ color: "oklch(0.975 0.008 80 / 0.7)", fontFamily: "'DM Sans', sans-serif" }}>fees and disbursements</div></div>
+            <div className="text-center"><div className="text-2xl font-bold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'Playfair Display', serif" }}>Free</div><div className="text-sm mt-1 font-medium" style={{ color: "oklch(0.975 0.008 80 / 0.7)", fontFamily: "'DM Sans', sans-serif" }}>to compare quotes</div></div>
+            <div className="text-center"><div className="text-2xl font-bold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'Playfair Display', serif" }}>UK</div><div className="text-sm mt-1 font-medium" style={{ color: "oklch(0.975 0.008 80 / 0.7)", fontFamily: "'DM Sans', sans-serif" }}>home-moving guidance</div></div>
+            <div className="text-center"><div className="text-2xl font-bold" style={{ color: "oklch(0.72 0.12 75)", fontFamily: "'Playfair Display', serif" }}>Clear</div><div className="text-sm mt-1 font-medium" style={{ color: "oklch(0.975 0.008 80 / 0.7)", fontFamily: "'DM Sans', sans-serif" }}>next steps to compare</div></div>
           </div>
         </div>
       </section>
@@ -464,8 +464,8 @@ export default function Home() {
                 Why Choose Us
               </div>
               <h2 className="text-4xl font-bold mb-4" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
-                Trusted by Thousands of<br />
-                <em>UK Home Buyers</em>
+                Confidence for your<br />
+                <em>next property move</em>
               </h2>
               <div className="gold-rule w-24 mb-6" />
               <p className="text-base mb-8 leading-relaxed" style={{ color: "oklch(0.975 0.008 80 / 0.7)", fontFamily: "'DM Sans', sans-serif" }}>
@@ -475,9 +475,9 @@ export default function Home() {
               <div className="space-y-4">
                 {[
                   { icon: Shield, text: "All firms SRA or CLC regulated" },
-                  { icon: Star, text: "Minimum 4.5 star rating required" },
-                  { icon: Clock, text: "Quotes generated in under 2 minutes" },
-                  { icon: Award, text: "Law Society Conveyancing Quality Scheme members" },
+                  { icon: Scale, text: "Itemised quote comparisons" },
+                  { icon: Clock, text: "Clear next steps for buyers and sellers" },
+                  { icon: Award, text: "Guidance to help you compare with confidence" },
                 ].map(({ icon: Icon, text }) => (
                   <div key={text} className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "oklch(0.72 0.12 75 / 0.15)" }}>
@@ -496,17 +496,9 @@ export default function Home() {
                 <img src={OFFICE_IMG} alt="Professional solicitor's office" className="w-full h-80 object-cover" />
               </div>
               <div className="absolute -bottom-6 -left-6 rounded-xl p-5 shadow-xl" style={{ background: "oklch(0.72 0.12 75)", minWidth: "200px" }}>
-                <div className="flex items-center gap-1 mb-1">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} size={14} fill="oklch(0.12 0.05 250)" style={{ color: "oklch(0.12 0.05 250)" }} />
-                  ))}
-                </div>
-                <div className="text-sm font-bold" style={{ color: "oklch(0.12 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>
-                  "Saved £340 on my purchase"
-                </div>
-                <div className="text-xs mt-1" style={{ color: "oklch(0.12 0.05 250 / 0.7)", fontFamily: "'DM Sans', sans-serif" }}>
-                  — Sarah T., First-Time Buyer
-                </div>
+                <div className="text-xs font-semibold uppercase tracking-widest" style={{ color: "oklch(0.12 0.05 250 / 0.7)", fontFamily: "'DM Sans', sans-serif" }}>Plan with confidence</div>
+                <div className="text-sm font-bold mt-1" style={{ color: "oklch(0.12 0.05 250)", fontFamily: "'DM Sans', sans-serif" }}>Compare itemised quotes</div>
+                <button onClick={() => navigate("/uk-conveyancing-cost-guide")} className="text-xs font-semibold mt-2 underline" style={{ color: "oklch(0.12 0.05 250)", background: "none", border: "none" }}>Read the UK cost guide</button>
               </div>
             </div>
           </div>
@@ -523,6 +515,14 @@ export default function Home() {
             <p className="text-base max-w-xl mx-auto" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
               Everything you need to know about conveyancing — from costs and timelines to leasehold law and first-time buyer tips.
             </p>
+            <div className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2">
+              <button onClick={() => navigate("/uk-conveyancing-cost-guide")} className="inline-flex items-center gap-2 text-sm font-semibold underline" style={{ color: "oklch(0.18 0.06 250)", background: "none", border: "none" }}>
+                Explore the UK cost &amp; process guide <ArrowRight size={14} />
+              </button>
+              <button onClick={() => navigate("/seller-conveyancing-checklist")} className="inline-flex items-center gap-2 text-sm font-semibold underline" style={{ color: "oklch(0.18 0.06 250)", background: "none", border: "none" }}>
+                Read the seller checklist <ArrowRight size={14} />
+              </button>
+            </div>
           </div>
           <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {/* FAQ card */}
@@ -574,7 +574,7 @@ export default function Home() {
             </h2>
             <div className="gold-rule w-24 mx-auto mb-6" />
             <p className="text-base mb-8" style={{ color: "oklch(0.45 0.04 250)", fontFamily: "'DM Sans', sans-serif" }}>
-              Join thousands of UK home buyers who have used Compare the Conveyancing Market to find the right solicitor at the right price.
+              Compare itemised quotes from regulated firms and use our UK guides to plan your next step with confidence.
             </p>
             <button
               onClick={() => navigate("/get-quote")}
@@ -617,6 +617,8 @@ export default function Home() {
                   { label: "Compare Conveyancing Fees", path: "/compare-conveyancing-fees" },
                   { label: "First Time Buyer Conveyancing", path: "/first-time-buyer-conveyancing" },
                   { label: "Moving Home Conveyancing", path: "/sale-and-purchase-conveyancing" },
+                  { label: "UK Cost & Process Guide", path: "/uk-conveyancing-cost-guide" },
+                  { label: "Seller Conveyancing Checklist", path: "/seller-conveyancing-checklist" },
                   { label: "Get Free Quotes", path: "/get-quote" },
                 ].map(({ label, path }) => (
                   <button key={label} onClick={() => navigate(path)} className="text-left hover:text-white transition-colors text-xs" style={{ background: "none", border: "none", color: "oklch(0.975 0.008 80 / 0.5)", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>{label}</button>

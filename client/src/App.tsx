@@ -22,6 +22,8 @@ import FirstTimeBuyer from "./pages/FirstTimeBuyer";
 import SaleAndPurchaseConveyancing from "./pages/SaleAndPurchaseConveyancing";
 import CompareConveyancingFees from "./pages/CompareConveyancingFees";
 import SavedQuote from "./pages/SavedQuote";
+import UKConveyancingCostGuide from "./pages/UKConveyancingCostGuide";
+import SellerConveyancingChecklist from "./pages/SellerConveyancingChecklist";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -43,6 +45,8 @@ function Router() {
       <Route path={"/first-time-buyer-conveyancing"} component={FirstTimeBuyer} />
       <Route path={"/sale-and-purchase-conveyancing"} component={SaleAndPurchaseConveyancing} />
       <Route path={"/compare-conveyancing-fees"} component={CompareConveyancingFees} />
+      <Route path={"/uk-conveyancing-cost-guide"} component={UKConveyancingCostGuide} />
+      <Route path={"/seller-conveyancing-checklist"} component={SellerConveyancingChecklist} />
       <Route path={"/quote/:ref"} component={SavedQuote} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />

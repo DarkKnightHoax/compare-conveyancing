@@ -35,10 +35,25 @@ describe("SEO foundation", () => {
       "/first-time-buyer-conveyancing",
       "/sale-and-purchase-conveyancing",
       "/compare-conveyancing-fees",
+      "/uk-conveyancing-cost-guide",
+      "/seller-conveyancing-checklist",
     ]) {
       expect(sitemap).toContain(`https://www.comparetheconveyancingmarket.co.uk${path}`);
     }
 
     expect(sitemap).toContain("<lastmod>2026-08-11</lastmod>");
+  });
+
+  it("exposes original authority resources with canonical URLs and primary-source references", () => {
+    const app = readProjectFile("client/src/App.tsx");
+    const guide = readProjectFile("client/src/pages/UKConveyancingCostGuide.tsx");
+    const sellerChecklist = readProjectFile("client/src/pages/SellerConveyancingChecklist.tsx");
+
+    expect(app).toContain('path={"/uk-conveyancing-cost-guide"}');
+    expect(app).toContain('path={"/seller-conveyancing-checklist"}');
+    expect(guide).toContain('canonicalPath="/uk-conveyancing-cost-guide"');
+    expect(guide).toContain("https://www.gov.uk/stamp-duty-land-tax/residential-property-rates");
+    expect(sellerChecklist).toContain('canonicalPath="/seller-conveyancing-checklist"');
+    expect(sellerChecklist).toContain("https://www.gov.uk/selling-a-home");
   });
 });
