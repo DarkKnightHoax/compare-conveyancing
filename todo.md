@@ -480,3 +480,15 @@
 
 ## Outreach Copy Resend (Aug 2026)
 - [x] Resent the three approved authority-outreach emails with info@comparetheconveyancingmarket.co.uk copied on each message
+
+## Conveyancing Lead-Supply Assessment (Aug 2026)
+- [x] Audited consent wording: current form and privacy policy permit sharing only with the selected or instructed panel firm, and expressly prohibit sale to third parties without explicit consent
+- [x] Researched 4 suitable regulated or regulated-firm-backed introducer prospects for a non-disclosing lead-supply offer
+- [x] Prepared a non-disclosing firm offer; user confirmed that the existing leads have express sharing consent, with personal-data transfer remaining subject to due diligence and written terms
+- [x] Clarified that the two-month period describes lead recency, not a recurring outreach schedule
+- [x] Obtained explicit approval before sending firm outreach; no personal lead data was shared
+
+## Five-Firm Lead-Supply Proposal (Aug 2026)
+- [x] Verified a fifth suitable conveyancing-firm contact and prepared a non-disclosing offer for up to 450 recent, consented enquiries generated during the preceding two months at £9 per lead
+- [x] Sent the user-approved proposal to five firms with info@comparetheconveyancingmarket.co.uk visibly copied
+- [x] Recorded firm-proposal delivery results; no follow-up will occur without user approval
