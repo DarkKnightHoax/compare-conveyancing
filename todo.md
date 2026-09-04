@@ -500,3 +500,8 @@
 ## Three-Firm SME Lead-Supply Outreach (Aug 2026)
 - [x] Sent the approved non-disclosing proposals to The Partnership, Juno Legal, and Independent Property Lawyers with info@comparetheconveyancingmarket.co.uk visibly copied
 - [x] Recorded delivery results and retained follow-up control pending user approval
+
+## Petr Vasilyev 20% Promotion (Aug 2026)
+- [x] Identified the next 50 leads from Petr Vasilyev downward and excluded instructed, test, junk, duplicate-email, and protected contacts
+- [x] Sent an enhanced 20% promotional email with a 10 September 2026 deadline and a visible internal CC
+- [x] Recorded delivery results and exclusions
