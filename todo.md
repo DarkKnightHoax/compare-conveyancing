@@ -505,3 +505,7 @@
 - [x] Identified the next 50 leads from Petr Vasilyev downward and excluded instructed, test, junk, duplicate-email, and protected contacts
 - [x] Sent an enhanced 20% promotional email with a 10 September 2026 deadline and a visible internal CC
 - [x] Recorded delivery results and exclusions
+
+## Organic Traffic Check (Sep 2026)
+- [ ] Retrieve current Google Search Console organic traffic and ranking data
+- [ ] Analyse the current search trend and report immediate SEO priorities
