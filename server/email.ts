@@ -276,6 +276,21 @@ export async function sendQuoteEmail(quote: {
   });
 }
 
+// Selected-firm quote requested explicitly from the results-page email modal.
+export async function sendSelectedQuoteEmail(quote: {
+  email: string;
+  firmName: string;
+  text: string;
+}) {
+  return resend.emails.send({
+    from: FROM,
+    to: quote.email,
+    replyTo: TO,
+    subject: `Your Conveyancing Quote — ${quote.firmName}`,
+    text: quote.text,
+  });
+}
+
 // ─── 2. New Callback Request ───────────────────────────────────────────────────
 export async function sendNewCallbackEmail(cb: {
   name: string;

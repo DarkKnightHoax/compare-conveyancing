@@ -22,7 +22,7 @@ import {
   getPlatformSettings, updatePlatformSettings,
 } from "./db";
 import { notifyOwner } from "./_core/notification";
-import { sendNewLeadEmail, sendNewCallbackEmail, sendNewInstructEmail, sendContactFormEmail, sendQuoteEmail, sendJamesFellowsFollowUpEmail } from "./email";
+import { sendNewLeadEmail, sendNewCallbackEmail, sendNewInstructEmail, sendContactFormEmail, sendQuoteEmail, sendSelectedQuoteEmail, sendJamesFellowsFollowUpEmail } from "./email";
 
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== "admin") {
@@ -634,6 +634,22 @@ export const appRouter = router({
           `This quote is indicative. Final fees may vary. All firms are SRA/CLC regulated.`,
           `Compare the Conveyancing Market — Office 17699, 182-184 High Street North, East Ham, London E6 2JA`,
         ].filter(Boolean).join('\n');
+
+        try {
+          const result = await sendSelectedQuoteEmail({
+            email: input.recipientEmail,
+            firmName: input.firmName,
+            text: quoteText,
+          });
+          if (result.error || !result.data?.id) {
+            throw new Error("Email provider did not accept the quote");
+          }
+        } catch {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "We couldn't send your quote. Please try again or contact us on 0330 128 9488.",
+          });
+        }
 
         await notifyOwner({
           title: `Quote emailed to ${input.recipientEmail}`,

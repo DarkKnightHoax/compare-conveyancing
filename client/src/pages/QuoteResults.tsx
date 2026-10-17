@@ -590,6 +590,7 @@ function EmailQuoteModal({ firm, onClose, contactDetails, answers }: {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (emailQuote.isPending) return;
     emailQuote.mutate({
       recipientEmail: email,
       firmName: firm.firmName,
@@ -601,8 +602,9 @@ function EmailQuoteModal({ firm, onClose, contactDetails, answers }: {
       grandTotal: firm.grandTotal,
       propertyValue: (answers.propertyValue as number) ?? 0,
       transactionType: (answers.transactionType as string) ?? 'purchase',
+    }, {
+      onSuccess: () => setSubmitted(true),
     });
-    setSubmitted(true);
   };
 
   return (
@@ -664,6 +666,7 @@ function EmailQuoteModal({ firm, onClose, contactDetails, answers }: {
               <input
                 type="email"
                 required
+                disabled={emailQuote.isPending}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="jane.smith@email.com"
@@ -674,6 +677,11 @@ function EmailQuoteModal({ firm, onClose, contactDetails, answers }: {
               />
             </div>
 
+            {emailQuote.isError && (
+              <p role="alert" className="text-sm text-red-700">
+                We couldn't send your quote. Please try again, or call 0330 128 9488.
+              </p>
+            )}
             <button type="submit" disabled={emailQuote.isPending} className="btn-gold w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
               <Mail size={16} />
               {emailQuote.isPending ? 'Sending...' : 'Send Me This Quote'}
