@@ -107,13 +107,6 @@ export default function CompareConveyancingFees() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = "Compare Conveyancing Fees Online | Instant Quotes from Regulated Solicitors";
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute("content", "Compare conveyancing fees online in seconds. See fully itemised quotes from SRA & CLC regulated UK solicitors — legal fees, searches, SDLT, and Land Registry all included.");
-    return () => {
-      document.title = "Compare the Conveyancing Market | Free Conveyancing Quotes";
-      if (metaDesc) metaDesc.setAttribute("content", "Compare instant conveyancing quotes from SRA & CLC regulated UK solicitors. Free, no-obligation quotes in under 2 minutes.");
-    };
   }, []);
 
   return (
@@ -145,8 +138,8 @@ export default function CompareConveyancingFees() {
                 <TrendingDown size={12} /> Save Up to £500 on Conveyancing Fees
               </div>
               <h1 className="text-4xl lg:text-5xl font-bold leading-tight mb-5" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
-                Compare
-                <span className="block italic" style={{ color: "oklch(0.82 0.10 75)" }}>Conveyancing Fees</span>
+                Compare{" "}
+                <span className="block italic" style={{ color: "oklch(0.82 0.10 75)" }}>Conveyancing Fees{" "}</span>
                 Online
               </h1>
               <p className="text-base mb-8 leading-relaxed" style={{ color: "oklch(0.975 0.008 80 / 0.75)", fontFamily: "'DM Sans', sans-serif" }}>

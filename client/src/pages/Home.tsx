@@ -250,7 +250,7 @@ export default function Home() {
     <div className="min-h-screen" style={{ background: "oklch(0.975 0.008 80)" }}>
       <SEOHead
         title="Compare the Conveyancing Market | Free Conveyancing Quotes"
-        description="Compare instant conveyancing quotes from SRA & CLC regulated UK solicitors. Free, no-obligation quotes in under 2 minutes."
+        description="Compare itemised conveyancing quotes from regulated firms for buying or selling in England. Access competitive rates when you instruct through us."
         canonicalPath="/"
         schema={{
           "@context": "https://schema.org",
@@ -292,15 +292,15 @@ export default function Home() {
               </div>
 
               <h1 className="text-5xl lg:text-6xl font-bold leading-tight mb-6" style={{ color: "white", fontFamily: "'Playfair Display', serif" }}>
-                Compare
+                Compare{" "}
                 <span className="block italic" style={{ color: "oklch(0.82 0.10 75)" }}>
-                  Conveyancing
+                  Conveyancing{" "}
                 </span>
                 Quotes Instantly
               </h1>
 
               <p className="text-lg mb-8 leading-relaxed" style={{ color: "oklch(0.975 0.008 80 / 0.75)", fontFamily: "'DM Sans', sans-serif", maxWidth: "480px" }}>
-                Get accurate, transparent quotes from regulated UK conveyancers in under 2 minutes. No hidden fees. No obligation.
+                Compare itemised quotes from regulated conveyancers for your property purchase or sale in England. Access competitive rates when you instruct through us. Free to compare, with no obligation.
               </p>
 
               <div className="flex flex-wrap gap-4 mb-10">

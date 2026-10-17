@@ -43,6 +43,21 @@ export default function SEOHead({
     }
     ogUrl.setAttribute('content', `https://www.comparetheconveyancingmarket.co.uk${canonicalPath}`);
 
+    for (const [name, content] of Object.entries({
+      'twitter:title': title,
+      'twitter:description': description,
+      'twitter:url': `https://www.comparetheconveyancingmarket.co.uk${canonicalPath}`,
+    })) {
+      let meta = document.querySelector(`meta[name="${name}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', name);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    }
+    document.querySelector('meta[property="og:type"]')?.setAttribute('content', ogType);
+
     // Update Canonical Link
     let canonical = document.querySelector('link[rel="canonical"]');
     if (!canonical) {
@@ -62,6 +77,8 @@ export default function SEOHead({
         document.head.appendChild(schemaScript);
       }
       schemaScript.textContent = JSON.stringify(schema);
+    } else {
+      schemaScript?.remove();
     }
   }, [title, description, canonicalPath, ogType, schema]);
 
